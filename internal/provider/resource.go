@@ -1,0 +1,189 @@
+package provider
+
+import (
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+)
+
+type ExampleResource struct{}
+
+var _ resource.Resource = ExampleResource{}
+
+// Metadata implements [resource.Resource].
+func (e ExampleResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_resource"
+}
+
+// Schema implements [resource.Resource].
+func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	nestedAttrs := map[string]schema.Attribute{
+		"string": schema.StringAttribute{
+			MarkdownDescription: "A nested string attribute.",
+			Optional:            true,
+		},
+		"nested_object": schema.SingleNestedAttribute{
+			MarkdownDescription: "A nested single object attribute.",
+			Optional:            true,
+			Attributes: map[string]schema.Attribute{
+				"bool": schema.BoolAttribute{
+					MarkdownDescription: "A nested bool attribute.",
+					Optional:            true,
+				},
+			},
+		},
+	}
+
+	nestedBlks := map[string]schema.Block{
+		"nested_block": schema.SingleNestedBlock{
+			MarkdownDescription: "A nested block.",
+			Attributes: map[string]schema.Attribute{
+				"number": schema.NumberAttribute{
+					MarkdownDescription: "A nested number attribute.",
+					Optional:            true,
+				},
+			},
+		},
+	}
+	resp.Schema = schema.Schema{
+		MarkdownDescription: "Manages an example resource.",
+		Attributes: map[string]schema.Attribute{
+			"bool": schema.BoolAttribute{
+				MarkdownDescription: "A boolean attribute.",
+				Required:            true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.RequiresReplace(),
+					boolplanmodifier.UseStateForUnknown(),
+					boolplanmodifier.RequiresReplaceIf(func(ctx context.Context, br planmodifier.BoolRequest, rrifr *boolplanmodifier.RequiresReplaceIfFuncResponse) {
+					}, "", "A conditional requires replace if."),
+				},
+			},
+			"string": schema.StringAttribute{
+				MarkdownDescription: "A string attribute.",
+				Optional:            true,
+				Computed:            true,
+				Sensitive:           true,
+				WriteOnly:           true,
+				Default:             stringdefault.StaticString(""),
+			},
+			"int64": schema.Int64Attribute{
+				MarkdownDescription: "A int64 attribute.",
+				Optional:            true,
+				Computed:            true,
+				Default:             int64default.StaticInt64(0),
+			},
+			"list": schema.ListAttribute{
+				MarkdownDescription: "A list attribute.",
+				Optional:            true,
+				Computed:            true,
+				Default:             listdefault.StaticValue(basetypes.NewListValueMust(basetypes.StringType{}, []attr.Value{basetypes.NewStringValue("foo")})),
+			},
+			"map": schema.MapAttribute{
+				MarkdownDescription: "A map attribute.",
+				Optional:            true,
+				Computed:            true,
+				Default:             mapdefault.StaticValue(basetypes.NewMapValueMust(basetypes.StringType{}, map[string]attr.Value{"key": basetypes.NewStringValue("val")})),
+			},
+			"set": schema.SetAttribute{
+				MarkdownDescription: "A set attribute.",
+				Optional:            true,
+				Computed:            true,
+				Default:             setdefault.StaticValue(basetypes.NewSetValueMust(basetypes.StringType{}, []attr.Value{basetypes.NewStringValue("foo")})),
+			},
+			"dynamic": schema.DynamicAttribute{
+				MarkdownDescription: "A dynamic attribute.",
+				Computed:            true,
+			},
+			"single_object": schema.SingleNestedAttribute{
+				MarkdownDescription: "A single object attribute.",
+				Optional:            true,
+				Attributes:          nestedAttrs,
+			},
+			"list_object": schema.ListNestedAttribute{
+				MarkdownDescription: "A list object attribute.",
+				Optional:            true,
+				NestedObject: schema.NestedAttributeObject{
+					PlanModifiers: []planmodifier.Object{
+						objectplanmodifier.RequiresReplace(),
+					},
+					Attributes: nestedAttrs,
+				},
+			},
+			"map_object": schema.MapNestedAttribute{
+				MarkdownDescription: "A map object attribute.",
+				Optional:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: nestedAttrs,
+				},
+			},
+			"set_object": schema.SetNestedAttribute{
+				MarkdownDescription: "A set object attribute.",
+				Optional:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: nestedAttrs,
+				},
+			},
+		},
+		Blocks: map[string]schema.Block{
+			"single_block": schema.SingleNestedBlock{
+				MarkdownDescription: "A single block.",
+				Attributes:          nestedAttrs,
+				Blocks:              nestedBlks,
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.RequiresReplace(),
+				},
+			},
+			"list_block": schema.ListNestedBlock{
+				MarkdownDescription: "A list block.",
+				NestedObject: schema.NestedBlockObject{
+					Attributes: nestedAttrs,
+					Blocks:     nestedBlks,
+					PlanModifiers: []planmodifier.Object{
+						objectplanmodifier.RequiresReplace(),
+					},
+				},
+			},
+			"set_block": schema.SetNestedBlock{
+				MarkdownDescription: "A set block.",
+				NestedObject: schema.NestedBlockObject{
+					Attributes: nestedAttrs,
+					Blocks:     nestedBlks,
+					PlanModifiers: []planmodifier.Object{
+						objectplanmodifier.RequiresReplace(),
+					},
+				},
+			},
+		},
+	}
+}
+
+// Create implements [resource.Resource].
+func (e ExampleResource) Create(context.Context, resource.CreateRequest, *resource.CreateResponse) {
+	panic("unimplemented")
+}
+
+// Delete implements [resource.Resource].
+func (e ExampleResource) Delete(context.Context, resource.DeleteRequest, *resource.DeleteResponse) {
+	panic("unimplemented")
+}
+
+// Read implements [resource.Resource].
+func (e ExampleResource) Read(context.Context, resource.ReadRequest, *resource.ReadResponse) {
+	panic("unimplemented")
+}
+
+// Update implements [resource.Resource].
+func (e ExampleResource) Update(context.Context, resource.UpdateRequest, *resource.UpdateResponse) {
+	panic("unimplemented")
+}
