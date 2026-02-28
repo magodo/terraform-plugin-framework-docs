@@ -1,7 +1,10 @@
 package tfproviderdocs
 
 import (
+	"fmt"
+	"slices"
 	"sort"
+	"strings"
 )
 
 type ResourceInfos map[string]ResourceInfo
@@ -87,4 +90,24 @@ type SchemaInfo struct {
 	DefaultDesc   *string
 
 	WriteOnly bool
+}
+
+func (info SchemaInfo) NestedKey() string {
+	return strings.Join(slices.Concat(info.Parents, []string{info.Name}), ".")
+}
+
+func (info SchemaInfo) NestedLink() string {
+	switch info.DataType {
+	case DTSingleNestedAttr,
+		DTListNestedAttr,
+		DTMapNestedAttr,
+		DTSetNestedAttr,
+		DTObjectAttr,
+		DTSingleNestedBlock,
+		DTListNestedBlock,
+		DTSetNestedBlock:
+		return fmt.Sprintf("See the nested schema [here](#nested--%s).", info.NestedKey())
+	default:
+		return ""
+	}
 }

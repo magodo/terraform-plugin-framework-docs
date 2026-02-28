@@ -20,7 +20,7 @@ type ResourceRender struct {
 	// ImportId           string
 }
 
-const TplProperty = "- `{{ .Name }}` ({{ .DataType }}) {{ .Description }} {{- template \"planmodifier-indent\" . }} {{- template \"validator-indent\" . }}"
+const TplProperty = "- `{{ .Name }}` ({{ .DataType }}) {{ .Description }} {{- .NestedLink }} {{- template \"planmodifier-indent\" . }} {{- template \"validator-indent\" . }}"
 
 const TplProperties = `{{ range . }}
 {{ template "property" . -}}
@@ -59,7 +59,7 @@ const TplValidatorIndent = `{{ with .Validators }}
 {{ end }}`
 
 var TplNested = fmt.Sprintf(`{{- range $key, $value := . }}
-<a id="nestedatt--{{ $key }}"></a>
+<a id="nested--{{ $key }}"></a>
 ### Nested Schema for %[1]s{{ $key }}%[1]s
 
 {{- template "planmodifier" . }} {{- template "validator" . }}
