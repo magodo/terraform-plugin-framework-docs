@@ -111,3 +111,11 @@ func (info SchemaInfo) NestedLink() string {
 		return ""
 	}
 }
+
+func (info SchemaInfo) Default() string {
+	if info.DefaultDesc == nil {
+		return ""
+	}
+	return Sentencefy(*info.DefaultDesc)
+
+}

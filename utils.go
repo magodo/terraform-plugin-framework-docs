@@ -1,6 +1,10 @@
 package tfproviderdocs
 
-import "context"
+import (
+	"context"
+	"strings"
+	"unicode"
+)
 
 type DescriptionProvider interface {
 	GetDescription() string
@@ -41,4 +45,32 @@ func MapOrNil[T any, U any](input T, f func(T) U) *U {
 	}
 	output := f(input)
 	return &output
+}
+
+func capitalizeFirstLetter(s string) string {
+	if s == "" {
+		return s
+	}
+
+	// Convert string to a slice of runes to handle Unicode characters correctly
+	runes := []rune(s)
+
+	// Capitalize the first rune
+	runes[0] = unicode.ToUpper(runes[0])
+
+	return string(runes)
+}
+
+func ensureStringEndsWithDot(s string) string {
+	if s == "" {
+		return s
+	}
+	return strings.TrimRight(s, ".") + "."
+}
+
+func Sentencefy(s string) string {
+	if s == "" {
+		return s
+	}
+	return capitalizeFirstLetter(ensureStringEndsWithDot(s))
 }

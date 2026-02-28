@@ -20,7 +20,7 @@ type ResourceRender struct {
 	// ImportId           string
 }
 
-const TplProperty = "- `{{ .Name }}` ({{ .DataType }}) {{ .Description }} {{- .NestedLink }} {{- template \"planmodifier-indent\" . }} {{- template \"validator-indent\" . }}"
+const TplProperty = "- `{{ .Name }}` ({{ .DataType }}) {{ .Description }} {{- .Default }} {{- .NestedLink }} {{- template \"planmodifier-indent\" . }} {{- template \"validator-indent\" . }}"
 
 const TplProperties = `{{ range . }}
 {{ template "property" . -}}
