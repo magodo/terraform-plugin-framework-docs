@@ -18,7 +18,7 @@ type ResourceInfo struct {
 
 type SchemaInfos map[string]SchemaInfo
 
-func (infos SchemaInfos) Requireds() []SchemaInfo {
+func (infos SchemaInfos) RequiredInfos() []SchemaInfo {
 	var out []SchemaInfo
 	for _, info := range infos {
 		if !info.Required {
@@ -32,7 +32,7 @@ func (infos SchemaInfos) Requireds() []SchemaInfo {
 	return out
 }
 
-func (infos SchemaInfos) Optionals() []SchemaInfo {
+func (infos SchemaInfos) OptionalInfos() []SchemaInfo {
 	var out []SchemaInfo
 	for _, info := range infos {
 		if !info.Optional {
@@ -46,7 +46,7 @@ func (infos SchemaInfos) Optionals() []SchemaInfo {
 	return out
 }
 
-func (infos SchemaInfos) Computeds() []SchemaInfo {
+func (infos SchemaInfos) ComputedInfos() []SchemaInfo {
 	var out []SchemaInfo
 	for _, info := range infos {
 		if !(info.Computed && !info.Optional) {

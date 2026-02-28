@@ -64,19 +64,19 @@ var TplNested = fmt.Sprintf(`{{- range $key, $value := . }}
 
 {{- template "planmodifier" . }} {{- template "validator" . }}
 
-{{- with $value.Infos.Requireds }}
+{{- with $value.Infos.RequiredInfos }}
 
 Required:
 {{ template "properties" . -}}
 {{ end }}
 
-{{- with $value.Infos.Optionals }}
+{{- with $value.Infos.OptionalInfos }}
 
 Optional:
 {{ template "properties" . -}}
 {{ end }}
 
-{{- with $value.Infos.Computeds }}
+{{- with $value.Infos.ComputedInfos }}
 
 Read-Only:
 {{ template "properties" . -}}
@@ -85,19 +85,19 @@ Read-Only:
 
 const TplSchema = `## Schema
 
-{{- with .Infos.Requireds }}
+{{- with .Infos.RequiredInfos }}
 
 ### Required
 {{ template "properties" . -}}
 {{ end }}
 
-{{- with .Infos.Optionals }}
+{{- with .Infos.OptionalInfos }}
 
 ### Optional
 {{ template "properties" . -}}
 {{ end }}
 
-{{- with .Infos.Computeds }}
+{{- with .Infos.ComputedInfos }}
 
 ### Read-Only
 {{ template "properties" . -}}
