@@ -3,7 +3,6 @@ package tfproviderdocs
 import (
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/magodo/terraform-provider-docs/internal/provider"
 )
 
@@ -12,6 +11,13 @@ func TestNewProviderData(t *testing.T) {
 	if diags.HasError() {
 		t.Fatal(diags.Errors())
 	}
+	//spew.Dump(pd.Resources)
 
-	spew.Dump(pd.Resources)
+	render := ResourceRender{
+		SchemaInfo: pd.Resources["examplecloud_resource"],
+	}
+
+	if err := render.Execute(t.Output()); err != nil {
+		t.Fatal(err)
+	}
 }
