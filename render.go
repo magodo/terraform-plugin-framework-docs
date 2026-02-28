@@ -3,7 +3,6 @@ package tfproviderdocs
 import (
 	"fmt"
 	"io"
-	"strings"
 	"text/template"
 )
 
@@ -24,10 +23,16 @@ const TplProperty = "- `{{ .Name }}` ({{ .Traits }}) {{ .Description }}" +
 	`{{ if .Default }} {{ .Default }}{{ end }}` +
 	`{{ if .NestedLink }} {{ .NestedLink }}{{ end }}` +
 	`{{- template "planmodifier-indent" . }}` +
-	`{{- template "validator-indent" . }}`
+	`{{- template "validator-indent" . }}` +
+	`{{- template "deprecation-indent" . }}`
 
 const TplProperties = `{{ range . }}
 {{ template "property" . -}}
+{{ end }}`
+
+const TplDeprecationIndent = `{{ with .Deprecation }}
+
+	!> {{ . }}
 {{ end }}`
 
 const TplPlanModifier = `{{ with .PlanModifiers }}
@@ -114,16 +119,9 @@ const TplSchema = `## Schema
 
 func (render ResourceRender) Execute(w io.Writer) error {
 	tpl := template.Must(template.New("schema").Parse(TplSchema))
-
-	tpl.Funcs(template.FuncMap{
-		"indent": func(n int, v string) string {
-			pad := strings.Repeat("\t", n)
-			return pad + strings.ReplaceAll(v, "\n", "\n"+pad)
-		},
-	})
-
 	template.Must(tpl.New("properties").Parse(TplProperties))
 	template.Must(tpl.New("property").Parse(TplProperty))
+	template.Must(tpl.New("deprecation-indent").Parse(TplDeprecationIndent))
 	template.Must(tpl.New("planmodifier").Parse(TplPlanModifier))
 	template.Must(tpl.New("planmodifier-indent").Parse(TplPlanModifierIndent))
 	template.Must(tpl.New("validator").Parse(TplValidator))

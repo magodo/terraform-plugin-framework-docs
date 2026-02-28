@@ -36,6 +36,7 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 	nestedAttrs := map[string]schema.Attribute{
 		"bool": schema.BoolAttribute{
 			MarkdownDescription: "A nested bool attribute.",
+			DeprecationMessage:  "Deprecated in favor of `boolean`.",
 			Required:            true,
 		},
 		"string": schema.StringAttribute{
