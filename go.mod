@@ -3,8 +3,8 @@ module github.com/magodo/terraform-provider-docs
 go 1.25.6
 
 require (
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/hashicorp/terraform-plugin-framework v1.17.0
+	github.com/hashicorp/terraform-plugin-framework-validators v0.19.0
 )
 
 require (

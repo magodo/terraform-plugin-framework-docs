@@ -63,8 +63,9 @@ func (infos SchemaInfos) Computeds() []SchemaInfo {
 type NestedSchemaInfos map[string]NestedSchemaInfo
 
 type NestedSchemaInfo struct {
-	PlanModifierDescriptions []string
-	Infos                    SchemaInfos
+	PlanModifiers []string
+	Validators    []string
+	Infos         SchemaInfos
 }
 
 type SchemaInfo struct {
@@ -81,8 +82,9 @@ type SchemaInfo struct {
 	Description string
 	Deprecation string
 
-	PlanModifierDescriptions []string
-	DefaultDesc              *string
+	PlanModifiers []string
+	Validators    []string
+	DefaultDesc   *string
 
 	WriteOnly bool
 }

@@ -3,7 +3,11 @@ package provider
 import (
 	"context"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/boolvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
@@ -14,6 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
@@ -29,6 +34,10 @@ func (e ExampleResource) Metadata(ctx context.Context, req resource.MetadataRequ
 // Schema implements [resource.Resource].
 func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	nestedAttrs := map[string]schema.Attribute{
+		"bool": schema.BoolAttribute{
+			MarkdownDescription: "A nested bool attribute.",
+			Required:            true,
+		},
 		"string": schema.StringAttribute{
 			MarkdownDescription: "A nested string attribute.",
 			Optional:            true,
@@ -38,7 +47,11 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			Optional:            true,
 			Attributes: map[string]schema.Attribute{
 				"bool": schema.BoolAttribute{
-					MarkdownDescription: "A nested bool attribute.",
+					MarkdownDescription: "A nested nested bool attribute.",
+					Required:            true,
+				},
+				"string": schema.StringAttribute{
+					MarkdownDescription: "A nested nested string attribute.",
 					Optional:            true,
 				},
 			},
@@ -68,6 +81,10 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					boolplanmodifier.RequiresReplaceIf(func(ctx context.Context, br planmodifier.BoolRequest, rrifr *boolplanmodifier.RequiresReplaceIfFuncResponse) {
 					}, "", "A conditional requires replace if."),
 				},
+				Validators: []validator.Bool{
+					boolvalidator.AlsoRequires(path.MatchRoot("string"), path.MatchRoot("int64")),
+					boolvalidator.ConflictsWith(path.MatchRoot("list")),
+				},
 			},
 			"string": schema.StringAttribute{
 				MarkdownDescription: "A string attribute.",
@@ -76,6 +93,9 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Sensitive:           true,
 				WriteOnly:           true,
 				Default:             stringdefault.StaticString(""),
+				Validators: []validator.String{
+					stringvalidator.OneOf("foo", "bar", "baz"),
+				},
 			},
 			"int64": schema.Int64Attribute{
 				MarkdownDescription: "A int64 attribute.",
@@ -143,6 +163,9 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.RequiresReplace(),
 				},
+				Validators: []validator.Object{
+					objectvalidator.ConflictsWith(path.MatchRoot("list_block")),
+				},
 			},
 			"list_block": schema.ListNestedBlock{
 				MarkdownDescription: "A list block.",
@@ -151,6 +174,9 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					Blocks:     nestedBlks,
 					PlanModifiers: []planmodifier.Object{
 						objectplanmodifier.RequiresReplace(),
+					},
+					Validators: []validator.Object{
+						objectvalidator.IsRequired(),
 					},
 				},
 			},

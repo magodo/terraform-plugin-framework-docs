@@ -1,8 +1,10 @@
 package tfproviderdocs
 
 import (
-	"html/template"
+	"fmt"
 	"io"
+	"strings"
+	"text/template"
 )
 
 type ResourceRender struct {
@@ -18,33 +20,111 @@ type ResourceRender struct {
 	// ImportId           string
 }
 
-const PropertyTemplate = "- `{{ .Name }}` ({{ .DataType }}) {{ .Description }}"
-const PropertiesTemplate = `{{ range . }}
+const TplProperty = "- `{{ .Name }}` ({{ .DataType }}) {{ .Description }} {{- template \"planmodifier-indent\" . }} {{- template \"validator-indent\" . }}"
+
+const TplProperties = `{{ range . }}
 {{ template "property" . -}}
 {{ end }}`
 
-const SchemaTemplate = `## Schema
+const TplPlanModifier = `{{ with .PlanModifiers }}
 
-{{ with .Infos.Requireds -}}
+Plan Modifiers:
+{{ range . }}
+- {{ . -}}
+{{ end -}}
+{{ end }}`
+
+const TplPlanModifierIndent = `{{ with .PlanModifiers }}
+
+	Plan Modifiers:
+{{ range . }}
+	- {{ . -}}
+{{ end -}}
+{{ end }}`
+
+const TplValidator = `{{ with .Validators }}
+
+Validators:
+{{ range . }}
+- {{ . -}}
+{{ end -}}
+{{ end }}`
+
+const TplValidatorIndent = `{{ with .Validators }}
+
+	Validators:
+{{ range . }}
+	- {{ . -}}
+{{ end -}}
+{{ end }}`
+
+var TplNested = fmt.Sprintf(`{{- range $key, $value := . }}
+<a id="nestedatt--{{ $key }}"></a>
+### Nested Schema for %[1]s{{ $key }}%[1]s
+
+{{- template "planmodifier" . }} {{- template "validator" . }}
+
+{{- with $value.Infos.Requireds }}
+
+Required:
+{{ template "properties" . -}}
+{{ end }}
+
+{{- with $value.Infos.Optionals }}
+
+Optional:
+{{ template "properties" . -}}
+{{ end }}
+
+{{- with $value.Infos.Computeds }}
+
+Read-Only:
+{{ template "properties" . -}}
+{{ end }}
+{{ end }})`, "`")
+
+const TplSchema = `## Schema
+
+{{- with .Infos.Requireds }}
+
 ### Required
 {{ template "properties" . -}}
 {{ end }}
 
-{{ with .Infos.Optionals -}}
+{{- with .Infos.Optionals }}
+
 ### Optional
 {{ template "properties" . -}}
 {{ end }}
 
-{{ with .Infos.Computeds -}}
-### Computed
+{{- with .Infos.Computeds }}
+
+### Read-Only
 {{ template "properties" . -}}
+{{ end }}
+
+{{- with .Nested }}
+{{ template "nested" . }}
 {{ end }}
 `
 
 func (render ResourceRender) Execute(w io.Writer) error {
-	tpl := template.Must(template.New("schema").Parse(SchemaTemplate))
-	template.Must(tpl.New("properties").Parse(PropertiesTemplate))
-	template.Must(tpl.New("property").Parse(PropertyTemplate))
+	tpl := template.Must(template.New("schema").Parse(TplSchema))
+
+	tpl.Funcs(template.FuncMap{
+		"indent": func(n int, v string) string {
+			pad := strings.Repeat("\t", n)
+			return pad + strings.ReplaceAll(v, "\n", "\n"+pad)
+		},
+	})
+
+	template.Must(tpl.New("properties").Parse(TplProperties))
+	template.Must(tpl.New("property").Parse(TplProperty))
+	template.Must(tpl.New("planmodifier").Parse(TplPlanModifier))
+	template.Must(tpl.New("planmodifier-indent").Parse(TplPlanModifierIndent))
+	template.Must(tpl.New("validator").Parse(TplValidator))
+	template.Must(tpl.New("validator-indent").Parse(TplValidatorIndent))
+	template.Must(tpl.New("nested").Parse(TplNested))
 	if err := tpl.Execute(w, render.SchemaInfo); err != nil {
 		return err
 	}
