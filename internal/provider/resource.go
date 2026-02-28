@@ -74,7 +74,10 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 		Attributes: map[string]schema.Attribute{
 			"bool": schema.BoolAttribute{
 				MarkdownDescription: "A boolean attribute.",
+				DeprecationMessage:  "Deprecated in favor of `boolean`.",
 				Required:            true,
+				WriteOnly:           true,
+				Sensitive:           true,
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.RequiresReplace(),
 					boolplanmodifier.UseStateForUnknown(),

@@ -119,3 +119,15 @@ func (info SchemaInfo) Default() string {
 	return Sentencefy(*info.DefaultDesc)
 
 }
+
+func (info SchemaInfo) Traits() string {
+	var traits []string
+	traits = append(traits, info.DataType.String())
+	if info.Sensitive {
+		traits = append(traits, "Sensitive")
+	}
+	if info.WriteOnly {
+		traits = append(traits, "[Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)")
+	}
+	return strings.Join(traits, ", ")
+}
