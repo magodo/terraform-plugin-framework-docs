@@ -1,4 +1,4 @@
-package tfproviderdocs
+package schema
 
 import (
 	"context"
@@ -47,6 +47,13 @@ func MapOrNil[T any, U any](input T, f func(T) U) *U {
 	return &output
 }
 
+func Sentencefy(s string) string {
+	if s == "" {
+		return s
+	}
+	return capitalizeFirstLetter(ensureStringEndsWithDot(s))
+}
+
 func capitalizeFirstLetter(s string) string {
 	if s == "" {
 		return s
@@ -66,11 +73,4 @@ func ensureStringEndsWithDot(s string) string {
 		return s
 	}
 	return strings.TrimRight(s, ".") + "."
-}
-
-func Sentencefy(s string) string {
-	if s == "" {
-		return s
-	}
-	return capitalizeFirstLetter(ensureStringEndsWithDot(s))
 }

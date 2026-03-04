@@ -1,4 +1,4 @@
-package tfproviderdocs
+package schema
 
 import "fmt"
 

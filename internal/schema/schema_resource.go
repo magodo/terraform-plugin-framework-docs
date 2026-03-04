@@ -1,4 +1,4 @@
-package tfproviderdocs
+package schema
 
 import (
 	"context"
@@ -8,93 +8,68 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/provider"
-	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
-type ProviderData struct {
-	Resources ResourceInfos
+type ResourceSchemas map[string]ResourceSchema
+
+type ResourceSchema struct {
+	Description string
+	Deprecation string
+
+	Fields Fields
+
+	// Including nested attribute object or block object.
+	Nested NestedFields
 }
 
-func NewProviderData(ctx context.Context, p provider.Provider) (pd ProviderData, diags diag.Diagnostics) {
-	pd = ProviderData{
-		Resources: ResourceInfos{},
-	}
+func NewResourceSchema(ctx context.Context, sch schema.Schema) (schema ResourceSchema, diags diag.Diagnostics) {
+	fields := Fields{}
+	nested := NestedFields{}
 
-	var providerMetadataResp provider.MetadataResponse
-	p.Metadata(ctx, provider.MetadataRequest{}, &providerMetadataResp)
-
-	for _, builder := range p.Resources(ctx) {
-		res := builder()
-
-		// Get the resource type
-		var metadataResp resource.MetadataResponse
-		res.Metadata(ctx, resource.MetadataRequest{ProviderTypeName: providerMetadataResp.TypeName}, &metadataResp)
-		resourceType := metadataResp.TypeName
-
-		var schemaResp resource.SchemaResponse
-		res.Schema(ctx, resource.SchemaRequest{}, &schemaResp)
-		diags.Append(schemaResp.Diagnostics...)
-		if diags.HasError() {
-			return
-		}
-
-		info, odiags := pd.NewResourceInfo(ctx, schemaResp.Schema)
-		diags.Append(odiags...)
-		if diags.HasError() {
-			return
-		}
-
-		pd.Resources[resourceType] = info
-	}
-
-	return
-}
-
-func (pd ProviderData) NewResourceInfo(ctx context.Context, sch schema.Schema) (resourceInfo ResourceInfo, diags diag.Diagnostics) {
-	infos := SchemaInfos{}
-	nested := NestedSchemaInfos{}
-
-	attrInfos, attrNested, odiags := pd.newResourceAttrInfos(ctx, nil, sch.Attributes)
+	attrFields, attrNested, odiags := newResourceAttrFields(ctx, nil, sch.Attributes)
 	diags.Append(odiags...)
 	if diags.HasError() {
 		return
 	}
-	maps.Copy(infos, attrInfos)
+	maps.Copy(fields, attrFields)
 	maps.Copy(nested, attrNested)
 
-	blockInfos, blockNested, odiags := pd.newResourceBlockInfos(ctx, nil, sch.Blocks)
-	maps.Copy(infos, blockInfos)
+	blockFields, blockNested, odiags := newResourceBlockFields(ctx, nil, sch.Blocks)
+	diags.Append(odiags...)
+	if diags.HasError() {
+		return
+	}
+	maps.Copy(fields, blockFields)
 	maps.Copy(nested, blockNested)
 
-	resourceInfo = ResourceInfo{
+	schema = ResourceSchema{
 		Description: DescriptionOf(sch),
 		Deprecation: sch.GetDeprecationMessage(),
-		Infos:       infos,
+		Fields:      fields,
 		Nested:      nested,
 	}
 	return
 }
 
-func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []string, attrs map[string]schema.Attribute) (infos SchemaInfos, nested NestedSchemaInfos, diags diag.Diagnostics) {
-	infos = SchemaInfos{}
-	nested = NestedSchemaInfos{}
+func newResourceAttrFields(ctx context.Context, parents []string, attrs map[string]schema.Attribute) (fields Fields, nested NestedFields, diags diag.Diagnostics) {
+	fields = Fields{}
+	nested = NestedFields{}
 
 	for name, attr := range attrs {
 		var (
-			info SchemaInfo
+			field Field
 
-			objectNested NestedSchemaInfos
+			objectNested NestedFields
 			objectDiags  diag.Diagnostics
 		)
 
 		switch attr := attr.(type) {
 		case schema.BoolAttribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTBool,
@@ -110,7 +85,7 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.Float32Attribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTFloat32,
@@ -126,7 +101,7 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.Float64Attribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTFloat64,
@@ -142,7 +117,7 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.Int32Attribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTInt32,
@@ -158,7 +133,7 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.Int64Attribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTInt64,
@@ -174,7 +149,7 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.NumberAttribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTNumber,
@@ -190,7 +165,7 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.StringAttribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTString,
@@ -206,7 +181,7 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.ListAttribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTList,
@@ -222,7 +197,7 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.MapAttribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTMap,
@@ -238,7 +213,7 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.SetAttribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTSet,
@@ -254,7 +229,7 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.DynamicAttribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTDynamic,
@@ -271,7 +246,7 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 			}
 
 		case schema.ObjectAttribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTObjectAttr,
@@ -288,7 +263,7 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 			}
 			// NOTE: We don't look into the AttributeTypes for an ObjectAttribute as it doesn't contain useful information.
 		case schema.SingleNestedAttribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTSingleNestedAttr,
@@ -303,9 +278,9 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Object) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
-			objectNested, objectDiags = pd.newResourceNestedAttrObjectInfos(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
+			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		case schema.SetNestedAttribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTSetNestedAttr,
@@ -320,9 +295,9 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Set) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
-			objectNested, objectDiags = pd.newResourceNestedAttrObjectInfos(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
+			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		case schema.MapNestedAttribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTMapNestedAttr,
@@ -337,9 +312,9 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Map) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
-			objectNested, objectDiags = pd.newResourceNestedAttrObjectInfos(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
+			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		case schema.ListNestedAttribute:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTListNestedAttr,
@@ -354,13 +329,13 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.List) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
-			objectNested, objectDiags = pd.newResourceNestedAttrObjectInfos(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
+			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		default:
 			diags.AddError("unknown schema type", fmt.Sprintf("%T", attr))
 			return
 		}
 
-		infos[name] = info
+		fields[name] = field
 
 		diags = append(diags, objectDiags...)
 		if diags.HasError() {
@@ -372,34 +347,34 @@ func (pd ProviderData) newResourceAttrInfos(ctx context.Context, parents []strin
 	return
 }
 
-func (pd ProviderData) newResourceNestedAttrObjectInfos(ctx context.Context, parents []string, obj schema.NestedAttributeObject) (nested NestedSchemaInfos, diags diag.Diagnostics) {
-	nested = NestedSchemaInfos{}
+func newResourceNestedAttrObjectFields(ctx context.Context, parents []string, obj schema.NestedAttributeObject) (nested NestedFields, diags diag.Diagnostics) {
+	nested = NestedFields{}
 
-	attrInfos, attrNested, attrDiags := pd.newResourceAttrInfos(ctx, parents, obj.Attributes)
+	attrFields, attrNested, attrDiags := newResourceAttrFields(ctx, parents, obj.Attributes)
 	diags.Append(attrDiags...)
 	if diags.HasError() {
 		return
 	}
 
-	nested[strings.Join(parents, ".")] = NestedSchemaInfo{
+	nested[strings.Join(parents, ".")] = NestedField{
 		PlanModifiers: MapSlice(obj.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) }),
 		Validators:    MapSlice(obj.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
-		Infos:         attrInfos,
+		Fields:        attrFields,
 	}
 	maps.Copy(nested, attrNested)
 	return
 }
 
-func (pd ProviderData) newResourceBlockInfos(ctx context.Context, parents []string, blks map[string]schema.Block) (infos SchemaInfos, nested NestedSchemaInfos, diags diag.Diagnostics) {
-	infos = SchemaInfos{}
-	nested = NestedSchemaInfos{}
+func newResourceBlockFields(ctx context.Context, parents []string, blks map[string]schema.Block) (fields Fields, nested NestedFields, diags diag.Diagnostics) {
+	fields = Fields{}
+	nested = NestedFields{}
 
 	for name, blk := range blks {
-		var info SchemaInfo
+		var field Field
 
 		switch blk := blk.(type) {
 		case schema.SingleNestedBlock:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTSingleNestedBlock,
@@ -410,7 +385,7 @@ func (pd ProviderData) newResourceBlockInfos(ctx context.Context, parents []stri
 				Validators:    MapSlice(blk.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.ListNestedBlock:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTListNestedBlock,
@@ -421,7 +396,7 @@ func (pd ProviderData) newResourceBlockInfos(ctx context.Context, parents []stri
 				Validators:    MapSlice(blk.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.SetNestedBlock:
-			info = SchemaInfo{
+			field = Field{
 				Parents:       parents,
 				Name:          name,
 				DataType:      DTSetNestedBlock,
@@ -433,44 +408,44 @@ func (pd ProviderData) newResourceBlockInfos(ctx context.Context, parents []stri
 			}
 		}
 
-		objectNested, odiags := pd.newResourceNestedBlkObjectInfos(ctx, slices.Concat(parents, []string{name}), blk.GetNestedObject().(schema.NestedBlockObject))
+		objectNested, odiags := newResourceNestedBlkObjectFields(ctx, slices.Concat(parents, []string{name}), blk.GetNestedObject().(schema.NestedBlockObject))
 		diags = append(diags, odiags...)
 		if diags.HasError() {
 			return
 		}
 
-		infos[name] = info
+		fields[name] = field
 		maps.Copy(nested, objectNested)
 	}
 
 	return
 }
 
-func (pd ProviderData) newResourceNestedBlkObjectInfos(ctx context.Context, parents []string, obj schema.NestedBlockObject) (nested NestedSchemaInfos, diags diag.Diagnostics) {
-	attrInfos, attrNested, attrDiags := pd.newResourceAttrInfos(ctx, parents, obj.Attributes)
+func newResourceNestedBlkObjectFields(ctx context.Context, parents []string, obj schema.NestedBlockObject) (nested NestedFields, diags diag.Diagnostics) {
+	attrFields, attrNested, attrDiags := newResourceAttrFields(ctx, parents, obj.Attributes)
 	diags.Append(attrDiags...)
 	if diags.HasError() {
 		return
 	}
 
-	blkInfos, blkNested, attrDiags := pd.newResourceBlockInfos(ctx, parents, obj.Blocks)
+	blkFields, blkNested, attrDiags := newResourceBlockFields(ctx, parents, obj.Blocks)
 	diags.Append(attrDiags...)
 	if diags.HasError() {
 		return
 	}
 
-	infos := SchemaInfos{}
-	maps.Copy(infos, attrInfos)
-	maps.Copy(infos, blkInfos)
+	fields := Fields{}
+	maps.Copy(fields, attrFields)
+	maps.Copy(fields, blkFields)
 
-	nested = NestedSchemaInfos{}
+	nested = NestedFields{}
 	maps.Copy(nested, attrNested)
 	maps.Copy(nested, blkNested)
 
-	nested[strings.Join(parents, ".")] = NestedSchemaInfo{
+	nested[strings.Join(parents, ".")] = NestedField{
 		PlanModifiers: MapSlice(obj.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) }),
 		Validators:    MapSlice(obj.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
-		Infos:         infos,
+		Fields:        fields,
 	}
 	return
 }

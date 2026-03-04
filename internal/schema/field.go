@@ -1,4 +1,4 @@
-package tfproviderdocs
+package schema
 
 import (
 	"fmt"
@@ -7,22 +7,10 @@ import (
 	"strings"
 )
 
-type ResourceInfos map[string]ResourceInfo
+type Fields map[string]Field
 
-type ResourceInfo struct {
-	Description string
-	Deprecation string
-
-	Infos SchemaInfos
-
-	// Including nested attribute object or block object.
-	Nested NestedSchemaInfos
-}
-
-type SchemaInfos map[string]SchemaInfo
-
-func (infos SchemaInfos) RequiredInfos() []SchemaInfo {
-	var out []SchemaInfo
+func (infos Fields) RequiredFields() []Field {
+	var out []Field
 	for _, info := range infos {
 		if !info.Required {
 			continue
@@ -35,8 +23,8 @@ func (infos SchemaInfos) RequiredInfos() []SchemaInfo {
 	return out
 }
 
-func (infos SchemaInfos) OptionalInfos() []SchemaInfo {
-	var out []SchemaInfo
+func (infos Fields) OptionalFields() []Field {
+	var out []Field
 	for _, info := range infos {
 		if !info.Optional {
 			continue
@@ -49,8 +37,8 @@ func (infos SchemaInfos) OptionalInfos() []SchemaInfo {
 	return out
 }
 
-func (infos SchemaInfos) ComputedInfos() []SchemaInfo {
-	var out []SchemaInfo
+func (infos Fields) ComputedFields() []Field {
+	var out []Field
 	for _, info := range infos {
 		if !(info.Computed && !info.Optional) {
 			continue
@@ -63,15 +51,15 @@ func (infos SchemaInfos) ComputedInfos() []SchemaInfo {
 	return out
 }
 
-type NestedSchemaInfos map[string]NestedSchemaInfo
+type NestedFields map[string]NestedField
 
-type NestedSchemaInfo struct {
+type NestedField struct {
 	PlanModifiers []string
 	Validators    []string
-	Infos         SchemaInfos
+	Fields        Fields
 }
 
-type SchemaInfo struct {
+type Field struct {
 	Parents  []string
 	Name     string
 	DataType DataType
@@ -92,11 +80,11 @@ type SchemaInfo struct {
 	WriteOnly bool
 }
 
-func (info SchemaInfo) NestedKey() string {
+func (info Field) NestedKey() string {
 	return strings.Join(slices.Concat(info.Parents, []string{info.Name}), ".")
 }
 
-func (info SchemaInfo) NestedLink() string {
+func (info Field) NestedLink() string {
 	switch info.DataType {
 	case DTSingleNestedAttr,
 		DTListNestedAttr,
@@ -112,7 +100,7 @@ func (info SchemaInfo) NestedLink() string {
 	}
 }
 
-func (info SchemaInfo) Default() string {
+func (info Field) Default() string {
 	if info.DefaultDesc == nil {
 		return ""
 	}
@@ -120,7 +108,7 @@ func (info SchemaInfo) Default() string {
 
 }
 
-func (info SchemaInfo) Traits() string {
+func (info Field) Traits() string {
 	var traits []string
 	traits = append(traits, info.DataType.String())
 	if info.Sensitive {

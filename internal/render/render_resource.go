@@ -1,18 +1,25 @@
-package tfproviderdocs
+package render
 
 import (
 	"fmt"
 	"io"
 	"text/template"
+
+	"github.com/magodo/tfproviderdocs/internal/schema"
 )
+
+type Example struct {
+	Description string
+	HCL         string
+}
 
 type ResourceRender struct {
 	ProviderName string
 	ResourceType string
-	Subcategory  string
+	Schema       schema.ResourceSchema
 
-	Example    string
-	SchemaInfo ResourceInfo
+	Subcategory string
+	Examples    []Example
 
 	// TODO
 	// IdentitySchemaInfo string
@@ -73,19 +80,19 @@ var TplNested = fmt.Sprintf(`{{- range $key, $value := . }}
 
 {{- template "planmodifier" . }} {{- template "validator" . }}
 
-{{- with $value.Infos.RequiredInfos }}
+{{- with $value.Fields.RequiredFields }}
 
 Required:
 {{ template "properties" . -}}
 {{ end }}
 
-{{- with $value.Infos.OptionalInfos }}
+{{- with $value.Fields.OptionalFields }}
 
 Optional:
 {{ template "properties" . -}}
 {{ end }}
 
-{{- with $value.Infos.ComputedInfos }}
+{{- with $value.Fields.ComputedFields }}
 
 Read-Only:
 {{ template "properties" . -}}
@@ -94,19 +101,19 @@ Read-Only:
 
 const TplSchema = `## Schema
 
-{{- with .Infos.RequiredInfos }}
+{{- with .Fields.RequiredFields }}
 
 ### Required
 {{ template "properties" . -}}
 {{ end }}
 
-{{- with .Infos.OptionalInfos }}
+{{- with .Fields.RequiredFields }}
 
 ### Optional
 {{ template "properties" . -}}
 {{ end }}
 
-{{- with .Infos.ComputedInfos }}
+{{- with .Fields.ComputedFields }}
 
 ### Read-Only
 {{ template "properties" . -}}
@@ -127,7 +134,7 @@ func (render ResourceRender) Execute(w io.Writer) error {
 	template.Must(tpl.New("validator").Parse(TplValidator))
 	template.Must(tpl.New("validator-indent").Parse(TplValidatorIndent))
 	template.Must(tpl.New("nested").Parse(TplNested))
-	if err := tpl.Execute(w, render.SchemaInfo); err != nil {
+	if err := tpl.Execute(w, render.Schema); err != nil {
 		return err
 	}
 	return nil

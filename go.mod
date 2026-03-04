@@ -1,4 +1,4 @@
-module github.com/magodo/terraform-provider-docs
+module github.com/magodo/tfproviderdocs
 
 go 1.25.6
 
