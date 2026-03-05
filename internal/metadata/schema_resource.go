@@ -1,4 +1,4 @@
-package schema
+package metadata
 
 import (
 	"context"
@@ -79,9 +79,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Bool) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Bool) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Bool) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Bool) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Bool) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Bool) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.Float32Attribute:
@@ -95,9 +95,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Float32) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Float32) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Float32) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Float32) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Float32) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Float32) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.Float64Attribute:
@@ -111,9 +111,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.DeprecationMessage,
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Float64) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Float64) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Float64) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Float64) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Float64) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Float64) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.Int32Attribute:
@@ -127,9 +127,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Int32) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Int32) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Int32) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Int32) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Int32) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Int32) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.Int64Attribute:
@@ -143,9 +143,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Int64) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Int64) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Int64) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Int64) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Int64) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Int64) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.NumberAttribute:
@@ -159,9 +159,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Number) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Number) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Number) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Number) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Number) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Number) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.StringAttribute:
@@ -175,9 +175,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.String) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.String) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.String) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.String) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.String) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.String) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.ListAttribute:
@@ -191,9 +191,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.List) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.List) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.List) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.List) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.MapAttribute:
@@ -207,9 +207,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Map) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Map) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Map) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Map) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.SetAttribute:
@@ -223,9 +223,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Set) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Set) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 		case schema.DynamicAttribute:
@@ -239,9 +239,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Dynamic) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Dynamic) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Dynamic) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Dynamic) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Dynamic) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Dynamic) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 
@@ -256,9 +256,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Object) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Object) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 			// NOTE: We don't look into the AttributeTypes for an ObjectAttribute as it doesn't contain useful information.
@@ -273,9 +273,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Object) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Object) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
@@ -290,9 +290,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Set) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Set) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
@@ -307,9 +307,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Map) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.Map) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Map) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.Map) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
@@ -324,9 +324,9 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				Sensitive:     attr.IsSensitive(),
 				Description:   DescriptionOf(attr),
 				Deprecation:   attr.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.List) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
-				DefaultDesc:   MapOrNil(attr.Default, func(v defaults.List) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.List) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
+				defaultDesc:   MapOrNil(attr.Default, func(v defaults.List) string { return DescriptionCtxOf(ctx, v) }),
 				WriteOnly:     attr.IsWriteOnly(),
 			}
 			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
@@ -381,8 +381,8 @@ func newResourceBlockFields(ctx context.Context, parents []string, blks map[stri
 				Optional:      true, // Always regard a block as optional.
 				Description:   DescriptionOf(blk),
 				Deprecation:   blk.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(blk.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(blk.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(blk.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(blk.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.ListNestedBlock:
 			field = Field{
@@ -392,8 +392,8 @@ func newResourceBlockFields(ctx context.Context, parents []string, blks map[stri
 				Optional:      true, // Always regard a block as optional.
 				Description:   DescriptionOf(blk),
 				Deprecation:   blk.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(blk.PlanModifiers, func(v planmodifier.List) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(blk.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(blk.PlanModifiers, func(v planmodifier.List) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(blk.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.SetNestedBlock:
 			field = Field{
@@ -403,8 +403,8 @@ func newResourceBlockFields(ctx context.Context, parents []string, blks map[stri
 				Optional:      true, // Always regard a block as optional.
 				Description:   DescriptionOf(blk),
 				Deprecation:   blk.GetDeprecationMessage(),
-				PlanModifiers: MapSlice(blk.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) }),
-				Validators:    MapSlice(blk.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
+				planModifiers: MapSlice(blk.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) }),
+				validators:    MapSlice(blk.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		}
 

@@ -6,16 +6,16 @@ import (
 	"io"
 
 	"github.com/hashicorp/terraform-plugin-framework/provider"
+	"github.com/magodo/tfproviderdocs/internal/metadata"
 	"github.com/magodo/tfproviderdocs/internal/render"
-	"github.com/magodo/tfproviderdocs/internal/schema"
 )
 
 type Generator struct {
-	metadata schema.Metadata
+	metadata metadata.Metadata
 }
 
 func NewGenerator(ctx context.Context, p provider.Provider) (*Generator, error) {
-	metadata, diags := schema.GetMetadata(ctx, p)
+	metadata, diags := metadata.GetMetadata(ctx, p)
 	if diags.HasError() {
 		return nil, diagsToError(diags)
 	}
@@ -45,5 +45,5 @@ func (gen Generator) RenderResource(ctx context.Context, w io.Writer, resourceTy
 		rr.Subcategory = option.SubCategory
 		rr.Examples = option.Examples
 	}
-	return rr.Execute(w)
+	return rr.Render(w)
 }

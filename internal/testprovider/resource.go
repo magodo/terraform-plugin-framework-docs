@@ -18,6 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
@@ -42,6 +43,12 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 		"string": schema.StringAttribute{
 			MarkdownDescription: "A nested string attribute.",
 			Optional:            true,
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.RequiresReplace(),
+			},
+			Validators: []validator.String{
+				stringvalidator.OneOf("foo", "bar", "baz"),
+			},
 		},
 		"nested_object": schema.SingleNestedAttribute{
 			MarkdownDescription: "A nested single object attribute.",
