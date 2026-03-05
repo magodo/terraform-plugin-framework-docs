@@ -1,17 +1,20 @@
 package render
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"maps"
 	"slices"
 
+	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/magodo/tfproviderdocs/internal/metadata"
 )
 
 type Example struct {
+	Header      string
 	Description string
-	HCL         string
+	HCL         []byte
 }
 
 type ResourceRender struct {
@@ -92,7 +95,26 @@ func (render ResourceRender) renderDescription(w io.Writer) error {
 }
 
 func (render ResourceRender) renderExample(w io.Writer) error {
-	// TODO
+	if examples := render.Examples; len(examples) != 0 {
+		if _, err := io.WriteString(w, "## Example Usage\n"); err != nil {
+			return err
+		}
+		for _, example := range examples {
+			if example.Header != "" {
+				if _, err := fmt.Fprintf(w, "\n### %s\n", example.Header); err != nil {
+					return err
+				}
+			}
+			if example.Description != "" {
+				if _, err := fmt.Fprintf(w, "\n%s\n", example.Description); err != nil {
+					return err
+				}
+			}
+			if _, err := fmt.Fprintf(w, "\n```hcl\n%s\n```\n", bytes.TrimSpace(hclwrite.Format(example.HCL))); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
