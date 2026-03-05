@@ -38,6 +38,14 @@ resource "examplecloud_resource" "example" {
 `),
 			},
 		},
+		ImportId: &ImportId{
+			Format:  "<parent_id>/<id>[/<version>]",
+			Example: "123/456",
+		},
+		ImportIdentityExample: []byte(`
+parent_id = "123"
+id = "456"
+`),
 	}))
 	expected, err := os.ReadFile("./testdata/resource.md")
 	require.NoError(t, err)

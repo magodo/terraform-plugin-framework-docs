@@ -7,10 +7,10 @@ import (
 	"strings"
 )
 
-type Fields map[string]Field
+type ResourceFields map[string]ResourceField
 
-func (fields Fields) RequiredFields() []Field {
-	var out []Field
+func (fields ResourceFields) RequiredFields() []ResourceField {
+	var out []ResourceField
 	for _, info := range fields {
 		if !info.Required {
 			continue
@@ -23,8 +23,8 @@ func (fields Fields) RequiredFields() []Field {
 	return out
 }
 
-func (fields Fields) OptionalFields() []Field {
-	var out []Field
+func (fields ResourceFields) OptionalFields() []ResourceField {
+	var out []ResourceField
 	for _, info := range fields {
 		if !info.Optional {
 			continue
@@ -37,8 +37,8 @@ func (fields Fields) OptionalFields() []Field {
 	return out
 }
 
-func (fields Fields) ComputedFields() []Field {
-	var out []Field
+func (fields ResourceFields) ComputedFields() []ResourceField {
+	var out []ResourceField
 	for _, info := range fields {
 		if !(info.Computed && !info.Optional) {
 			continue
@@ -51,15 +51,15 @@ func (fields Fields) ComputedFields() []Field {
 	return out
 }
 
-type NestedFields map[string]NestedField
+type ResourceNestedFields map[string]ResourceNestedField
 
-type NestedField struct {
+type ResourceNestedField struct {
 	PlanModifiers []string
 	Validators    []string
-	Fields        Fields
+	Fields        ResourceFields
 }
 
-type Field struct {
+type ResourceField struct {
 	Parents  []string
 	Name     string
 	DataType DataType
@@ -80,11 +80,11 @@ type Field struct {
 	validators    []string
 }
 
-func (field Field) NestedKey() string {
+func (field ResourceField) NestedKey() string {
 	return strings.Join(slices.Concat(field.Parents, []string{field.Name}), ".")
 }
 
-func (field Field) NestedLink() string {
+func (field ResourceField) NestedLink() string {
 	switch field.DataType {
 	case DTSingleNestedAttr,
 		DTListNestedAttr,
@@ -100,7 +100,7 @@ func (field Field) NestedLink() string {
 	}
 }
 
-func (field Field) Traits() string {
+func (field ResourceField) Traits() string {
 	var traits []string
 	traits = append(traits, field.DataType.String())
 	if field.Sensitive {
@@ -112,14 +112,14 @@ func (field Field) Traits() string {
 	return strings.Join(traits, ", ")
 }
 
-func (field Field) Default() string {
+func (field ResourceField) Default() string {
 	if field.defaultDesc == nil {
 		return ""
 	}
 	return Sentencefy(*field.defaultDesc)
 }
 
-func (field Field) PlanModifiers() []string {
+func (field ResourceField) PlanModifiers() []string {
 	var out []string
 	for _, e := range field.planModifiers {
 		out = append(out, Sentencefy(e))
@@ -127,7 +127,7 @@ func (field Field) PlanModifiers() []string {
 	return out
 }
 
-func (field Field) Validators() []string {
+func (field ResourceField) Validators() []string {
 	var out []string
 	for _, e := range field.validators {
 		out = append(out, Sentencefy(e))

@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/identityschema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
@@ -25,7 +26,7 @@ import (
 
 type ExampleResource struct{}
 
-var _ resource.Resource = ExampleResource{}
+var _ resource.ResourceWithIdentity = ExampleResource{}
 
 // Metadata implements [resource.Resource].
 func (e ExampleResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -200,6 +201,26 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						objectplanmodifier.RequiresReplace(),
 					},
 				},
+			},
+		},
+	}
+}
+
+// IdentitySchema implements [resource.ResourceWithIdentity].
+func (e ExampleResource) IdentitySchema(ctx context.Context, req resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = identityschema.Schema{
+		Attributes: map[string]identityschema.Attribute{
+			"parent_id": identityschema.StringAttribute{
+				Description:       "The parent id.",
+				RequiredForImport: true,
+			},
+			"id": identityschema.StringAttribute{
+				Description:       "The id of this resource.",
+				RequiredForImport: true,
+			},
+			"version": identityschema.StringAttribute{
+				Description:       "The version of this resource.",
+				OptionalForImport: true,
 			},
 		},
 	}

@@ -17,17 +17,23 @@ type Example struct {
 	HCL         []byte
 }
 
+type ImportId struct {
+	Format  string
+	Example string
+}
+
 type ResourceRender struct {
 	ProviderName string
 	ResourceType string
-	Schema       metadata.ResourceSchema
+
+	Metadata metadata.ResourceMetadata
 
 	Subcategory string
-	Examples    []Example
+	Example     []Example
 
-	// TODO
-	// IdentitySchemaInfo string
-	// ImportId           string
+	// Import
+	ImportId              *ImportId
+	ImportIdentityExample []byte
 }
 
 func (render ResourceRender) Render(w io.Writer) error {
@@ -40,7 +46,7 @@ func (render ResourceRender) Render(w io.Writer) error {
 		return err
 	}
 
-	if len(render.Examples) != 0 {
+	if len(render.Example) != 0 {
 		io.WriteString(w, "\n")
 		if err := render.renderExample(w); err != nil {
 			return err
@@ -52,7 +58,23 @@ func (render ResourceRender) Render(w io.Writer) error {
 		return err
 	}
 
-	// TODO: Render Import
+	if identity := render.Metadata.Identity; render.ImportId != nil || identity != nil {
+		io.WriteString(w, "\n## Import\n")
+
+		if render.ImportId != nil {
+			io.WriteString(w, "\n")
+			if err := render.renderImportId(w, *render.ImportId); err != nil {
+				return err
+			}
+		}
+
+		if identity != nil {
+			io.WriteString(w, "\n")
+			if err := render.renderImportIdentity(w, *identity); err != nil {
+				return err
+			}
+		}
+	}
 
 	return nil
 }
@@ -65,7 +87,7 @@ subcategory: "%[3]s"
 description: |-
   %[4]s
 ---
-`, render.ResourceType, render.ProviderName, render.Subcategory, render.Schema.Description); err != nil {
+`, render.ResourceType, render.ProviderName, render.Subcategory, render.Metadata.Schema.Description); err != nil {
 		return err
 	}
 	return nil
@@ -77,7 +99,7 @@ func (render ResourceRender) renderDescription(w io.Writer) error {
 		return err
 	}
 
-	if deprecation := render.Schema.Deprecation; deprecation != "" {
+	if deprecation := render.Metadata.Schema.Deprecation; deprecation != "" {
 		if _, err := fmt.Fprintf(w, `
 !> %s
 `, deprecation); err != nil {
@@ -87,7 +109,7 @@ func (render ResourceRender) renderDescription(w io.Writer) error {
 
 	if _, err := fmt.Fprintf(w, `
 %s
-`, render.Schema.Description); err != nil {
+`, render.Metadata.Schema.Description); err != nil {
 		return err
 	}
 
@@ -95,7 +117,7 @@ func (render ResourceRender) renderDescription(w io.Writer) error {
 }
 
 func (render ResourceRender) renderExample(w io.Writer) error {
-	if examples := render.Examples; len(examples) != 0 {
+	if examples := render.Example; len(examples) != 0 {
 		if _, err := io.WriteString(w, "## Example Usage\n"); err != nil {
 			return err
 		}
@@ -110,7 +132,7 @@ func (render ResourceRender) renderExample(w io.Writer) error {
 					return err
 				}
 			}
-			if _, err := fmt.Fprintf(w, "\n```hcl\n%s\n```\n", bytes.TrimSpace(hclwrite.Format(example.HCL))); err != nil {
+			if _, err := fmt.Fprintf(w, "\n```terraform\n%s\n```\n", bytes.TrimSpace(hclwrite.Format(example.HCL))); err != nil {
 				return err
 			}
 		}
@@ -126,19 +148,19 @@ func (render ResourceRender) renderSchema(w io.Writer) error {
 
 	sections := []struct {
 		name   string
-		fields []metadata.Field
+		fields []metadata.ResourceField
 	}{
 		{
 			name:   "Required",
-			fields: render.Schema.Fields.RequiredFields(),
+			fields: render.Metadata.Schema.Fields.RequiredFields(),
 		},
 		{
 			name:   "Optional",
-			fields: render.Schema.Fields.OptionalFields(),
+			fields: render.Metadata.Schema.Fields.OptionalFields(),
 		},
 		{
 			name:   "Read-Only",
-			fields: render.Schema.Fields.ComputedFields(),
+			fields: render.Metadata.Schema.Fields.ComputedFields(),
 		},
 	}
 
@@ -160,7 +182,7 @@ func (render ResourceRender) renderSchema(w io.Writer) error {
 		}
 	}
 
-	if nested := render.Schema.Nested; len(nested) != 0 {
+	if nested := render.Metadata.Schema.Nested; len(nested) != 0 {
 		io.WriteString(w, "\n")
 		if err := render.renderNestedFields(w, nested); err != nil {
 			return err
@@ -170,7 +192,7 @@ func (render ResourceRender) renderSchema(w io.Writer) error {
 	return nil
 }
 
-func (render ResourceRender) renderNestedFields(w io.Writer, fields metadata.NestedFields) error {
+func (render ResourceRender) renderNestedFields(w io.Writer, fields metadata.ResourceNestedFields) error {
 	keys := slices.Collect(maps.Keys(fields))
 	slices.Sort(keys)
 	for _, key := range keys {
@@ -193,7 +215,7 @@ func (render ResourceRender) renderNestedFields(w io.Writer, fields metadata.Nes
 
 		sections := []struct {
 			name   string
-			fields []metadata.Field
+			fields []metadata.ResourceField
 		}{
 			{
 				name:   "Required",
@@ -231,7 +253,7 @@ func (render ResourceRender) renderNestedFields(w io.Writer, fields metadata.Nes
 	return nil
 }
 
-func (render ResourceRender) renderField(w io.Writer, field metadata.Field) error {
+func (render ResourceRender) renderField(w io.Writer, field metadata.ResourceField) error {
 	if _, err := fmt.Fprintf(w, "- `%s` (%s) %s", field.Name, field.Traits(), field.Description); err != nil {
 		return err
 	}
@@ -267,5 +289,89 @@ func (render ResourceRender) renderField(w io.Writer, field metadata.Field) erro
 		}
 	}
 
+	return nil
+}
+
+func (render ResourceRender) renderImportId(w io.Writer, importId ImportId) error {
+	if _, err := fmt.Fprintf(w, `### Import ID
+
+The [%[1]sterraform import%[1]s command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used with the id format: %[1]s%[2]s%[1]s, for example:
+
+%[1]s%[1]s%[1]sshell
+$ terraform import %[3]s.example "%[4]s"
+%[1]s%[1]s%[1]s
+
+In Terraform v1.5.0 and later, the [%[1]simport%[1]s block](https://developer.hashicorp.com/terraform/language/block/import) can be used with the %[1]sid%[1]s attribute, for example:
+
+%[1]s%[1]s%[1]sterraform
+import {
+  to = %[3]s.example
+  id = "%[4]s"
+}
+%[1]s%[1]s%[1]s
+`, "`", importId.Format, render.ResourceType, importId.Example); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (render ResourceRender) renderImportIdentity(w io.Writer, schema metadata.ResourceIdentitySchema) error {
+	example := hclwrite.Format(fmt.Appendf(nil, `import {
+  to = %s.example
+  identity = {
+    %s
+  }
+}`, render.ResourceType, bytes.TrimSpace(render.ImportIdentityExample)))
+
+	if _, err := fmt.Fprintf(w, `### Import Identity
+
+In Terraform v1.12.0 and later, the [%[1]simport%[1]s block](https://developer.hashicorp.com/terraform/language/block/import) can be used with the %[1]sidentity%[1]s attribute, for example:
+
+%[1]s%[1]s%[1]sterraform
+%[2]s
+%[1]s%[1]s%[1]s
+`, "`", example); err != nil {
+		return err
+	}
+
+	sections := []struct {
+		name   string
+		fields []metadata.ResourceIdentityField
+	}{
+		{
+			name:   "Required",
+			fields: schema.Fields.RequiredFields(),
+		},
+		{
+			name:   "Optional",
+			fields: schema.Fields.OptionalFields(),
+		},
+	}
+
+	for _, section := range sections {
+		if len(section.fields) == 0 {
+			continue
+		}
+		if _, err := fmt.Fprintf(w, `
+%s:
+
+`, section.name); err != nil {
+			return err
+		}
+
+		for _, field := range section.fields {
+			if err := render.renderIdentityField(w, field); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (render ResourceRender) renderIdentityField(w io.Writer, field metadata.ResourceIdentityField) error {
+	if _, err := fmt.Fprintf(w, "- `%s` (%s) %s\n", field.Name, field.Traits(), field.Description); err != nil {
+		return err
+	}
 	return nil
 }

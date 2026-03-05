@@ -24,10 +24,16 @@ func NewGenerator(ctx context.Context, p provider.Provider) (*Generator, error) 
 }
 
 type Example = render.Example
+type ImportId = render.ImportId
 
 type ResourceRenderOption struct {
 	SubCategory string
 	Examples    []Example
+
+	// Import examples
+	ImportId *ImportId
+	// The example shall only contains the content of the identity block.
+	ImportIdentityExample []byte
 }
 
 func (gen Generator) RenderResource(ctx context.Context, w io.Writer, resourceType string, option *ResourceRenderOption) error {
@@ -38,12 +44,14 @@ func (gen Generator) RenderResource(ctx context.Context, w io.Writer, resourceTy
 	rr := render.ResourceRender{
 		ProviderName: gen.metadata.ProviderName,
 		ResourceType: resourceType,
-		Schema:       res,
+		Metadata:     res,
 	}
 
 	if option != nil {
 		rr.Subcategory = option.SubCategory
-		rr.Examples = option.Examples
+		rr.Example = option.Examples
+		rr.ImportId = option.ImportId
+		rr.ImportIdentityExample = option.ImportIdentityExample
 	}
 	return rr.Render(w)
 }

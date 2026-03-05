@@ -16,7 +16,7 @@ Manages an example resource.
 
 The basic configuration.
 
-```hcl
+```terraform
 resource "examplecloud_resource" "example" {
   name = "foo"
 }
@@ -26,7 +26,7 @@ resource "examplecloud_resource" "example" {
 
 The complete configuration.
 
-```hcl
+```terraform
 resource "examplecloud_resource" "example" {
   name    = "foo"
   address = "bar"
@@ -331,3 +331,45 @@ Required:
 Optional:
 
 - `string` (String) A nested nested string attribute.
+
+## Import
+
+### Import ID
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used with the id format: `<parent_id>/<id>[/<version>]`, for example:
+
+```shell
+$ terraform import examplecloud_resource.example "123/456"
+```
+
+In Terraform v1.5.0 and later, the [`import` block](https://developer.hashicorp.com/terraform/language/block/import) can be used with the `id` attribute, for example:
+
+```terraform
+import {
+  to = examplecloud_resource.example
+  id = "123/456"
+}
+```
+
+### Import Identity
+
+In Terraform v1.12.0 and later, the [`import` block](https://developer.hashicorp.com/terraform/language/block/import) can be used with the `identity` attribute, for example:
+
+```terraform
+import {
+  to = examplecloud_resource.example
+  identity = {
+    parent_id = "123"
+    id        = "456"
+  }
+}
+```
+
+Required:
+
+- `id` (String) The id of this resource.
+- `parent_id` (String) The parent id.
+
+Optional:
+
+- `version` (String) The version of this resource.
