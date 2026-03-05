@@ -97,7 +97,7 @@ Optional:
 Read-Only:
 {{ template "properties" . -}}
 {{ end }}
-{{ end }})`, "`")
+{{ end }}`, "`")
 
 const TplSchema = `## Schema
 
@@ -121,8 +121,7 @@ const TplSchema = `## Schema
 
 {{- with .Nested }}
 {{ template "nested" . }}
-{{ end }}
-`
+{{ end }}`
 
 func (render ResourceRender) Execute(w io.Writer) error {
 	tpl := template.Must(template.New("schema").Parse(TplSchema))
