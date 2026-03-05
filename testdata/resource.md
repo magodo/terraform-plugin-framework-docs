@@ -353,7 +353,11 @@ import {
 
 ### Import Identity
 
-In Terraform v1.12.0 and later, the [`import` block](https://developer.hashicorp.com/terraform/language/block/import) can be used with the `identity` attribute, for example:
+In Terraform v1.12.0 and later, the [`import` block](https://developer.hashicorp.com/terraform/language/block/import) can be used with the `identity` attribute.
+
+#### Example: Without Version
+
+Import without version.
 
 ```terraform
 import {
@@ -361,6 +365,21 @@ import {
   identity = {
     parent_id = "123"
     id        = "456"
+  }
+}
+```
+
+#### Example: With Version
+
+Import with version.
+
+```terraform
+import {
+  to = examplecloud_resource.example
+  identity = {
+    parent_id = "123"
+    id        = "456"
+    version   = "v2"
   }
 }
 ```

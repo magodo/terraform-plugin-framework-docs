@@ -32,8 +32,8 @@ type ResourceRenderOption struct {
 
 	// Import examples
 	ImportId *ImportId
-	// The example shall only contains the content of the identity block.
-	ImportIdentityExample []byte
+	// The example HCL shall only contains the content of the identity block.
+	IdentityExamples []Example
 }
 
 func (gen Generator) RenderResource(ctx context.Context, w io.Writer, resourceType string, option *ResourceRenderOption) error {
@@ -49,9 +49,9 @@ func (gen Generator) RenderResource(ctx context.Context, w io.Writer, resourceTy
 
 	if option != nil {
 		rr.Subcategory = option.SubCategory
-		rr.Example = option.Examples
+		rr.Examples = option.Examples
 		rr.ImportId = option.ImportId
-		rr.ImportIdentityExample = option.ImportIdentityExample
+		rr.IdentityExamples = option.IdentityExamples
 	}
 	return rr.Render(w)
 }

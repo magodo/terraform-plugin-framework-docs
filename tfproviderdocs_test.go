@@ -17,8 +17,8 @@ func TestRender(t *testing.T) {
 		SubCategory: "abc",
 		Examples: []Example{
 			{
-				Header:      "Basic",
-				Description: "The basic configuration.",
+				Header:      new("Basic"),
+				Description: new("The basic configuration."),
 				HCL: []byte(`
 resource "examplecloud_resource" "example" {
 	name = "foo"
@@ -26,8 +26,8 @@ resource "examplecloud_resource" "example" {
 `),
 			},
 			{
-				Header:      "Complete",
-				Description: "The complete configuration.",
+				Header:      new("Complete"),
+				Description: new("The complete configuration."),
 				HCL: []byte(`
 resource "examplecloud_resource" "example" {
 	name = "foo"
@@ -42,10 +42,25 @@ resource "examplecloud_resource" "example" {
 			Format:  "<parent_id>/<id>[/<version>]",
 			Example: "123/456",
 		},
-		ImportIdentityExample: []byte(`
+		IdentityExamples: []Example{
+			{
+				Header:      new("Without Version"),
+				Description: new("Import without version."),
+				HCL: []byte(`
 parent_id = "123"
 id = "456"
 `),
+			},
+			{
+				Header:      new("With Version"),
+				Description: new("Import with version."),
+				HCL: []byte(`
+parent_id = "123"
+id = "456"
+version = "v2"
+`),
+			},
+		},
 	}))
 	expected, err := os.ReadFile("./testdata/resource.md")
 	require.NoError(t, err)

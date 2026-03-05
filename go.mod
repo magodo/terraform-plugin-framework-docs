@@ -1,6 +1,6 @@
 module github.com/magodo/tfproviderdocs
 
-go 1.25.6
+go 1.26.0
 
 require (
 	github.com/hashicorp/hcl/v2 v2.24.0

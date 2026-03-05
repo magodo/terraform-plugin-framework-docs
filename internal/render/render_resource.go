@@ -12,8 +12,8 @@ import (
 )
 
 type Example struct {
-	Header      string
-	Description string
+	Header      *string
+	Description *string
 	HCL         []byte
 }
 
@@ -29,11 +29,11 @@ type ResourceRender struct {
 	Metadata metadata.ResourceMetadata
 
 	Subcategory string
-	Example     []Example
+	Examples    []Example
 
 	// Import
-	ImportId              *ImportId
-	ImportIdentityExample []byte
+	ImportId         *ImportId
+	IdentityExamples []Example
 }
 
 func (render ResourceRender) Render(w io.Writer) error {
@@ -46,7 +46,7 @@ func (render ResourceRender) Render(w io.Writer) error {
 		return err
 	}
 
-	if len(render.Example) != 0 {
+	if len(render.Examples) != 0 {
 		io.WriteString(w, "\n")
 		if err := render.renderExample(w); err != nil {
 			return err
@@ -117,23 +117,25 @@ func (render ResourceRender) renderDescription(w io.Writer) error {
 }
 
 func (render ResourceRender) renderExample(w io.Writer) error {
-	if examples := render.Example; len(examples) != 0 {
+	if examples := render.Examples; len(examples) != 0 {
 		if _, err := io.WriteString(w, "## Example Usage\n"); err != nil {
 			return err
 		}
 		for _, example := range examples {
-			if example.Header != "" {
-				if _, err := fmt.Fprintf(w, "\n### %s\n", example.Header); err != nil {
+			if example.Header != nil {
+				if _, err := fmt.Fprintf(w, "\n### %s\n", *example.Header); err != nil {
 					return err
 				}
 			}
-			if example.Description != "" {
-				if _, err := fmt.Fprintf(w, "\n%s\n", example.Description); err != nil {
+			if example.Description != nil {
+				if _, err := fmt.Fprintf(w, "\n%s\n", *example.Description); err != nil {
 					return err
 				}
 			}
-			if _, err := fmt.Fprintf(w, "\n```terraform\n%s\n```\n", bytes.TrimSpace(hclwrite.Format(example.HCL))); err != nil {
-				return err
+			if example.HCL != nil {
+				if _, err := fmt.Fprintf(w, "\n```terraform\n%s\n```\n", bytes.TrimSpace(hclwrite.Format(example.HCL))); err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -317,22 +319,38 @@ import {
 }
 
 func (render ResourceRender) renderImportIdentity(w io.Writer, schema metadata.ResourceIdentitySchema) error {
-	example := hclwrite.Format(fmt.Appendf(nil, `import {
+	formatExample := func(example []byte) []byte {
+		return hclwrite.Format(fmt.Appendf(nil, `import {
   to = %s.example
   identity = {
     %s
   }
-}`, render.ResourceType, bytes.TrimSpace(render.ImportIdentityExample)))
+}`, render.ResourceType, bytes.TrimSpace(example)))
+	}
 
 	if _, err := fmt.Fprintf(w, `### Import Identity
 
-In Terraform v1.12.0 and later, the [%[1]simport%[1]s block](https://developer.hashicorp.com/terraform/language/block/import) can be used with the %[1]sidentity%[1]s attribute, for example:
-
-%[1]s%[1]s%[1]sterraform
-%[2]s
-%[1]s%[1]s%[1]s
-`, "`", example); err != nil {
+In Terraform v1.12.0 and later, the [%[1]simport%[1]s block](https://developer.hashicorp.com/terraform/language/block/import) can be used with the %[1]sidentity%[1]s attribute.
+`, "`"); err != nil {
 		return err
+	}
+
+	for _, example := range render.IdentityExamples {
+		if example.Header != nil {
+			if _, err := fmt.Fprintf(w, "\n#### Example: %s\n", *example.Header); err != nil {
+				return err
+			}
+		}
+		if example.Description != nil {
+			if _, err := fmt.Fprintf(w, "\n%s\n", *example.Description); err != nil {
+				return err
+			}
+		}
+		if example.HCL != nil {
+			if _, err := fmt.Fprintf(w, "\n```terraform\n%s\n```\n", formatExample(example.HCL)); err != nil {
+				return err
+			}
+		}
 	}
 
 	sections := []struct {
