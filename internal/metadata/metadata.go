@@ -25,7 +25,7 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 	p.Metadata(ctx, provider.MetadataRequest{}, &providerMetadataResp)
 
 	metadata = Metadata{
-		ProviderName: metadata.ProviderName,
+		ProviderName: providerMetadataResp.TypeName,
 		Resources:    ResourceMetadatas{},
 	}
 

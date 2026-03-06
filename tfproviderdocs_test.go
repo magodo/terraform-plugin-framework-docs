@@ -12,7 +12,14 @@ import (
 func TestRender(t *testing.T) {
 	g, err := NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
 	require.NoError(t, err)
+
 	var buf bytes.Buffer
+	require.NoError(t, g.RenderResource(t.Context(), &buf, "examplecloud_resource", nil))
+	expected, err := os.ReadFile("./testdata/resource_minimal.md")
+	require.NoError(t, err)
+	require.Equal(t, string(expected), buf.String())
+
+	buf = *bytes.NewBuffer(nil)
 	require.NoError(t, g.RenderResource(t.Context(), &buf, "examplecloud_resource", &ResourceRenderOption{
 		SubCategory: "abc",
 		Examples: []Example{
@@ -62,7 +69,7 @@ version = "v2"
 			},
 		},
 	}))
-	expected, err := os.ReadFile("./testdata/resource.md")
+	expected, err = os.ReadFile("./testdata/resource.md")
 	require.NoError(t, err)
 	require.Equal(t, string(expected), buf.String())
 }
