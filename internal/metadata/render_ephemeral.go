@@ -7,35 +7,30 @@ import (
 	"text/template"
 )
 
-type ResourceRenderOption struct {
+type EphemeralRenderOption struct {
 	Subcategory string
 	Examples    []Example
-
-	// Import
-	ImportId         *ImportId
-	IdentityExamples []Example
 
 	Template *template.Template
 }
 
-type ResourceRender struct {
+type EphemeralRender struct {
 	Template    *template.Template
 	Header      string
 	Description string
 	Example     string
 	Schema      string
-	Import      string
 }
 
-func (metadata Metadata) NewResourceRender(resourceType string, opt *ResourceRenderOption) (*ResourceRender, error) {
-	resmetadata, ok := metadata.Resources[resourceType]
+func (metadata Metadata) NewEphemeralRender(ephemeralType string, opt *EphemeralRenderOption) (*EphemeralRender, error) {
+	resmetadata, ok := metadata.Ephemerals[ephemeralType]
 	if !ok {
-		return nil, fmt.Errorf("unknown resource type %q", resourceType)
+		return nil, fmt.Errorf("unknown ephemeral resource type %q", ephemeralType)
 	}
 
-	src := resourceRenderBuilder{
+	src := ephemeralRenderBuilder{
 		ProviderName: metadata.ProviderName,
-		ResourceType: resourceType,
+		ResourceType: ephemeralType,
 		Metadata:     resmetadata,
 	}
 	var tpl *template.Template
@@ -43,8 +38,6 @@ func (metadata Metadata) NewResourceRender(resourceType string, opt *ResourceRen
 		tpl = opt.Template
 		src.Subcategory = opt.Subcategory
 		src.Examples = opt.Examples
-		src.ImportId = opt.ImportId
-		src.IdentityExamples = opt.IdentityExamples
 	}
 
 	headerBuf := bytes.NewBuffer(nil)
@@ -63,36 +56,28 @@ func (metadata Metadata) NewResourceRender(resourceType string, opt *ResourceRen
 	if err := src.renderSchema(schemaBuf); err != nil {
 		return nil, err
 	}
-	importBuf := bytes.NewBuffer(nil)
-	if err := src.renderImport(importBuf); err != nil {
-		return nil, err
-	}
 
-	return &ResourceRender{
+	return &EphemeralRender{
 		Template:    tpl,
 		Header:      headerBuf.String(),
 		Description: descriptionBuf.String(),
 		Example:     exampleBuf.String(),
 		Schema:      schemaBuf.String(),
-		Import:      importBuf.String(),
 	}, nil
 }
 
-const resourceTpl = `{{ .Header }}
+const ephemeralTpl = `{{ .Header }}
 {{ .Description }}
 {{- with .Example }}
 {{ . }}
 {{- end }}
-{{ .Schema }}
-{{- with .Import }}
-{{ . }}
-{{- end }}`
+{{ .Schema }}`
 
-func (render ResourceRender) Execute(w io.Writer) error {
+func (render EphemeralRender) Execute(w io.Writer) error {
 	tpl := render.Template
 	if tpl == nil {
 		var err error
-		tpl, err = template.New("resource").Parse(resourceTpl)
+		tpl, err = template.New("ephemeral").Parse(ephemeralTpl)
 		if err != nil {
 			return err
 		}

@@ -5,8 +5,3 @@ type Example struct {
 	Description *string
 	HCL         []byte
 }
-
-type ImportId struct {
-	Format  string
-	Example string
-}

@@ -10,6 +10,11 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
+type ImportId struct {
+	Format  string
+	Example string
+}
+
 type resourceRenderBuilder struct {
 	ProviderName string
 	ResourceType string

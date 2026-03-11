@@ -25,6 +25,7 @@ type Example = metadata.Example
 type ImportId = metadata.ImportId
 type ResourceRenderOption = metadata.ResourceRenderOption
 type DataSourceRenderOption = metadata.DataSourceRenderOption
+type EphemeralResourceRenderOption = metadata.EphemeralRenderOption
 
 func (gen Generator) RenderResource(ctx context.Context, w io.Writer, resourceType string, option *ResourceRenderOption) error {
 	rr, err := gen.metadata.NewResourceRender(resourceType, option)
@@ -36,6 +37,14 @@ func (gen Generator) RenderResource(ctx context.Context, w io.Writer, resourceTy
 
 func (gen Generator) RenderDataSource(ctx context.Context, w io.Writer, dataSourceType string, option *DataSourceRenderOption) error {
 	rr, err := gen.metadata.NewDataSourceRender(dataSourceType, option)
+	if err != nil {
+		return err
+	}
+	return rr.Execute(w)
+}
+
+func (gen Generator) RenderEphemeralResource(ctx context.Context, w io.Writer, ephemeralResourceType string, option *EphemeralResourceRenderOption) error {
+	rr, err := gen.metadata.NewEphemeralRender(ephemeralResourceType, option)
 	if err != nil {
 		return err
 	}

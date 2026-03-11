@@ -4,12 +4,14 @@ import (
 	"context"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 )
 
 var _ provider.Provider = &ExampleCloudProvider{}
+var _ provider.ProviderWithEphemeralResources = &ExampleCloudProvider{}
 
 type ExampleCloudProvider struct{}
 
@@ -37,5 +39,11 @@ func (p *ExampleCloudProvider) DataSources(ctx context.Context) []func() datasou
 func (p *ExampleCloudProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		func() resource.Resource { return ExampleResource{} },
+	}
+}
+
+func (p *ExampleCloudProvider) EphemeralResources(context.Context) []func() ephemeral.EphemeralResource {
+	return []func() ephemeral.EphemeralResource{
+		func() ephemeral.EphemeralResource { return ExampleEphemeralResource{} },
 	}
 }

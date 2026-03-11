@@ -28,10 +28,10 @@ func (metadata Metadata) NewDataSourceRender(dataSourceType string, opt *DataSou
 		return nil, fmt.Errorf("unknown data source type %q", dataSourceType)
 	}
 
-	src := datasourceRenderBuilder{
-		ProviderName:   metadata.ProviderName,
-		DataSourceType: dataSourceType,
-		Metadata:       resmetadata,
+	src := dataSourceRenderBuilder{
+		ProviderName: metadata.ProviderName,
+		ResourceType: dataSourceType,
+		Metadata:     resmetadata,
 	}
 	var tpl *template.Template
 	if opt != nil {
@@ -66,16 +66,18 @@ func (metadata Metadata) NewDataSourceRender(dataSourceType string, opt *DataSou
 	}, nil
 }
 
-func (render DataSourceRender) Execute(w io.Writer) error {
-	tpl := render.Template
-	if tpl == nil {
-		var err error
-		tpl, err = template.New("resource").Parse(`{{ .Header }}
+const dataSourceTpl = `{{ .Header }}
 {{ .Description }}
 {{- with .Example }}
 {{ . }}
 {{- end }}
-{{ .Schema }}`)
+{{ .Schema }}`
+
+func (render DataSourceRender) Execute(w io.Writer) error {
+	tpl := render.Template
+	if tpl == nil {
+		var err error
+		tpl, err = template.New("dataSource").Parse(dataSourceTpl)
 		if err != nil {
 			return err
 		}
