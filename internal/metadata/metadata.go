@@ -11,10 +11,11 @@ import (
 )
 
 type Metadata struct {
-	ProviderName string
-	Resources    ResourceMetadatas
-	DataSources  DataSourceMetadatas
-	Ephemerals   EphemeralMetadatas
+	ProviderName   string
+	ProviderSchema ProviderSchema
+	Resources      ResourceMetadatas
+	DataSources    DataSourceMetadatas
+	Ephemerals     EphemeralMetadatas
 }
 
 type ResourceMetadatas map[string]ResourceMetadata
@@ -40,11 +41,24 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 	var providerMetadataResp provider.MetadataResponse
 	p.Metadata(ctx, provider.MetadataRequest{}, &providerMetadataResp)
 
+	var schemaResp provider.SchemaResponse
+	p.Schema(ctx, provider.SchemaRequest{}, &schemaResp)
+	diags.Append(schemaResp.Diagnostics...)
+	if diags.HasError() {
+		return
+	}
+	providerSchema, odiags := NewProviderSchema(ctx, schemaResp.Schema)
+	diags.Append(odiags...)
+	if diags.HasError() {
+		return
+	}
+
 	metadata = Metadata{
-		ProviderName: providerMetadataResp.TypeName,
-		Resources:    ResourceMetadatas{},
-		DataSources:  DataSourceMetadatas{},
-		Ephemerals:   EphemeralMetadatas{},
+		ProviderName:   providerMetadataResp.TypeName,
+		ProviderSchema: providerSchema,
+		Resources:      ResourceMetadatas{},
+		DataSources:    DataSourceMetadatas{},
+		Ephemerals:     EphemeralMetadatas{},
 	}
 
 	for _, builder := range p.Resources(ctx) {
