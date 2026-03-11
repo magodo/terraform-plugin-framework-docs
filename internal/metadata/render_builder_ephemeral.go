@@ -1,13 +1,10 @@
 package metadata
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"maps"
 	"slices"
-
-	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
 type ephemeralRenderBuilder struct {
@@ -58,29 +55,7 @@ func (b ephemeralRenderBuilder) renderDescription(w io.Writer) error {
 }
 
 func (b ephemeralRenderBuilder) renderExample(w io.Writer) error {
-	if examples := b.Examples; len(examples) != 0 {
-		if _, err := io.WriteString(w, "## Example Usage\n"); err != nil {
-			return err
-		}
-		for _, example := range examples {
-			if example.Header != nil {
-				if _, err := fmt.Fprintf(w, "\n### %s\n", *example.Header); err != nil {
-					return err
-				}
-			}
-			if example.Description != nil {
-				if _, err := fmt.Fprintf(w, "\n%s\n", *example.Description); err != nil {
-					return err
-				}
-			}
-			if example.HCL != nil {
-				if _, err := fmt.Fprintf(w, "\n```terraform\n%s\n```\n", bytes.TrimSpace(hclwrite.Format(example.HCL))); err != nil {
-					return err
-				}
-			}
-		}
-	}
-	return nil
+	return renderExamples(w, b.Examples)
 }
 
 func (b ephemeralRenderBuilder) renderSchema(w io.Writer) error {
