@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
+	"github.com/hashicorp/terraform-plugin-framework/list"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 )
@@ -18,6 +19,7 @@ type Metadata struct {
 	DataSources    DataSourceMetadatas
 	Ephemerals     EphemeralMetadatas
 	Actions        ActionMetadatas
+	Lists          ListMetadatas
 }
 
 type ResourceMetadatas map[string]ResourceMetadata
@@ -45,6 +47,12 @@ type ActionMetadata struct {
 	Schema ActionSchema
 }
 
+type ListMetadatas map[string]ListMetadata
+
+type ListMetadata struct {
+	Schema ListSchema
+}
+
 func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, diags diag.Diagnostics) {
 	var providerMetadataResp provider.MetadataResponse
 	p.Metadata(ctx, provider.MetadataRequest{}, &providerMetadataResp)
@@ -68,6 +76,7 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 		DataSources:    DataSourceMetadatas{},
 		Ephemerals:     EphemeralMetadatas{},
 		Actions:        ActionMetadatas{},
+		Lists:          ListMetadatas{},
 	}
 
 	for _, builder := range p.Resources(ctx) {
@@ -200,6 +209,36 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 			}
 
 			metadata.Actions[resourceType] = resMetadata
+		}
+	}
+
+	if p, ok := p.(provider.ProviderWithListResources); ok {
+		for _, builder := range p.ListResources(ctx) {
+			res := builder()
+
+			// Get the resource type
+			var metadataResp resource.MetadataResponse
+			res.Metadata(ctx, resource.MetadataRequest{ProviderTypeName: providerMetadataResp.TypeName}, &metadataResp)
+			resourceType := metadataResp.TypeName
+
+			var schemaResp list.ListResourceSchemaResponse
+			res.ListResourceConfigSchema(ctx, list.ListResourceSchemaRequest{}, &schemaResp)
+			diags.Append(schemaResp.Diagnostics...)
+			if diags.HasError() {
+				return
+			}
+
+			sch, odiags := NewListSchema(ctx, schemaResp.Schema)
+			diags.Append(odiags...)
+			if diags.HasError() {
+				return
+			}
+
+			resMetadata := ListMetadata{
+				Schema: sch,
+			}
+
+			metadata.Lists[resourceType] = resMetadata
 		}
 	}
 

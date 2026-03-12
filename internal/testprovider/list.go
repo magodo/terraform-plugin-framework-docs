@@ -6,29 +6,24 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/boolvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/action"
-	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
 	"github.com/hashicorp/terraform-plugin-framework/list"
+	"github.com/hashicorp/terraform-plugin-framework/list/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
-	"github.com/hashicorp/terraform-plugin-framework/provider"
-	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
-var _ provider.Provider = &ExampleCloudProvider{}
-var _ provider.ProviderWithEphemeralResources = &ExampleCloudProvider{}
-var _ provider.ProviderWithActions = &ExampleCloudProvider{}
-var _ provider.ProviderWithListResources = &ExampleCloudProvider{}
+type ExampleList struct{}
 
-type ExampleCloudProvider struct{}
+var _ list.ListResource = ExampleList{}
 
-func (p *ExampleCloudProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "examplecloud"
+// Metadata implements [list.ListResource].
+func (e ExampleList) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_resource"
 }
 
-func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
+// ListResourceConfigSchema implements [list.ListResource].
+func (e ExampleList) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {
 	nestedAttrs := map[string]schema.Attribute{
 		"bool": schema.BoolAttribute{
 			MarkdownDescription: "A nested bool attribute.",
@@ -70,14 +65,12 @@ func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRe
 		},
 	}
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "The example provider.",
-		DeprecationMessage:  "This provider is deprecated.",
+		MarkdownDescription: "List example resources.",
 		Attributes: map[string]schema.Attribute{
 			"bool": schema.BoolAttribute{
 				MarkdownDescription: "A boolean attribute.",
 				DeprecationMessage:  "Deprecated in favor of `boolean`.",
 				Required:            true,
-				Sensitive:           true,
 				Validators: []validator.Bool{
 					boolvalidator.AlsoRequires(path.MatchRoot("string"), path.MatchRoot("int64")),
 					boolvalidator.ConflictsWith(path.MatchRoot("list")),
@@ -86,7 +79,6 @@ func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRe
 			"string": schema.StringAttribute{
 				MarkdownDescription: "A string attribute.",
 				Optional:            true,
-				Sensitive:           true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("foo", "bar", "baz"),
 				},
@@ -101,10 +93,6 @@ func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRe
 			},
 			"map": schema.MapAttribute{
 				MarkdownDescription: "A map attribute.",
-				Optional:            true,
-			},
-			"set": schema.SetAttribute{
-				MarkdownDescription: "A set attribute.",
 				Optional:            true,
 			},
 			"dynamic": schema.DynamicAttribute{
@@ -124,13 +112,6 @@ func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRe
 			},
 			"map_object": schema.MapNestedAttribute{
 				MarkdownDescription: "A map object attribute.",
-				Optional:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: nestedAttrs,
-				},
-			},
-			"set_object": schema.SetNestedAttribute{
-				MarkdownDescription: "A set object attribute.",
 				Optional:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: nestedAttrs,
@@ -156,46 +137,11 @@ func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRe
 					},
 				},
 			},
-			"set_block": schema.SetNestedBlock{
-				MarkdownDescription: "A set block.",
-				NestedObject: schema.NestedBlockObject{
-					Attributes: nestedAttrs,
-					Blocks:     nestedBlks,
-				},
-			},
 		},
 	}
 }
 
-func (p *ExampleCloudProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
-}
-
-func (p *ExampleCloudProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{
-		func() datasource.DataSource { return ExampleDataSource{} },
-	}
-}
-
-func (p *ExampleCloudProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{
-		func() resource.Resource { return ExampleResource{} },
-	}
-}
-
-func (p *ExampleCloudProvider) EphemeralResources(context.Context) []func() ephemeral.EphemeralResource {
-	return []func() ephemeral.EphemeralResource{
-		func() ephemeral.EphemeralResource { return ExampleEphemeralResource{} },
-	}
-}
-
-func (p *ExampleCloudProvider) Actions(context.Context) []func() action.Action {
-	return []func() action.Action{
-		func() action.Action { return ExampleAction{} },
-	}
-}
-
-func (p *ExampleCloudProvider) ListResources(context.Context) []func() list.ListResource {
-	return []func() list.ListResource{
-		func() list.ListResource { return ExampleList{} },
-	}
+// List implements [list.ListResource].
+func (e ExampleList) List(context.Context, list.ListRequest, *list.ListResultsStream) {
+	panic("unimplemented")
 }
