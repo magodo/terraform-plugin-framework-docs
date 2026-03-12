@@ -90,7 +90,7 @@ resource "examplecloud_resource" "example" {
 
 Validators:
 
-- must have a configuration value as the provider has marked it as required
+- Must have a configuration value as the provider has marked it as required.
 
 Required:
 
@@ -263,7 +263,7 @@ Optional:
 
 Validators:
 
-- Ensure that if an attribute is set, these are not set: "[list_block]"
+- Ensure that if an attribute is set, these are not set: "[list_block]".
 
 Required:
 

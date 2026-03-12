@@ -47,6 +47,16 @@ func MapOrNil[T any, U any](input T, f func(T) U) *U {
 	return &output
 }
 
+func MapOrZero[T any, U any](input T, f func(T) U) U {
+	var zero U
+	var anyInput any = input
+	if anyInput == nil {
+		return zero
+	}
+	output := f(input)
+	return output
+}
+
 func Sentencefy(s string) string {
 	if s == "" {
 		return s

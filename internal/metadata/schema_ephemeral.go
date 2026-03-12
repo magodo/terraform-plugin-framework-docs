@@ -8,25 +8,25 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
-type ProviderSchema struct {
+type EphemeralSchema struct {
 	Description string
 	Deprecation string
 
-	Fields ProviderFields
+	Fields Fields
 
 	// Including nested attribute object or block object.
-	Nested ProviderNestedFields
+	Nested NestedFields
 }
 
-func NewProviderSchema(ctx context.Context, sch schema.Schema) (schema ProviderSchema, diags diag.Diagnostics) {
-	fields := ProviderFields{}
-	nested := ProviderNestedFields{}
+func NewEphemeralSchema(ctx context.Context, sch schema.Schema) (schema EphemeralSchema, diags diag.Diagnostics) {
+	fields := Fields{}
+	nested := NestedFields{}
 
-	attrFields, attrNested, odiags := newProviderAttrFields(ctx, nil, sch.Attributes)
+	attrFields, attrNested, odiags := newEphemeralAttrFields(ctx, nil, sch.Attributes)
 	diags.Append(odiags...)
 	if diags.HasError() {
 		return
@@ -34,7 +34,7 @@ func NewProviderSchema(ctx context.Context, sch schema.Schema) (schema ProviderS
 	maps.Copy(fields, attrFields)
 	maps.Copy(nested, attrNested)
 
-	blockFields, blockNested, odiags := newProviderBlockFields(ctx, nil, sch.Blocks)
+	blockFields, blockNested, odiags := newEphemeralBlockFields(ctx, nil, sch.Blocks)
 	diags.Append(odiags...)
 	if diags.HasError() {
 		return
@@ -42,7 +42,7 @@ func NewProviderSchema(ctx context.Context, sch schema.Schema) (schema ProviderS
 	maps.Copy(fields, blockFields)
 	maps.Copy(nested, blockNested)
 
-	schema = ProviderSchema{
+	schema = EphemeralSchema{
 		Description: DescriptionOf(sch),
 		Deprecation: sch.GetDeprecationMessage(),
 		Fields:      fields,
@@ -51,217 +51,233 @@ func NewProviderSchema(ctx context.Context, sch schema.Schema) (schema ProviderS
 	return
 }
 
-func newProviderAttrFields(ctx context.Context, parents []string, attrs map[string]schema.Attribute) (fields ProviderFields, nested ProviderNestedFields, diags diag.Diagnostics) {
-	fields = ProviderFields{}
-	nested = ProviderNestedFields{}
+func newEphemeralAttrFields(ctx context.Context, parents []string, attrs map[string]schema.Attribute) (fields Fields, nested NestedFields, diags diag.Diagnostics) {
+	fields = Fields{}
+	nested = NestedFields{}
 
 	for name, attr := range attrs {
 		var (
-			field ProviderField
+			field Field
 
-			objectNested ProviderNestedFields
+			objectNested NestedFields
 			objectDiags  diag.Diagnostics
 		)
 
 		switch attr := attr.(type) {
 		case schema.BoolAttribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTBool,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTBool,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Bool) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.Float32Attribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTFloat32,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTFloat32,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Float32) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.Float64Attribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTFloat64,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.DeprecationMessage,
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTFloat64,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.DeprecationMessage,
 				validators:  MapSlice(attr.Validators, func(v validator.Float64) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.Int32Attribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTInt32,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTInt32,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Int32) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.Int64Attribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTInt64,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTInt64,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Int64) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.NumberAttribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTNumber,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTNumber,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Number) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.StringAttribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTString,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTString,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.String) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.ListAttribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTList,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTList,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.MapAttribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTMap,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTMap,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.SetAttribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTSet,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTSet,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.DynamicAttribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTDynamic,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTDynamic,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Dynamic) string { return DescriptionCtxOf(ctx, v) }),
 			}
 
 		case schema.ObjectAttribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTObjectAttr,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTObjectAttr,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
 			}
 			// NOTE: We don't look into the AttributeTypes for an ObjectAttribute as it doesn't contain useful information.
 		case schema.SingleNestedAttribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTSingleNestedAttr,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTSingleNestedAttr,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
 			}
-			objectNested, objectDiags = newProviderNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
+			objectNested, objectDiags = newEphemeralNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		case schema.SetNestedAttribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTSetNestedAttr,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTSetNestedAttr,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
 			}
-			objectNested, objectDiags = newProviderNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
+			objectNested, objectDiags = newEphemeralNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		case schema.MapNestedAttribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTMapNestedAttr,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTMapNestedAttr,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) }),
 			}
-			objectNested, objectDiags = newProviderNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
+			objectNested, objectDiags = newEphemeralNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		case schema.ListNestedAttribute:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTListNestedAttr,
-				Required:    attr.IsRequired(),
-				Optional:    attr.IsOptional(),
-				Sensitive:   attr.IsSensitive(),
-				Description: DescriptionOf(attr),
-				Deprecation: attr.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTListNestedAttr,
+				required:    attr.IsRequired(),
+				optional:    attr.IsOptional(),
+				computed:    attr.IsComputed(),
+				sensitive:   attr.IsSensitive(),
+				description: DescriptionOf(attr),
+				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
 			}
-			objectNested, objectDiags = newProviderNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
+			objectNested, objectDiags = newEphemeralNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		default:
 			diags.AddError("unknown schema type", fmt.Sprintf("%T", attr))
 			return
@@ -279,64 +295,64 @@ func newProviderAttrFields(ctx context.Context, parents []string, attrs map[stri
 	return
 }
 
-func newProviderNestedAttrObjectFields(ctx context.Context, parents []string, obj schema.NestedAttributeObject) (nested ProviderNestedFields, diags diag.Diagnostics) {
-	nested = ProviderNestedFields{}
+func newEphemeralNestedAttrObjectFields(ctx context.Context, parents []string, obj schema.NestedAttributeObject) (nested NestedFields, diags diag.Diagnostics) {
+	nested = NestedFields{}
 
-	attrFields, attrNested, attrDiags := newProviderAttrFields(ctx, parents, obj.Attributes)
+	attrFields, attrNested, attrDiags := newEphemeralAttrFields(ctx, parents, obj.Attributes)
 	diags.Append(attrDiags...)
 	if diags.HasError() {
 		return
 	}
 
-	nested[strings.Join(parents, ".")] = ProviderNestedField{
-		Validators: MapSlice(obj.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
-		Fields:     attrFields,
+	nested[strings.Join(parents, ".")] = NestedField{
+		validators: MapSlice(obj.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
+		fields:     attrFields,
 	}
 	maps.Copy(nested, attrNested)
 	return
 }
 
-func newProviderBlockFields(ctx context.Context, parents []string, blks map[string]schema.Block) (fields ProviderFields, nested ProviderNestedFields, diags diag.Diagnostics) {
-	fields = ProviderFields{}
-	nested = ProviderNestedFields{}
+func newEphemeralBlockFields(ctx context.Context, parents []string, blks map[string]schema.Block) (fields Fields, nested NestedFields, diags diag.Diagnostics) {
+	fields = Fields{}
+	nested = NestedFields{}
 
 	for name, blk := range blks {
-		var field ProviderField
+		var field Field
 
 		switch blk := blk.(type) {
 		case schema.SingleNestedBlock:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTSingleNestedBlock,
-				Optional:    true, // Always regard a block as optional.
-				Description: DescriptionOf(blk),
-				Deprecation: blk.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTSingleNestedBlock,
+				optional:    true, // Always regard a block as optional.
+				description: DescriptionOf(blk),
+				deprecation: blk.GetDeprecationMessage(),
 				validators:  MapSlice(blk.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.ListNestedBlock:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTListNestedBlock,
-				Optional:    true, // Always regard a block as optional.
-				Description: DescriptionOf(blk),
-				Deprecation: blk.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTListNestedBlock,
+				optional:    true, // Always regard a block as optional.
+				description: DescriptionOf(blk),
+				deprecation: blk.GetDeprecationMessage(),
 				validators:  MapSlice(blk.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		case schema.SetNestedBlock:
-			field = ProviderField{
-				Parents:     parents,
-				Name:        name,
-				DataType:    DTSetNestedBlock,
-				Optional:    true, // Always regard a block as optional.
-				Description: DescriptionOf(blk),
-				Deprecation: blk.GetDeprecationMessage(),
+			field = Field{
+				parents:     parents,
+				name:        name,
+				dataType:    DTSetNestedBlock,
+				optional:    true, // Always regard a block as optional.
+				description: DescriptionOf(blk),
+				deprecation: blk.GetDeprecationMessage(),
 				validators:  MapSlice(blk.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
 			}
 		}
 
-		objectNested, odiags := newProviderNestedBlkObjectFields(ctx, slices.Concat(parents, []string{name}), blk.GetNestedObject().(schema.NestedBlockObject))
+		objectNested, odiags := newEphemeralNestedBlkObjectFields(ctx, slices.Concat(parents, []string{name}), blk.GetNestedObject().(schema.NestedBlockObject))
 		diags = append(diags, odiags...)
 		if diags.HasError() {
 			return
@@ -349,30 +365,30 @@ func newProviderBlockFields(ctx context.Context, parents []string, blks map[stri
 	return
 }
 
-func newProviderNestedBlkObjectFields(ctx context.Context, parents []string, obj schema.NestedBlockObject) (nested ProviderNestedFields, diags diag.Diagnostics) {
-	attrFields, attrNested, attrDiags := newProviderAttrFields(ctx, parents, obj.Attributes)
+func newEphemeralNestedBlkObjectFields(ctx context.Context, parents []string, obj schema.NestedBlockObject) (nested NestedFields, diags diag.Diagnostics) {
+	attrFields, attrNested, attrDiags := newEphemeralAttrFields(ctx, parents, obj.Attributes)
 	diags.Append(attrDiags...)
 	if diags.HasError() {
 		return
 	}
 
-	blkFields, blkNested, attrDiags := newProviderBlockFields(ctx, parents, obj.Blocks)
+	blkFields, blkNested, attrDiags := newEphemeralBlockFields(ctx, parents, obj.Blocks)
 	diags.Append(attrDiags...)
 	if diags.HasError() {
 		return
 	}
 
-	fields := ProviderFields{}
+	fields := Fields{}
 	maps.Copy(fields, attrFields)
 	maps.Copy(fields, blkFields)
 
-	nested = ProviderNestedFields{}
+	nested = NestedFields{}
 	maps.Copy(nested, attrNested)
 	maps.Copy(nested, blkNested)
 
-	nested[strings.Join(parents, ".")] = ProviderNestedField{
-		Validators: MapSlice(obj.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
-		Fields:     fields,
+	nested[strings.Join(parents, ".")] = NestedField{
+		validators: MapSlice(obj.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
+		fields:     fields,
 	}
 	return
 }
