@@ -7,26 +7,21 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/action"
-	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
+	"github.com/hashicorp/terraform-plugin-framework/action/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
-	"github.com/hashicorp/terraform-plugin-framework/provider"
-	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
-var _ provider.Provider = &ExampleCloudProvider{}
-var _ provider.ProviderWithEphemeralResources = &ExampleCloudProvider{}
-var _ provider.ProviderWithActions = &ExampleCloudProvider{}
+type ExampleAction struct{}
 
-type ExampleCloudProvider struct{}
+var _ action.Action = ExampleAction{}
 
-func (p *ExampleCloudProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "examplecloud"
+func (e ExampleAction) Metadata(ctx context.Context, req action.MetadataRequest, resp *action.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_resource"
 }
 
-func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
+// Schema implements [action.ActionResource].
+func (e ExampleAction) Schema(ctx context.Context, req action.SchemaRequest, resp *action.SchemaResponse) {
 	nestedAttrs := map[string]schema.Attribute{
 		"bool": schema.BoolAttribute{
 			MarkdownDescription: "A nested bool attribute.",
@@ -68,14 +63,13 @@ func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRe
 		},
 	}
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "The example provider.",
-		DeprecationMessage:  "This provider is deprecated.",
+		MarkdownDescription: "Manages an action.",
 		Attributes: map[string]schema.Attribute{
 			"bool": schema.BoolAttribute{
 				MarkdownDescription: "A boolean attribute.",
 				DeprecationMessage:  "Deprecated in favor of `boolean`.",
 				Required:            true,
-				Sensitive:           true,
+				WriteOnly:           true,
 				Validators: []validator.Bool{
 					boolvalidator.AlsoRequires(path.MatchRoot("string"), path.MatchRoot("int64")),
 					boolvalidator.ConflictsWith(path.MatchRoot("list")),
@@ -84,7 +78,7 @@ func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRe
 			"string": schema.StringAttribute{
 				MarkdownDescription: "A string attribute.",
 				Optional:            true,
-				Sensitive:           true,
+				WriteOnly:           true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("foo", "bar", "baz"),
 				},
@@ -165,29 +159,7 @@ func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRe
 	}
 }
 
-func (p *ExampleCloudProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
-}
-
-func (p *ExampleCloudProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{
-		func() datasource.DataSource { return ExampleDataSource{} },
-	}
-}
-
-func (p *ExampleCloudProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{
-		func() resource.Resource { return ExampleResource{} },
-	}
-}
-
-func (p *ExampleCloudProvider) EphemeralResources(context.Context) []func() ephemeral.EphemeralResource {
-	return []func() ephemeral.EphemeralResource{
-		func() ephemeral.EphemeralResource { return ExampleEphemeralResource{} },
-	}
-}
-
-func (p *ExampleCloudProvider) Actions(context.Context) []func() action.Action {
-	return []func() action.Action{
-		func() action.Action { return ExampleAction{} },
-	}
+// Invoke implements [action.Action].
+func (e ExampleAction) Invoke(context.Context, action.InvokeRequest, *action.InvokeResponse) {
+	panic("unimplemented")
 }

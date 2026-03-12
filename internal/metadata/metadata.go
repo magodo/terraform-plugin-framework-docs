@@ -3,6 +3,7 @@ package metadata
 import (
 	"context"
 
+	"github.com/hashicorp/terraform-plugin-framework/action"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
@@ -16,6 +17,7 @@ type Metadata struct {
 	Resources      ResourceMetadatas
 	DataSources    DataSourceMetadatas
 	Ephemerals     EphemeralMetadatas
+	Actions        ActionMetadatas
 }
 
 type ResourceMetadatas map[string]ResourceMetadata
@@ -35,6 +37,12 @@ type EphemeralMetadatas map[string]EphemeralMetadata
 
 type EphemeralMetadata struct {
 	Schema EphemeralSchema
+}
+
+type ActionMetadatas map[string]ActionMetadata
+
+type ActionMetadata struct {
+	Schema ActionSchema
 }
 
 func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, diags diag.Diagnostics) {
@@ -59,6 +67,7 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 		Resources:      ResourceMetadatas{},
 		DataSources:    DataSourceMetadatas{},
 		Ephemerals:     EphemeralMetadatas{},
+		Actions:        ActionMetadatas{},
 	}
 
 	for _, builder := range p.Resources(ctx) {
@@ -107,15 +116,15 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 	}
 
 	for _, builder := range p.DataSources(ctx) {
-		ds := builder()
+		res := builder()
 
 		// Get the resource type
 		var metadataResp datasource.MetadataResponse
-		ds.Metadata(ctx, datasource.MetadataRequest{ProviderTypeName: providerMetadataResp.TypeName}, &metadataResp)
+		res.Metadata(ctx, datasource.MetadataRequest{ProviderTypeName: providerMetadataResp.TypeName}, &metadataResp)
 		resourceType := metadataResp.TypeName
 
 		var schemaResp datasource.SchemaResponse
-		ds.Schema(ctx, datasource.SchemaRequest{}, &schemaResp)
+		res.Schema(ctx, datasource.SchemaRequest{}, &schemaResp)
 		diags.Append(schemaResp.Diagnostics...)
 		if diags.HasError() {
 			return
@@ -127,24 +136,24 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 			return
 		}
 
-		dsMetadata := DataSourceMetadata{
+		resMetadata := DataSourceMetadata{
 			Schema: sch,
 		}
 
-		metadata.DataSources[resourceType] = dsMetadata
+		metadata.DataSources[resourceType] = resMetadata
 	}
 
 	if p, ok := p.(provider.ProviderWithEphemeralResources); ok {
 		for _, builder := range p.EphemeralResources(ctx) {
-			er := builder()
+			res := builder()
 
 			// Get the resource type
 			var metadataResp ephemeral.MetadataResponse
-			er.Metadata(ctx, ephemeral.MetadataRequest{ProviderTypeName: providerMetadataResp.TypeName}, &metadataResp)
+			res.Metadata(ctx, ephemeral.MetadataRequest{ProviderTypeName: providerMetadataResp.TypeName}, &metadataResp)
 			resourceType := metadataResp.TypeName
 
 			var schemaResp ephemeral.SchemaResponse
-			er.Schema(ctx, ephemeral.SchemaRequest{}, &schemaResp)
+			res.Schema(ctx, ephemeral.SchemaRequest{}, &schemaResp)
 			diags.Append(schemaResp.Diagnostics...)
 			if diags.HasError() {
 				return
@@ -156,11 +165,41 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 				return
 			}
 
-			emetadata := EphemeralMetadata{
+			resMetadata := EphemeralMetadata{
 				Schema: sch,
 			}
 
-			metadata.Ephemerals[resourceType] = emetadata
+			metadata.Ephemerals[resourceType] = resMetadata
+		}
+	}
+
+	if p, ok := p.(provider.ProviderWithActions); ok {
+		for _, builder := range p.Actions(ctx) {
+			res := builder()
+
+			// Get the resource type
+			var metadataResp action.MetadataResponse
+			res.Metadata(ctx, action.MetadataRequest{ProviderTypeName: providerMetadataResp.TypeName}, &metadataResp)
+			resourceType := metadataResp.TypeName
+
+			var schemaResp action.SchemaResponse
+			res.Schema(ctx, action.SchemaRequest{}, &schemaResp)
+			diags.Append(schemaResp.Diagnostics...)
+			if diags.HasError() {
+				return
+			}
+
+			sch, odiags := NewActionSchema(ctx, schemaResp.Schema)
+			diags.Append(odiags...)
+			if diags.HasError() {
+				return
+			}
+
+			resMetadata := ActionMetadata{
+				Schema: sch,
+			}
+
+			metadata.Actions[resourceType] = resMetadata
 		}
 	}
 

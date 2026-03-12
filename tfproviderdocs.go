@@ -27,6 +27,7 @@ type ProviderRenderOption = metadata.ProviderRenderOption
 type ResourceRenderOption = metadata.ResourceRenderOption
 type DataSourceRenderOption = metadata.DataSourceRenderOption
 type EphemeralResourceRenderOption = metadata.EphemeralRenderOption
+type ActionRenderOption = metadata.ActionRenderOption
 
 func (gen Generator) RenderProvider(ctx context.Context, w io.Writer, option *ProviderRenderOption) error {
 	rr, err := gen.metadata.NewProviderRender(option)
@@ -54,6 +55,14 @@ func (gen Generator) RenderDataSource(ctx context.Context, w io.Writer, dataSour
 
 func (gen Generator) RenderEphemeralResource(ctx context.Context, w io.Writer, ephemeralResourceType string, option *EphemeralResourceRenderOption) error {
 	rr, err := gen.metadata.NewEphemeralRender(ephemeralResourceType, option)
+	if err != nil {
+		return err
+	}
+	return rr.Execute(w)
+}
+
+func (gen Generator) RenderAction(ctx context.Context, w io.Writer, actionType string, option *ActionRenderOption) error {
+	rr, err := gen.metadata.NewActionRender(actionType, option)
 	if err != nil {
 		return err
 	}
