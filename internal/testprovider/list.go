@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type ExampleList struct{}
@@ -88,15 +89,18 @@ func (e ExampleList) ListResourceConfigSchema(ctx context.Context, req list.List
 				Optional:            true,
 			},
 			"list": schema.ListAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A list attribute.",
 				Optional:            true,
 			},
 			"map": schema.MapAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A map attribute.",
 				Optional:            true,
 			},
 			"dynamic": schema.DynamicAttribute{
 				MarkdownDescription: "A dynamic attribute.",
+				Optional:            true,
 			},
 			"single_object": schema.SingleNestedAttribute{
 				MarkdownDescription: "A single object attribute.",

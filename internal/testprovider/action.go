@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/action/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type ExampleAction struct{}
@@ -88,19 +89,23 @@ func (e ExampleAction) Schema(ctx context.Context, req action.SchemaRequest, res
 				Optional:            true,
 			},
 			"list": schema.ListAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A list attribute.",
 				Optional:            true,
 			},
 			"map": schema.MapAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A map attribute.",
 				Optional:            true,
 			},
 			"set": schema.SetAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A set attribute.",
 				Optional:            true,
 			},
 			"dynamic": schema.DynamicAttribute{
 				MarkdownDescription: "A dynamic attribute.",
+				Optional:            true,
 			},
 			"single_object": schema.SingleNestedAttribute{
 				MarkdownDescription: "A single object attribute.",

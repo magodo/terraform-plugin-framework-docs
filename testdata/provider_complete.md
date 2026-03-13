@@ -51,6 +51,7 @@ provider "examplecloud_resource" "example" {
 
 ### Optional
 	
+- `dynamic` (Dynamic) A dynamic attribute.
 - `int64` (Int64) A int64 attribute.
 - `list` (List) A list attribute.
 - `list_block` (Blocks) A list block. See the nested schema [here](#nested--list_block).

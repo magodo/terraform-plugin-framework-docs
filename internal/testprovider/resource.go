@@ -21,6 +21,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
@@ -116,18 +117,21 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Default:             int64default.StaticInt64(0),
 			},
 			"list": schema.ListAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A list attribute.",
 				Optional:            true,
 				Computed:            true,
 				Default:             listdefault.StaticValue(basetypes.NewListValueMust(basetypes.StringType{}, []attr.Value{basetypes.NewStringValue("foo")})),
 			},
 			"map": schema.MapAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A map attribute.",
 				Optional:            true,
 				Computed:            true,
 				Default:             mapdefault.StaticValue(basetypes.NewMapValueMust(basetypes.StringType{}, map[string]attr.Value{"key": basetypes.NewStringValue("val")})),
 			},
 			"set": schema.SetAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A set attribute.",
 				Optional:            true,
 				Computed:            true,

@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type ExampleDataSource struct{}
@@ -90,16 +91,19 @@ func (e ExampleDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 				Computed:            true,
 			},
 			"list": schema.ListAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A list attribute.",
 				Optional:            true,
 				Computed:            true,
 			},
 			"map": schema.MapAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A map attribute.",
 				Optional:            true,
 				Computed:            true,
 			},
 			"set": schema.SetAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A set attribute.",
 				Optional:            true,
 				Computed:            true,

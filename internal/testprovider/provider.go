@@ -9,18 +9,21 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/action"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
+	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/list"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 var _ provider.Provider = &ExampleCloudProvider{}
 var _ provider.ProviderWithEphemeralResources = &ExampleCloudProvider{}
 var _ provider.ProviderWithActions = &ExampleCloudProvider{}
 var _ provider.ProviderWithListResources = &ExampleCloudProvider{}
+var _ provider.ProviderWithFunctions = &ExampleCloudProvider{}
 
 type ExampleCloudProvider struct{}
 
@@ -96,19 +99,23 @@ func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRe
 				Optional:            true,
 			},
 			"list": schema.ListAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A list attribute.",
 				Optional:            true,
 			},
 			"map": schema.MapAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A map attribute.",
 				Optional:            true,
 			},
 			"set": schema.SetAttribute{
+				ElementType:         types.StringType,
 				MarkdownDescription: "A set attribute.",
 				Optional:            true,
 			},
 			"dynamic": schema.DynamicAttribute{
 				MarkdownDescription: "A dynamic attribute.",
+				Optional:            true,
 			},
 			"single_object": schema.SingleNestedAttribute{
 				MarkdownDescription: "A single object attribute.",
@@ -170,15 +177,15 @@ func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRe
 func (p *ExampleCloudProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 }
 
-func (p *ExampleCloudProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{
-		func() datasource.DataSource { return ExampleDataSource{} },
-	}
-}
-
 func (p *ExampleCloudProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		func() resource.Resource { return ExampleResource{} },
+	}
+}
+
+func (p *ExampleCloudProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
+	return []func() datasource.DataSource{
+		func() datasource.DataSource { return ExampleDataSource{} },
 	}
 }
 
@@ -197,5 +204,11 @@ func (p *ExampleCloudProvider) Actions(context.Context) []func() action.Action {
 func (p *ExampleCloudProvider) ListResources(context.Context) []func() list.ListResource {
 	return []func() list.ListResource{
 		func() list.ListResource { return ExampleList{} },
+	}
+}
+
+func (p *ExampleCloudProvider) Functions(context.Context) []func() function.Function {
+	return []func() function.Function{
+		func() function.Function { return ExampleFunctionSimple{} },
 	}
 }
