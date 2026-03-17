@@ -54,11 +54,11 @@ func (b functionRenderBuilder) renderSignature(w io.Writer) error {
 			params = append(params, fmt.Sprintf("%s %s", param.name, param.dataType))
 		}
 	}
-	if _, err := fmt.Fprintf(w, strings.Join(params, ",")); err != nil {
+	if _, err := io.WriteString(w, strings.Join(params, ",")); err != nil {
 		return err
 	}
 	if _, err := fmt.Fprintf(w, `) %[1]s
-%[2]s%[2]s%[2]
+%[2]s%[2]s%[2]s
 `, schema.Return.dataType, "`"); err != nil {
 		return err
 	}

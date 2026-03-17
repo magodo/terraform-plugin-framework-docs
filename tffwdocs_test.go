@@ -1,4 +1,4 @@
-package tfproviderdocs
+package tffwdocs_test
 
 import (
 	"bytes"
@@ -6,12 +6,13 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/magodo/tfproviderdocs/internal/testprovider"
+	tffwdocs "github.com/magodo/terraform-plugin-framework-docs"
+	"github.com/magodo/terraform-plugin-framework-docs/internal/testprovider"
 	"github.com/stretchr/testify/require"
 )
 
 func TestProviderRender(t *testing.T) {
-	g, err := NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
+	g, err := tffwdocs.NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
 	require.NoError(t, err)
 
 	// Render the minimal version
@@ -22,8 +23,8 @@ func TestProviderRender(t *testing.T) {
 	require.Equal(t, string(expected), buf.String(), "minimal")
 
 	// Render the complete version
-	opt := &ProviderRenderOption{
-		Examples: []Example{
+	opt := &tffwdocs.ProviderRenderOption{
+		Examples: []tffwdocs.Example{
 			{
 				Header:      new("Basic"),
 				Description: new("The basic configuration."),
@@ -67,7 +68,7 @@ Some note...
 }
 
 func TestResourceRender(t *testing.T) {
-	g, err := NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
+	g, err := tffwdocs.NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
 	require.NoError(t, err)
 
 	// Render the minimal version
@@ -78,9 +79,9 @@ func TestResourceRender(t *testing.T) {
 	require.Equal(t, string(expected), buf.String(), "minimal")
 
 	// Render the complete version
-	opt := &ResourceRenderOption{
+	opt := &tffwdocs.ResourceRenderOption{
 		Subcategory: "abc",
-		Examples: []Example{
+		Examples: []tffwdocs.Example{
 			{
 				Header:      new("Basic"),
 				Description: new("The basic configuration."),
@@ -103,11 +104,11 @@ resource "examplecloud_resource" "example" {
 `),
 			},
 		},
-		ImportId: &ImportId{
+		ImportId: &tffwdocs.ImportId{
 			Format:  "<parent_id>/<id>[/<version>]",
 			Example: "123/456",
 		},
-		IdentityExamples: []Example{
+		IdentityExamples: []tffwdocs.Example{
 			{
 				Header:      new("Without Version"),
 				Description: new("Import without version."),
@@ -147,7 +148,7 @@ Some note...
 }
 
 func TestDataSourceRender(t *testing.T) {
-	g, err := NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
+	g, err := tffwdocs.NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
 	require.NoError(t, err)
 
 	// Render the minimal version
@@ -158,9 +159,9 @@ func TestDataSourceRender(t *testing.T) {
 	require.Equal(t, string(expected), buf.String(), "minimal")
 
 	// Render the complete version
-	opt := &DataSourceRenderOption{
+	opt := &tffwdocs.DataSourceRenderOption{
 		Subcategory: "abc",
-		Examples: []Example{
+		Examples: []tffwdocs.Example{
 			{
 				Header:      new("Basic"),
 				Description: new("The basic configuration."),
@@ -204,7 +205,7 @@ Some note...
 }
 
 func TestEphemeralRender(t *testing.T) {
-	g, err := NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
+	g, err := tffwdocs.NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
 	require.NoError(t, err)
 
 	// Render the minimal version
@@ -215,9 +216,9 @@ func TestEphemeralRender(t *testing.T) {
 	require.Equal(t, string(expected), buf.String(), "minimal")
 
 	// Render the complete version
-	opt := &EphemeralResourceRenderOption{
+	opt := &tffwdocs.EphemeralResourceRenderOption{
 		Subcategory: "abc",
-		Examples: []Example{
+		Examples: []tffwdocs.Example{
 			{
 				Header:      new("Basic"),
 				Description: new("The basic configuration."),
@@ -261,7 +262,7 @@ Some note...
 }
 
 func TestActionRender(t *testing.T) {
-	g, err := NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
+	g, err := tffwdocs.NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
 	require.NoError(t, err)
 
 	// Render the minimal version
@@ -272,9 +273,9 @@ func TestActionRender(t *testing.T) {
 	require.Equal(t, string(expected), buf.String(), "minimal")
 
 	// Render the complete version
-	opt := &ActionRenderOption{
+	opt := &tffwdocs.ActionRenderOption{
 		Subcategory: "abc",
-		Examples: []Example{
+		Examples: []tffwdocs.Example{
 			{
 				Header:      new("Basic"),
 				Description: new("The basic configuration."),
@@ -322,7 +323,7 @@ Some note...
 }
 
 func TestListRender(t *testing.T) {
-	g, err := NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
+	g, err := tffwdocs.NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
 	require.NoError(t, err)
 
 	// Render the minimal version
@@ -333,9 +334,9 @@ func TestListRender(t *testing.T) {
 	require.Equal(t, string(expected), buf.String(), "minimal")
 
 	// Render the complete version
-	opt := &ListResourceRenderOption{
+	opt := &tffwdocs.ListResourceRenderOption{
 		Subcategory: "abc",
-		Examples: []Example{
+		Examples: []tffwdocs.Example{
 			{
 				Header:      new("Basic"),
 				Description: new("The basic configuration."),

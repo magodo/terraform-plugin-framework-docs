@@ -1,11 +1,11 @@
-package tfproviderdocs
+package tffwdocs
 
 import (
 	"context"
 	"io"
 
 	"github.com/hashicorp/terraform-plugin-framework/provider"
-	"github.com/magodo/tfproviderdocs/internal/metadata"
+	"github.com/magodo/terraform-plugin-framework-docs/internal/metadata"
 )
 
 type Generator struct {

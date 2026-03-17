@@ -1,4 +1,4 @@
-package tfproviderdocs
+package tffwdocs
 
 import (
 	"errors"
