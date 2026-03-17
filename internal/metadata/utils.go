@@ -8,32 +8,79 @@ import (
 
 type DescriptionProvider interface {
 	GetDescription() string
+}
+
+type MarkdownDescriptionProvider interface {
 	GetMarkdownDescription() string
 }
 
-func DescriptionOf(d DescriptionProvider) string {
-	if v := d.GetMarkdownDescription(); v != "" {
-		return v
+type AnyDescriptionProvider interface {
+	DescriptionProvider
+	MarkdownDescriptionProvider
+}
+
+func DescriptionOf[T AnyDescriptionProvider](d T) string {
+	if v, ok := any(d).(MarkdownDescriptionProvider); ok {
+		return v.GetMarkdownDescription()
 	}
-	return d.GetDescription()
+	return any(d).(DescriptionProvider).GetDescription()
+}
+
+func MaybeDescriptionOf(d any) *string {
+	if v, ok := d.(MarkdownDescriptionProvider); ok {
+		return new(v.GetMarkdownDescription())
+	}
+	if v, ok := d.(DescriptionProvider); ok {
+		return new(v.GetDescription())
+	}
+	return nil
 }
 
 type DescriptionCtxProvider interface {
 	Description(context.Context) string
+}
+
+type MarkdownDescriptionCtxProvider interface {
 	MarkdownDescription(context.Context) string
 }
 
-func DescriptionCtxOf(ctx context.Context, d DescriptionCtxProvider) string {
-	if v := d.MarkdownDescription(ctx); v != "" {
-		return v
+type AnyDescriptionCtxProvider interface {
+	DescriptionCtxProvider
+	MarkdownDescriptionCtxProvider
+}
+
+func DescriptionCtxOf[T AnyDescriptionCtxProvider](ctx context.Context, d T) string {
+	if v, ok := any(d).(MarkdownDescriptionCtxProvider); ok {
+		return v.MarkdownDescription(ctx)
 	}
-	return d.Description(ctx)
+	return any(d).(DescriptionCtxProvider).Description(ctx)
+}
+
+func MaybeDescriptionCtxOf(ctx context.Context, d any) *string {
+	if v, ok := d.(MarkdownDescriptionCtxProvider); ok {
+		return new(v.MarkdownDescription(ctx))
+	}
+	if v, ok := d.(DescriptionCtxProvider); ok {
+		return new(v.Description(ctx))
+	}
+	return nil
 }
 
 func MapSlice[T any, U any](input []T, f func(T) U) []U {
 	result := make([]U, len(input))
 	for i, v := range input {
 		result[i] = f(v)
+	}
+	return result
+}
+
+func MapSliceSome[T any, U any](input []T, f func(T) *U) []U {
+	result := make([]U, len(input))
+	for i, v := range input {
+		ptr := f(v)
+		if ptr != nil {
+			result[i] = *ptr
+		}
 	}
 	return result
 }
@@ -55,6 +102,14 @@ func MapOrZero[T any, U any](input T, f func(T) U) U {
 	}
 	output := f(input)
 	return output
+}
+
+func PointerTo[T any](ptr *T) T {
+	var zero T
+	if ptr == nil {
+		return zero
+	}
+	return *ptr
 }
 
 func Sentencefy(s string) string {

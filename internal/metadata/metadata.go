@@ -20,6 +20,7 @@ type Metadata struct {
 	Ephemerals     EphemeralMetadatas
 	Actions        ActionMetadatas
 	Lists          ListMetadatas
+	Functions      FunctionMetadatas
 }
 
 type ResourceMetadatas map[string]ResourceMetadata
@@ -51,6 +52,12 @@ type ListMetadatas map[string]ListMetadata
 
 type ListMetadata struct {
 	Schema ListSchema
+}
+
+type FunctionMetadatas map[string]FunctionMetadata
+
+type FunctionMetadata struct {
+	Schema FunctionSchema
 }
 
 func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, diags diag.Diagnostics) {

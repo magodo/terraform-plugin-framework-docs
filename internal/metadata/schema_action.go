@@ -43,7 +43,7 @@ func NewActionSchema(ctx context.Context, sch schema.Schema) (schema ActionSchem
 	maps.Copy(nested, blockNested)
 
 	schema = ActionSchema{
-		Description: DescriptionOf(sch),
+		Description: *DescriptionOf(sch),
 		Deprecation: sch.GetDeprecationMessage(),
 		Fields:      fields,
 		Nested:      nested,

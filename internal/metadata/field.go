@@ -160,7 +160,7 @@ func (field Field) Traits() string {
 	return strings.Join(traits, ", ")
 }
 
-func fieldNestedKey(field Field) string {
+func (field Field) nestedKey() string {
 	return strings.Join(slices.Concat(field.Parents(), []string{field.Name()}), ".")
 }
 
@@ -174,7 +174,7 @@ func (field Field) NestedLink() string {
 		DTSingleNestedBlock,
 		DTListNestedBlock,
 		DTSetNestedBlock:
-		return fmt.Sprintf("See the nested schema [here](#nested--%s).", fieldNestedKey(field))
+		return fmt.Sprintf("See the nested schema [here](#nested--%s).", field.nestedKey())
 	default:
 		return ""
 	}

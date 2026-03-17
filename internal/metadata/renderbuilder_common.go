@@ -13,4 +13,5 @@ const (
 	CategoryEphemeral  = "Ephemeral Resource"
 	CategoryAction     = "Action"
 	CategoryList       = "List Resource"
+	CategoryFunction   = "Function"
 )
