@@ -141,6 +141,17 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				MarkdownDescription: "A dynamic attribute.",
 				Computed:            true,
 			},
+			"object": schema.ObjectAttribute{
+				MarkdownDescription: "An object attribute.",
+				Optional:            true,
+				AttributeTypes: map[string]attr.Type{
+					"foo": types.ObjectType{
+						AttrTypes: map[string]attr.Type{
+							"bar": types.StringType,
+						},
+					},
+				},
+			},
 			"single_object": schema.SingleNestedAttribute{
 				MarkdownDescription: "A single object attribute.",
 				Optional:            true,

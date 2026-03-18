@@ -259,7 +259,11 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Object) string { return DescriptionCtxOf(ctx, v) }),
 				writeOnly:     attr.IsWriteOnly(),
 			}
-			// NOTE: We don't look into the AttributeTypes for an ObjectAttribute as it doesn't contain useful information.
+			objects, objectDiags := newObjects(ctx, slices.Concat(parents, []string{name}), attr.AttributeTypes)
+			if objectDiags.HasError() {
+				return nil, nil, objectDiags
+			}
+			objectNested = objects.ToNestedFields(field)
 		case schema.SingleNestedAttribute:
 			field = Field{
 				parents:       parents,

@@ -5,9 +5,10 @@ import (
 )
 
 type providerRenderBuilder struct {
-	ProviderName string
-	Schema       ProviderSchema
-	Examples     []Example
+	ProviderName       string
+	Schema             ProviderSchema
+	Examples           []Example
+	ObjectDescriptions ObjectDescription
 }
 
 func (b providerRenderBuilder) Category() Category {
@@ -27,5 +28,5 @@ func (b providerRenderBuilder) renderExample(w io.Writer) error {
 }
 
 func (b providerRenderBuilder) renderSchema(w io.Writer) error {
-	return renderSchema(w, b.Schema.Fields, b.Schema.Nested)
+	return renderSchema(w, b.Schema.Fields, b.Schema.Nested, b.ObjectDescriptions)
 }

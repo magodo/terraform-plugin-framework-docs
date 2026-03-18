@@ -19,8 +19,9 @@ type resourceRenderBuilder struct {
 
 	Metadata ResourceMetadata
 
-	Subcategory string
-	Examples    []Example
+	Subcategory        string
+	Examples           []Example
+	ObjectDescriptions ObjectDescription
 
 	// Import
 	ImportId         *ImportId
@@ -44,7 +45,7 @@ func (b resourceRenderBuilder) renderExample(w io.Writer) error {
 }
 
 func (b resourceRenderBuilder) renderSchema(w io.Writer) error {
-	return renderSchema(w, b.Metadata.Schema.Fields, b.Metadata.Schema.Nested)
+	return renderSchema(w, b.Metadata.Schema.Fields, b.Metadata.Schema.Nested, b.ObjectDescriptions)
 }
 
 func (b resourceRenderBuilder) renderImport(w io.Writer) error {

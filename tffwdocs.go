@@ -23,6 +23,7 @@ func NewGenerator(ctx context.Context, p provider.Provider) (*Generator, error) 
 
 type Example = metadata.Example
 type ImportId = metadata.ImportId
+type ObjectDescription = metadata.ObjectDescription
 type ProviderRenderOption = metadata.ProviderRenderOption
 type ResourceRenderOption = metadata.ResourceRenderOption
 type DataSourceRenderOption = metadata.DataSourceRenderOption
@@ -30,7 +31,6 @@ type EphemeralResourceRenderOption = metadata.EphemeralRenderOption
 type ActionRenderOption = metadata.ActionRenderOption
 type ListResourceRenderOption = metadata.ListRenderOption
 type FunctionRenderOption = metadata.FunctionRenderOption
-type FunctionObjectDescription = metadata.ObjectDescription
 
 func (gen Generator) RenderProvider(ctx context.Context, w io.Writer, option *ProviderRenderOption) error {
 	rr, err := gen.metadata.NewProviderRender(option)

@@ -37,6 +37,7 @@ Manages an example resource.
 - `list_object` (List of Objects) A list object attribute. See the nested schema [here](#nested--list_object).
 - `map` (Map) A map attribute. Value defaults to `{"key":"val"}`.
 - `map_object` (Map of Objects) A map object attribute. See the nested schema [here](#nested--map_object).
+- `object` (Object) An object attribute. See the nested schema [here](#nested--object).
 - `set` (Set) A set attribute. Value defaults to `["foo"]`.
 - `set_block` (Blocks) A set block. See the nested schema [here](#nested--set_block).
 - `set_object` (Set of Objects) A set object attribute. See the nested schema [here](#nested--set_object).
@@ -164,6 +165,18 @@ Required:
 Optional:
 
 - `string` (String) A nested nested string attribute.
+<a id="nested--object"></a>
+### Nested Schema for `object`
+
+Optional:
+
+- `foo` (Object) See the nested schema [here](#nested--object.foo).
+<a id="nested--object.foo"></a>
+### Nested Schema for `object.foo`
+
+Optional:
+
+- `bar` (String)
 <a id="nested--set_block"></a>
 ### Nested Schema for `set_block`
 

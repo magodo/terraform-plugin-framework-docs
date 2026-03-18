@@ -7,7 +7,6 @@ import (
 	"text/template"
 
 	tffwdocs "github.com/magodo/terraform-plugin-framework-docs"
-	"github.com/magodo/terraform-plugin-framework-docs/internal/metadata"
 	"github.com/magodo/terraform-plugin-framework-docs/internal/testprovider"
 	"github.com/stretchr/testify/require"
 )
@@ -126,6 +125,14 @@ parent_id = "123"
 id = "456"
 version = "v2"
 `),
+			},
+		},
+		ObjectDescription: tffwdocs.ObjectDescription{
+			"object": map[string]string{
+				"foo": "A foo field.",
+			},
+			"object.foo": map[string]string{
+				"bar": "A bar field.",
 			},
 		},
 	}
@@ -411,7 +418,7 @@ func TestFunctionRenderSimple(t *testing.T) {
 			},
 		},
 		ReturnDescription: new("This function returns a boolean indicating something."),
-		ObjectDescription: metadata.ObjectDescription{
+		ObjectDescription: tffwdocs.ObjectDescription{
 			"object": map[string]string{
 				"foo": "The foo field.",
 				"bar": "The bar field.",
@@ -463,7 +470,7 @@ func TestFunctionRenderRetObj(t *testing.T) {
 			},
 		},
 		ReturnDescription: new("This function returns an object indicating something."),
-		ObjectDescription: metadata.ObjectDescription{
+		ObjectDescription: tffwdocs.ObjectDescription{
 			"object": map[string]string{
 				"foo": "The foo field.",
 			},

@@ -10,8 +10,9 @@ type ephemeralRenderBuilder struct {
 
 	Metadata EphemeralMetadata
 
-	Subcategory string
-	Examples    []Example
+	Subcategory        string
+	Examples           []Example
+	ObjectDescriptions ObjectDescription
 }
 
 func (b ephemeralRenderBuilder) Category() Category {
@@ -31,5 +32,5 @@ func (b ephemeralRenderBuilder) renderExample(w io.Writer) error {
 }
 
 func (b ephemeralRenderBuilder) renderSchema(w io.Writer) error {
-	return renderSchema(w, b.Metadata.Schema.Fields, b.Metadata.Schema.Nested)
+	return renderSchema(w, b.Metadata.Schema.Fields, b.Metadata.Schema.Nested, b.ObjectDescriptions)
 }

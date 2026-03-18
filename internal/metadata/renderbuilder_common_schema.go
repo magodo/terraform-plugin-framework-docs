@@ -7,7 +7,7 @@ import (
 	"slices"
 )
 
-func renderSchema(w io.Writer, fields Fields, nested NestedFields) error {
+func renderSchema(w io.Writer, fields Fields, nested NestedFields, objectDescription ObjectDescription) error {
 	if _, err := fmt.Fprintf(w, `## Schema
 `); err != nil {
 		return err
@@ -43,7 +43,7 @@ func renderSchema(w io.Writer, fields Fields, nested NestedFields) error {
 		}
 
 		for _, field := range section.fields {
-			if err := renderField(w, field); err != nil {
+			if err := renderField(w, field, ""); err != nil {
 				return err
 			}
 		}
@@ -51,7 +51,7 @@ func renderSchema(w io.Writer, fields Fields, nested NestedFields) error {
 
 	if nested := nested; len(nested) != 0 {
 		io.WriteString(w, "\n")
-		if err := renderNestedFields(w, nested); err != nil {
+		if err := renderNestedFields(w, nested, objectDescription); err != nil {
 			return err
 		}
 	}
@@ -59,7 +59,7 @@ func renderSchema(w io.Writer, fields Fields, nested NestedFields) error {
 	return nil
 }
 
-func renderNestedFields(w io.Writer, fields NestedFields) error {
+func renderNestedFields(w io.Writer, fields NestedFields, objectDescription ObjectDescription) error {
 	keys := slices.Collect(maps.Keys(fields))
 	slices.Sort(keys)
 	for _, key := range keys {
@@ -110,7 +110,12 @@ func renderNestedFields(w io.Writer, fields NestedFields) error {
 			}
 
 			for _, field := range section.fields {
-				if err := renderField(w, field); err != nil {
+				var fallbackDesc string
+				if objDesc, ok := objectDescription[key]; ok {
+					fallbackDesc = objDesc[field.name]
+				}
+
+				if err := renderField(w, field, fallbackDesc); err != nil {
 					return err
 				}
 			}
@@ -120,10 +125,17 @@ func renderNestedFields(w io.Writer, fields NestedFields) error {
 	return nil
 }
 
-func renderField(w io.Writer, field Field) error {
-	if _, err := fmt.Fprintf(w, "- `%s` (%s) %s", field.Name(), field.Traits(), field.Description()); err != nil {
+func renderField(w io.Writer, field Field, fallbackDesc string) error {
+	if _, err := fmt.Fprintf(w, "- `%s` (%s)", field.Name(), field.Traits()); err != nil {
 		return err
 	}
+
+	if v := field.Description(); v != "" {
+		fmt.Fprintf(w, " %s", v)
+	} else if fallbackDesc != "" {
+		fmt.Fprintf(w, " %s", fallbackDesc)
+	}
+
 	if v := field.Default(); v != "" {
 		fmt.Fprintf(w, " %s", v)
 	}

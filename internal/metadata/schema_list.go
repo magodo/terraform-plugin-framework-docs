@@ -186,7 +186,11 @@ func newListAttrFields(ctx context.Context, parents []string, attrs map[string]s
 				deprecation: attr.GetDeprecationMessage(),
 				validators:  MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
 			}
-			// NOTE: We don't look into the AttributeTypes for an ObjectAttribute as it doesn't contain useful information.
+			objects, objectDiags := newObjects(ctx, slices.Concat(parents, []string{name}), attr.AttributeTypes)
+			if objectDiags.HasError() {
+				return nil, nil, objectDiags
+			}
+			objectNested = objects.ToNestedFields(field)
 		case schema.SingleNestedAttribute:
 			field = Field{
 				parents:     parents,
