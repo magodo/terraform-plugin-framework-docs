@@ -462,14 +462,18 @@ func TestFunctionRenderRetObj(t *testing.T) {
 				HCL:         []byte(`example_function_retobj(...)`),
 			},
 		},
-		ReturnDescription: new("This function returns a boolean indicating something."),
+		ReturnDescription: new("This function returns an object indicating something."),
 		ObjectDescription: metadata.ObjectDescription{
 			"object": map[string]string{
 				"foo": "The foo field.",
+			},
+			"object.foo": map[string]string{
 				"bar": "The bar field.",
 			},
 			"": map[string]string{
 				"retfoo": "The retfoo field.",
+			},
+			"retfoo": map[string]string{
 				"retbar": "The retbar field.",
 			},
 		},

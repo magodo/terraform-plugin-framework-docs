@@ -21,8 +21,8 @@ type FunctionSchema struct {
 	Parameters FunctionFields
 	Objects    FunctionObjects
 
-	Return       FunctionField
-	ReturnObject *FunctionObject
+	Return        FunctionField
+	ReturnObjects FunctionObjects
 }
 
 func NewFunctionSchema(ctx context.Context, sch function.Definition) (schema FunctionSchema, diags diag.Diagnostics) {
@@ -63,16 +63,16 @@ func NewFunctionSchema(ctx context.Context, sch function.Definition) (schema Fun
 			}
 			return sch.Description
 		}(),
-		Deprecation:  sch.DeprecationMessage,
-		Parameters:   paramFields,
-		Objects:      nested,
-		Return:       retField,
-		ReturnObject: retNested,
+		Deprecation:   sch.DeprecationMessage,
+		Parameters:    paramFields,
+		Objects:       nested,
+		Return:        retField,
+		ReturnObjects: retNested,
 	}
 	return
 }
 
-func newFunctionReturn(ctx context.Context, ret function.Return) (field FunctionField, object *FunctionObject, diags diag.Diagnostics) {
+func newFunctionReturn(ctx context.Context, ret function.Return) (field FunctionField, objects FunctionObjects, diags diag.Diagnostics) {
 	switch attr := ret.(type) {
 	case function.BoolReturn:
 		field = FunctionField{
@@ -122,18 +122,18 @@ func newFunctionReturn(ctx context.Context, ret function.Return) (field Function
 		field = FunctionField{
 			dataType: DTObjectAttr,
 		}
-		obj, odiags := newFunctionObject(ctx, nil, attr.AttributeTypes)
+		var odiags diag.Diagnostics
+		objects, odiags = newFunctionObjects(ctx, nil, attr.AttributeTypes)
 		diags = append(diags, odiags...)
 		if diags.HasError() {
 			return
 		}
-		object = &obj
 	default:
 		diags.AddError("unknown schema type", fmt.Sprintf("%T", attr))
 		return
 	}
 
-	return field, object, diags
+	return field, objects, diags
 }
 
 func newFunctionParameters(ctx context.Context, parents []string, params []function.Parameter) (fields FunctionFields, nested FunctionObjects, diags diag.Diagnostics) {
@@ -300,12 +300,12 @@ func newFunctionParameters(ctx context.Context, parents []string, params []funct
 						return MaybeDescriptionCtxOf(ctx, v)
 					}),
 			}
-			objectNested, odiags := newFunctionObject(ctx, slices.Concat(parents, []string{attr.GetName()}), attr.AttributeTypes)
+			nestedObjects, odiags := newFunctionObjects(ctx, slices.Concat(parents, []string{attr.GetName()}), attr.AttributeTypes)
 			diags = append(diags, odiags...)
 			if diags.HasError() {
 				return
 			}
-			nested[field.nestedKey()] = objectNested
+			maps.Copy(nested, nestedObjects)
 
 		default:
 			diags.AddError("unknown schema type", fmt.Sprintf("%T", attr))
@@ -318,101 +318,110 @@ func newFunctionParameters(ctx context.Context, parents []string, params []funct
 	return
 }
 
-func newFunctionObject(ctx context.Context, parents []string, attrs map[string]attr.Type) (field FunctionObject, diags diag.Diagnostics) {
+func newFunctionObjects(ctx context.Context, parents []string, attrs map[string]attr.Type) (objects FunctionObjects, diags diag.Diagnostics) {
+	objects = FunctionObjects{}
 	fields := map[string]FunctionField{}
 	for name, attr := range attrs {
 		var field FunctionField
 		switch attr := attr.(type) {
-		case basetypes.BoolTypable:
+		case basetypes.BoolType:
 			field = FunctionField{
 				parents:     parents,
 				name:        name,
 				dataType:    DTBool,
 				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 			}
-		case basetypes.Float32Typable:
+		case basetypes.Float32Type:
 			field = FunctionField{
 				parents:     parents,
 				name:        name,
 				dataType:    DTFloat32,
 				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 			}
-		case basetypes.Float64Typable:
+		case basetypes.Float64Type:
 			field = FunctionField{
 				parents:     parents,
 				name:        name,
 				dataType:    DTFloat64,
 				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 			}
-		case basetypes.Int32Typable:
+		case basetypes.Int32Type:
 			field = FunctionField{
 				parents:     parents,
 				name:        name,
 				dataType:    DTInt32,
 				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 			}
-		case basetypes.Int64Typable:
+		case basetypes.Int64Type:
 			field = FunctionField{
 				parents:     parents,
 				name:        name,
 				dataType:    DTInt64,
 				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 			}
-		case basetypes.NumberTypable:
+		case basetypes.NumberType:
 			field = FunctionField{
 				parents:     parents,
 				name:        name,
 				dataType:    DTNumber,
 				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 			}
-		case basetypes.StringTypable:
+		case basetypes.StringType:
 			field = FunctionField{
 				parents:     parents,
 				name:        name,
 				dataType:    DTString,
 				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 			}
-		case basetypes.ListTypable:
+		case basetypes.ListType:
 			field = FunctionField{
 				parents:     parents,
 				name:        name,
 				dataType:    DTList,
 				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 			}
-		case basetypes.SetTypable:
+		case basetypes.SetType:
 			field = FunctionField{
 				parents:     parents,
 				name:        name,
 				dataType:    DTSet,
 				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 			}
-		case basetypes.MapTypable:
+		case basetypes.MapType:
 			field = FunctionField{
 				parents:     parents,
 				name:        name,
 				dataType:    DTMap,
 				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 			}
-		case basetypes.DynamicTypable:
+		case basetypes.DynamicType:
 			field = FunctionField{
 				parents:     parents,
 				name:        name,
 				dataType:    DTDynamic,
 				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 			}
-		case basetypes.ObjectTypable:
+		case basetypes.ObjectType:
 			field = FunctionField{
 				parents:     parents,
 				name:        name,
 				dataType:    DTObjectAttr,
 				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 			}
-			// TODO: Recursively check the value type by ValueType + type assertion on Valuable..
+			nestedObjects, odiags := newFunctionObjects(ctx, slices.Concat(parents, []string{name}), attr.AttributeTypes())
+			diags = append(diags, odiags...)
+			if diags.HasError() {
+				return nil, diags
+			}
+			maps.Copy(objects, nestedObjects)
 		}
+
 		fields[name] = field
 	}
-	return FunctionObject{
+	objects[strings.Join(parents, ".")] = FunctionObject{
 		functionKey: strings.Join(parents, "."),
 		fields:      fields,
-	}, diags
+	}
+
+	return objects, diags
 }

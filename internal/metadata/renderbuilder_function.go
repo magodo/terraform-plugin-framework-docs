@@ -82,29 +82,11 @@ func (b functionRenderBuilder) renderArguments(w io.Writer) error {
 		}
 	}
 
-	keys := slices.Collect(maps.Keys(b.Metadata.Schema.Objects))
-	slices.Sort(keys)
-	for _, key := range keys {
-		obj := b.Metadata.Schema.Objects[key]
-
-		if _, err := fmt.Fprintf(w, `
-<a id="nested--%[1]s"></a>
-### Fields of %[2]s%[1]s%[2]s
-
-`, key, "`"); err != nil {
-			return err
-		}
-
-		if err := b.renderObject(w, obj); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return b.renderObjects(w, b.Metadata.Schema.Objects)
 }
 
 func (b functionRenderBuilder) renderReturn(w io.Writer) error {
-	if !(b.Metadata.Schema.ReturnObject != nil || b.ReturnDescription != nil) {
+	if !(b.Metadata.Schema.ReturnObjects != nil || b.ReturnDescription != nil) {
 		return nil
 	}
 
@@ -119,12 +101,19 @@ func (b functionRenderBuilder) renderReturn(w io.Writer) error {
 		}
 	}
 
-	if obj := b.Metadata.Schema.ReturnObject; obj != nil {
+	if objs := b.Metadata.Schema.ReturnObjects; objs != nil {
 		if _, err := fmt.Fprintf(w, "\nThe `object` returned from `%s` has the following attributes:\n\n", b.FunctionName); err != nil {
 			return err
 		}
 
-		if err := b.renderObject(w, *obj); err != nil {
+		objs := maps.Clone(objs)
+
+		if err := b.renderObject(w, objs[""]); err != nil {
+			return err
+		}
+
+		delete(objs, "")
+		if err := b.renderObjects(w, objs); err != nil {
 			return err
 		}
 	}
@@ -152,6 +141,27 @@ func (b functionRenderBuilder) renderArgument(w io.Writer, field FunctionField) 
 	return nil
 }
 
+func (b functionRenderBuilder) renderObjects(w io.Writer, objs FunctionObjects) error {
+	keys := slices.Collect(maps.Keys(objs))
+	slices.Sort(keys)
+	for _, key := range keys {
+		obj := objs[key]
+
+		if _, err := fmt.Fprintf(w, `
+<a id="nested--%[1]s"></a>
+### Fields of %[2]s%[1]s%[2]s
+
+`, key, "`"); err != nil {
+			return err
+		}
+
+		if err := b.renderObject(w, obj); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (b functionRenderBuilder) renderObject(w io.Writer, object FunctionObject) error {
 	keys := slices.Collect(maps.Keys(object.fields))
 	slices.Sort(keys)
@@ -168,6 +178,9 @@ func (b functionRenderBuilder) renderObject(w io.Writer, object FunctionObject) 
 					}
 				}
 			}
+		}
+		if v := field.NestedLink(); v != "" {
+			fmt.Fprintf(w, " %s", v)
 		}
 		io.WriteString(w, "\n")
 	}

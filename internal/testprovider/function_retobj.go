@@ -24,16 +24,22 @@ func (e ExampleFunctionRetObj) Definition(ctx context.Context, req function.Defi
 			function.ObjectParameter{
 				Name: "object",
 				AttributeTypes: map[string]attr.Type{
-					"foo": types.StringType,
-					"bar": types.BoolType,
+					"foo": types.ObjectType{
+						AttrTypes: map[string]attr.Type{
+							"bar": types.BoolType,
+						},
+					},
 				},
 				MarkdownDescription: "An object parameter.",
 			},
 		},
 		Return: function.ObjectReturn{
 			AttributeTypes: map[string]attr.Type{
-				"retfoo": types.StringType,
-				"retbar": types.BoolType,
+				"retfoo": types.ObjectType{
+					AttrTypes: map[string]attr.Type{
+						"retbar": types.BoolType,
+					},
+				},
 			},
 		},
 		Summary:             "The summary.",

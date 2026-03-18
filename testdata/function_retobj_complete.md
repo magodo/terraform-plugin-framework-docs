@@ -41,14 +41,22 @@ example_function_retobj(object Object) Object
 <a id="nested--object"></a>
 ### Fields of `object`
 
+- `foo` (Object) The foo field. See the nested schema [here](#nested--object.foo).
+
+<a id="nested--object.foo"></a>
+### Fields of `object.foo`
+
 - `bar` (Boolean) The bar field.
-- `foo` (String) The foo field.
 
 ## Return
 
-This function returns a boolean indicating something.
+This function returns an object indicating something.
 
 The `object` returned from `example_function_retobj` has the following attributes:
 
+- `retfoo` (Object) The retfoo field. See the nested schema [here](#nested--retfoo).
+
+<a id="nested--retfoo"></a>
+### Fields of `retfoo`
+
 - `retbar` (Boolean) The retbar field.
-- `retfoo` (String) The retfoo field.
