@@ -14,12 +14,12 @@ type MarkdownDescriptionProvider interface {
 	GetMarkdownDescription() string
 }
 
-type AnyDescriptionProvider interface {
+type BothDescriptionProvider interface {
 	DescriptionProvider
 	MarkdownDescriptionProvider
 }
 
-func DescriptionOf[T AnyDescriptionProvider](d T) string {
+func DescriptionOf[T BothDescriptionProvider](d T) string {
 	if v, ok := any(d).(MarkdownDescriptionProvider); ok {
 		return v.GetMarkdownDescription()
 	}
@@ -44,12 +44,12 @@ type MarkdownDescriptionCtxProvider interface {
 	MarkdownDescription(context.Context) string
 }
 
-type AnyDescriptionCtxProvider interface {
+type BothDescriptionCtxProvider interface {
 	DescriptionCtxProvider
 	MarkdownDescriptionCtxProvider
 }
 
-func DescriptionCtxOf[T AnyDescriptionCtxProvider](ctx context.Context, d T) string {
+func DescriptionCtxOf[T BothDescriptionCtxProvider](ctx context.Context, d T) string {
 	if v, ok := any(d).(MarkdownDescriptionCtxProvider); ok {
 		return v.MarkdownDescription(ctx)
 	}
