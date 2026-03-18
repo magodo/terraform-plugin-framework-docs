@@ -15,6 +15,7 @@ import (
 
 type FunctionSchema struct {
 	Description string
+	Summary     string
 	Deprecation string
 
 	Parameters FunctionFields
@@ -54,6 +55,7 @@ func NewFunctionSchema(ctx context.Context, sch function.Definition) (schema Fun
 	}
 
 	schema = FunctionSchema{
+		Summary: sch.Summary,
 		Description: func() string {
 			v := sch.MarkdownDescription
 			if v != "" {

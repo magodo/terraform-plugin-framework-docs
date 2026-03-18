@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	tffwdocs "github.com/magodo/terraform-plugin-framework-docs"
+	"github.com/magodo/terraform-plugin-framework-docs/internal/metadata"
 	"github.com/magodo/terraform-plugin-framework-docs/internal/testprovider"
 	"github.com/stretchr/testify/require"
 )
@@ -379,6 +380,114 @@ Some note...
 	buf = *bytes.NewBuffer(nil)
 	require.NoError(t, g.RenderListResource(t.Context(), &buf, "examplecloud_resource", opt))
 	expected, err = os.ReadFile("./testdata/list_custom.md")
+	require.NoError(t, err)
+	require.Equal(t, string(expected), buf.String(), "custom")
+}
+
+func TestFunctionRenderSimple(t *testing.T) {
+	g, err := tffwdocs.NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
+	require.NoError(t, err)
+
+	// Render the minimal version
+	var buf bytes.Buffer
+	require.NoError(t, g.RenderFunction(t.Context(), &buf, "example_function_simple", nil))
+	expected, err := os.ReadFile("./testdata/function_simple_minimal.md")
+	require.NoError(t, err)
+	require.Equal(t, string(expected), buf.String(), "minimal")
+
+	// Render the complete version
+	opt := &tffwdocs.FunctionRenderOption{
+		Subcategory: "abc",
+		Examples: []tffwdocs.Example{
+			{
+				Header:      new("Basic"),
+				Description: new("The basic call."),
+				HCL:         []byte(`example_function_simple(...)`),
+			},
+			{
+				Header:      new("Complete"),
+				Description: new("The complete call."),
+				HCL:         []byte(`example_function_simple(...)`),
+			},
+		},
+		ReturnDescription: new("This function returns a boolean indicating something."),
+		ObjectDescription: metadata.ObjectDescription{
+			"object": map[string]string{
+				"foo": "The foo field.",
+				"bar": "The bar field.",
+			},
+		},
+	}
+	buf = *bytes.NewBuffer(nil)
+	require.NoError(t, g.RenderFunction(t.Context(), &buf, "example_function_simple", opt))
+	expected, err = os.ReadFile("./testdata/function_simple_complete.md")
+	require.NoError(t, err)
+	require.Equal(t, string(expected), buf.String(), "complete")
+
+	// Render the custom template
+	opt.Template = template.Must(template.New("").Parse(`{{ .Header }}
+{{ .Description }}
+Some note...
+{{ .Example }}`))
+	buf = *bytes.NewBuffer(nil)
+	require.NoError(t, g.RenderFunction(t.Context(), &buf, "example_function_simple", opt))
+	expected, err = os.ReadFile("./testdata/function_simple_custom.md")
+	require.NoError(t, err)
+	require.Equal(t, string(expected), buf.String(), "custom")
+}
+
+func TestFunctionRenderRetObj(t *testing.T) {
+	g, err := tffwdocs.NewGenerator(t.Context(), &testprovider.ExampleCloudProvider{})
+	require.NoError(t, err)
+
+	// Render the minimal version
+	var buf bytes.Buffer
+	require.NoError(t, g.RenderFunction(t.Context(), &buf, "example_function_retobj", nil))
+	expected, err := os.ReadFile("./testdata/function_retobj_minimal.md")
+	require.NoError(t, err)
+	require.Equal(t, string(expected), buf.String(), "minimal")
+
+	// Render the complete version
+	opt := &tffwdocs.FunctionRenderOption{
+		Subcategory: "abc",
+		Examples: []tffwdocs.Example{
+			{
+				Header:      new("Basic"),
+				Description: new("The basic call."),
+				HCL:         []byte(`example_function_retobj(...)`),
+			},
+			{
+				Header:      new("Complete"),
+				Description: new("The complete call."),
+				HCL:         []byte(`example_function_retobj(...)`),
+			},
+		},
+		ReturnDescription: new("This function returns a boolean indicating something."),
+		ObjectDescription: metadata.ObjectDescription{
+			"object": map[string]string{
+				"foo": "The foo field.",
+				"bar": "The bar field.",
+			},
+			"": map[string]string{
+				"retfoo": "The retfoo field.",
+				"retbar": "The retbar field.",
+			},
+		},
+	}
+	buf = *bytes.NewBuffer(nil)
+	require.NoError(t, g.RenderFunction(t.Context(), &buf, "example_function_retobj", opt))
+	expected, err = os.ReadFile("./testdata/function_retobj_complete.md")
+	require.NoError(t, err)
+	require.Equal(t, string(expected), buf.String(), "complete")
+
+	// Render the custom template
+	opt.Template = template.Must(template.New("").Parse(`{{ .Header }}
+{{ .Description }}
+Some note...
+{{ .Example }}`))
+	buf = *bytes.NewBuffer(nil)
+	require.NoError(t, g.RenderFunction(t.Context(), &buf, "example_function_retobj", opt))
+	expected, err = os.ReadFile("./testdata/function_retobj_custom.md")
 	require.NoError(t, err)
 	require.Equal(t, string(expected), buf.String(), "custom")
 }

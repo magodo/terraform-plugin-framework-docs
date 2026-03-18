@@ -26,7 +26,7 @@ func (b functionRenderBuilder) Category() Category {
 }
 
 func (b functionRenderBuilder) renderHeader(w io.Writer) error {
-	return renderHeader(w, b.Category(), b.ProviderName, b.FunctionName, b.Subcategory, b.Metadata.Schema.Description)
+	return renderHeader(w, b.Category(), b.ProviderName, b.FunctionName, b.Subcategory, b.Metadata.Schema.Summary)
 }
 
 func (b functionRenderBuilder) renderDescription(w io.Writer) error {
@@ -109,19 +109,18 @@ func (b functionRenderBuilder) renderReturn(w io.Writer) error {
 	}
 
 	if _, err := fmt.Fprintf(w, `## Return
-
 `); err != nil {
 		return err
 	}
 
 	if desc := b.ReturnDescription; desc != nil {
-		if _, err := fmt.Fprintf(w, "%s\n", *desc); err != nil {
+		if _, err := fmt.Fprintf(w, "\n%s\n", *desc); err != nil {
 			return err
 		}
 	}
 
 	if obj := b.Metadata.Schema.ReturnObject; obj != nil {
-		if _, err := fmt.Fprintf(w, "The `object` returned from `%s` has the following attributes:\n\n", b.FunctionName); err != nil {
+		if _, err := fmt.Fprintf(w, "\nThe `object` returned from `%s` has the following attributes:\n\n", b.FunctionName); err != nil {
 			return err
 		}
 

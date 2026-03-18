@@ -210,5 +210,6 @@ func (p *ExampleCloudProvider) ListResources(context.Context) []func() list.List
 func (p *ExampleCloudProvider) Functions(context.Context) []func() function.Function {
 	return []func() function.Function{
 		func() function.Function { return ExampleFunctionSimple{} },
+		func() function.Function { return ExampleFunctionRetObj{} },
 	}
 }

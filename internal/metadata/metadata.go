@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
+	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/list"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -84,6 +85,7 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 		Ephemerals:     EphemeralMetadatas{},
 		Actions:        ActionMetadatas{},
 		Lists:          ListMetadatas{},
+		Functions:      FunctionMetadatas{},
 	}
 
 	for _, builder := range p.Resources(ctx) {
@@ -246,6 +248,37 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 			}
 
 			metadata.Lists[resourceType] = resMetadata
+		}
+	}
+
+	if p, ok := p.(provider.ProviderWithFunctions); ok {
+		for _, builder := range p.Functions(ctx) {
+			fun := builder()
+
+			// Get the function name
+			var metadataResp function.MetadataResponse
+			fun.Metadata(ctx, function.MetadataRequest{}, &metadataResp)
+			functionName := metadataResp.Name
+
+			// Get the function definition
+			var definitionResp function.DefinitionResponse
+			fun.Definition(ctx, function.DefinitionRequest{}, &definitionResp)
+			diags.Append(schemaResp.Diagnostics...)
+			if diags.HasError() {
+				return
+			}
+
+			sch, odiags := NewFunctionSchema(ctx, definitionResp.Definition)
+			diags.Append(odiags...)
+			if diags.HasError() {
+				return
+			}
+
+			funcMetadata := FunctionMetadata{
+				Schema: sch,
+			}
+
+			metadata.Functions[functionName] = funcMetadata
 		}
 	}
 

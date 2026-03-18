@@ -29,6 +29,8 @@ type DataSourceRenderOption = metadata.DataSourceRenderOption
 type EphemeralResourceRenderOption = metadata.EphemeralRenderOption
 type ActionRenderOption = metadata.ActionRenderOption
 type ListResourceRenderOption = metadata.ListRenderOption
+type FunctionRenderOption = metadata.FunctionRenderOption
+type FunctionObjectDescription = metadata.ObjectDescription
 
 func (gen Generator) RenderProvider(ctx context.Context, w io.Writer, option *ProviderRenderOption) error {
 	rr, err := gen.metadata.NewProviderRender(option)
@@ -72,6 +74,14 @@ func (gen Generator) RenderAction(ctx context.Context, w io.Writer, actionType s
 
 func (gen Generator) RenderListResource(ctx context.Context, w io.Writer, listResourceType string, option *ListResourceRenderOption) error {
 	rr, err := gen.metadata.NewListRender(listResourceType, option)
+	if err != nil {
+		return err
+	}
+	return rr.Execute(w)
+}
+
+func (gen Generator) RenderFunction(ctx context.Context, w io.Writer, functionName string, option *FunctionRenderOption) error {
+	rr, err := gen.metadata.NewFunctionRender(functionName, option)
 	if err != nil {
 		return err
 	}
