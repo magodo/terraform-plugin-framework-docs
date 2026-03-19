@@ -1,81 +1,174 @@
 package metadata
 
-import "fmt"
+import (
+	"fmt"
 
-// Terraform data types.
-// https://developer.hashicorp.com/terraform/plugin/framework/handling-data/types
-type DataType int
-
-const (
-	// Primary
-	DTBool DataType = iota
-	DTFloat32
-	DTFloat64
-	DTInt32
-	DTInt64
-	DTNumber
-	DTString
-	// Collection
-	DTList
-	DTMap
-	DTSet
-	// Object (attribute)
-	DTSingleNestedAttr
-	DTListNestedAttr
-	DTMapNestedAttr
-	DTSetNestedAttr
-	DTObjectAttr
-	// Object (block)
-	DTSingleNestedBlock
-	DTListNestedBlock
-	DTSetNestedBlock
-	// Tuple
-	DTTuple
-	// Dynamic
-	DTDynamic
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
+type DataType struct {
+	isblk bool
+	inner attr.Type
+}
+
 func (dt DataType) String() string {
-	switch dt {
-	case DTBool:
+	switch typ := dt.inner.(type) {
+	case basetypes.BoolTypable:
 		return "Boolean"
-	case DTFloat32:
+	case basetypes.Float32Typable:
 		return "Float32"
-	case DTFloat64:
+	case basetypes.Float64Typable:
 		return "Float64"
-	case DTInt32:
+	case basetypes.Int32Typable:
 		return "Int32"
-	case DTInt64:
+	case basetypes.Int64Typable:
 		return "Int64"
-	case DTNumber:
+	case basetypes.NumberTypable:
 		return "Number"
-	case DTString:
+	case basetypes.StringTypable:
 		return "String"
-	case DTList:
-		return "List"
-	case DTMap:
-		return "Map"
-	case DTSet:
-		return "Set"
-	case DTSingleNestedAttr:
-		return "Single Object"
-	case DTListNestedAttr:
-		return "List of Objects"
-	case DTMapNestedAttr:
-		return "Map of Objects"
-	case DTSetNestedAttr:
-		return "Set of Objects"
-	case DTObjectAttr:
-		return "Object"
-	case DTSingleNestedBlock:
-		return "Single Block"
-	case DTListNestedBlock, DTSetNestedBlock:
-		return "Blocks"
-	case DTTuple:
-		return "Tuple"
-	case DTDynamic:
+	case basetypes.DynamicTypable:
 		return "Dynamic"
+	case basetypes.ListTypable:
+		if etype := maybeElementTypeString(dt.isblk, typ); etype != "" {
+			return "List of " + etype
+		} else {
+			return "List"
+		}
+	case basetypes.SetTypable:
+		if etype := maybeElementTypeString(dt.isblk, typ); etype != "" {
+			return "Set of " + etype
+		} else {
+			return "Set"
+		}
+	case basetypes.MapTypable:
+		if etype := maybeElementTypeString(dt.isblk, typ); etype != "" {
+			return "Map of " + etype
+		} else {
+			return "Map"
+		}
+	case basetypes.ObjectTypable:
+		if dt.isblk {
+			return "Block"
+		} else {
+			return "Object"
+		}
+	case basetypes.TupleType:
+		// Note there is no TupleTypable type in the fw.
+		// TODO consider enrich this.
+		return "Tuple"
 	default:
-		panic(fmt.Sprintf("unknown data type %d", dt))
+		panic(fmt.Sprintf("unhandled inner data type: %t", dt.inner))
 	}
+}
+
+func (dt DataType) string(plural bool) string {
+	switch typ := dt.inner.(type) {
+	case basetypes.BoolTypable:
+		if plural {
+			return "Booleans"
+		} else {
+			return "Boolean"
+		}
+	case basetypes.Float32Typable:
+		if plural {
+			return "Float32s"
+		} else {
+			return "Float32"
+		}
+	case basetypes.Float64Typable:
+		if plural {
+			return "Float64s"
+		}
+		return "Float64"
+	case basetypes.Int32Typable:
+		if plural {
+			return "Int32s"
+		}
+		return "Int32"
+	case basetypes.Int64Typable:
+		if plural {
+			return "Int64s"
+		}
+		return "Int64"
+	case basetypes.NumberTypable:
+		if plural {
+			return "Numbers"
+		}
+		return "Number"
+	case basetypes.StringTypable:
+		if plural {
+			return "Strings"
+		}
+		return "String"
+	case basetypes.DynamicTypable:
+		if plural {
+			return "Dynamics"
+		}
+		return "Dynamic"
+	case basetypes.ListTypable:
+		prefix := "List"
+		if plural {
+			prefix += "s"
+		}
+		if etype := maybeElementTypeString(dt.isblk, typ); etype != "" {
+			return prefix + " of " + etype
+		} else {
+			return prefix
+		}
+	case basetypes.SetTypable:
+		prefix := "Set"
+		if plural {
+			prefix += "s"
+		}
+		if etype := maybeElementTypeString(dt.isblk, typ); etype != "" {
+			return prefix + " of " + etype
+		} else {
+			return prefix
+		}
+	case basetypes.MapTypable:
+		prefix := "Map"
+		if plural {
+			prefix += "s"
+		}
+		if etype := maybeElementTypeString(dt.isblk, typ); etype != "" {
+			return prefix + " of " + etype
+		} else {
+			return prefix
+		}
+	case basetypes.ObjectTypable:
+		if dt.isblk {
+			if plural {
+				return "Blocks"
+			} else {
+				return "Block"
+			}
+		} else {
+			if plural {
+				return "Objects"
+			} else {
+				return "Object"
+			}
+		}
+	case basetypes.TupleType:
+		// Note there is no TupleTypable type in the fw.
+		// TODO consider enrich this.
+		if plural {
+			return "Tuples"
+		}
+		return "Tuple"
+	default:
+		panic(fmt.Sprintf("unhandled inner data type: %t", dt.inner))
+	}
+}
+
+func maybeElementTypeString(isblk bool, typ attr.Type) string {
+	if typeWithElement, ok := typ.(attr.TypeWithElementType); ok {
+		return DataType{
+			isblk: isblk,
+			inner: typeWithElement.ElementType(),
+		}.string(true)
+	}
+	return ""
 }

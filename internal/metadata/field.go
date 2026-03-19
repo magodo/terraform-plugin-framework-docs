@@ -94,6 +94,8 @@ type Field struct {
 	defaultDesc   string
 	planModifiers []string
 	validators    []string
+
+	isObject bool
 }
 
 func (r Field) Parents() []string {
@@ -165,17 +167,8 @@ func (field Field) nestedKey() string {
 }
 
 func (field Field) NestedLink() string {
-	switch field.DataType() {
-	case DTSingleNestedAttr,
-		DTListNestedAttr,
-		DTMapNestedAttr,
-		DTSetNestedAttr,
-		DTObjectAttr,
-		DTSingleNestedBlock,
-		DTListNestedBlock,
-		DTSetNestedBlock:
+	if field.isObject {
 		return fmt.Sprintf("See the nested schema [here](#nested--%s).", field.nestedKey())
-	default:
-		return ""
 	}
+	return ""
 }

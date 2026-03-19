@@ -70,64 +70,18 @@ func NewFunctionSchema(ctx context.Context, sch function.Definition) (schema Fun
 }
 
 func newFunctionReturn(ctx context.Context, ret function.Return) (field FunctionField, objects FunctionObjects, diags diag.Diagnostics) {
-	switch attr := ret.(type) {
-	case function.BoolReturn:
-		field = FunctionField{
-			dataType: DTBool,
-		}
-	case function.Float32Return:
-		field = FunctionField{
-			dataType: DTFloat32,
-		}
-	case function.Float64Return:
-		field = FunctionField{
-			dataType: DTFloat64,
-		}
-	case function.Int32Return:
-		field = FunctionField{
-			dataType: DTInt32,
-		}
-	case function.Int64Return:
-		field = FunctionField{
-			dataType: DTInt64,
-		}
-	case function.NumberReturn:
-		field = FunctionField{
-			dataType: DTNumber,
-		}
-	case function.StringReturn:
-		field = FunctionField{
-			dataType: DTString,
-		}
-	case function.ListReturn:
-		field = FunctionField{
-			dataType: DTList,
-		}
-	case function.MapReturn:
-		field = FunctionField{
-			dataType: DTMap,
-		}
-	case function.SetReturn:
-		field = FunctionField{
-			dataType: DTSet,
-		}
-	case function.DynamicReturn:
-		field = FunctionField{
-			dataType: DTDynamic,
-		}
-	case function.ObjectReturn:
-		field = FunctionField{
-			dataType: DTObjectAttr,
-		}
-		plainObjs, odiags := newObjects(ctx, nil, attr.AttributeTypes)
+	field = FunctionField{
+		dataType: DataType{inner: ret.GetType()},
+	}
+
+	if obj, ok := ret.(function.ObjectReturn); ok {
+		field.isObject = true
+		plainObjs, odiags := newObjects(ctx, nil, obj.AttributeTypes)
 		diags = append(diags, odiags...)
 		if diags.HasError() {
 			return
 		}
 		objects = plainObjs.ToFunctionObjects()
-	default:
-		diags.AddError("unknown schema type", fmt.Sprintf("%T", attr))
-		return
 	}
 
 	return field, objects, diags
@@ -138,165 +92,77 @@ func newFunctionParameters(ctx context.Context, parents []string, params []funct
 	nested = FunctionObjects{}
 
 	for _, attr := range params {
-		var field FunctionField
+		field := FunctionField{
+			parents:      parents,
+			name:         attr.GetName(),
+			dataType:     DataType{inner: attr.GetType()},
+			description:  DescriptionOf(attr),
+			allowNull:    attr.GetAllowNullValue(),
+			allowUnknown: attr.GetAllowUnknownValues(),
+		}
 
 		switch attr := attr.(type) {
 		case function.BoolParameter:
-			field = FunctionField{
-				parents:      parents,
-				name:         attr.GetName(),
-				dataType:     DTBool,
-				description:  DescriptionOf(attr),
-				allowNull:    attr.GetAllowNullValue(),
-				allowUnknown: attr.GetAllowUnknownValues(),
-				validators: MapSliceSome(attr.Validators,
-					func(v function.BoolParameterValidator) *string {
-						return MaybeDescriptionCtxOf(ctx, v)
-					}),
-			}
+			field.validators = MapSliceSome(attr.Validators,
+				func(v function.BoolParameterValidator) *string {
+					return MaybeDescriptionCtxOf(ctx, v)
+				})
 		case function.Float32Parameter:
-			field = FunctionField{
-				parents:      parents,
-				name:         attr.GetName(),
-				dataType:     DTFloat32,
-				description:  DescriptionOf(attr),
-				allowNull:    attr.GetAllowNullValue(),
-				allowUnknown: attr.GetAllowUnknownValues(),
-				validators: MapSliceSome(attr.Validators,
-					func(v function.Float32ParameterValidator) *string {
-						return MaybeDescriptionCtxOf(ctx, v)
-					}),
-			}
+			field.validators = MapSliceSome(attr.Validators,
+				func(v function.Float32ParameterValidator) *string {
+					return MaybeDescriptionCtxOf(ctx, v)
+				})
 		case function.Float64Parameter:
-			field = FunctionField{
-				parents:      parents,
-				name:         attr.GetName(),
-				dataType:     DTFloat64,
-				description:  DescriptionOf(attr),
-				allowNull:    attr.GetAllowNullValue(),
-				allowUnknown: attr.GetAllowUnknownValues(),
-				validators: MapSliceSome(attr.Validators,
-					func(v function.Float64ParameterValidator) *string {
-						return MaybeDescriptionCtxOf(ctx, v)
-					}),
-			}
+			field.validators = MapSliceSome(attr.Validators,
+				func(v function.Float64ParameterValidator) *string {
+					return MaybeDescriptionCtxOf(ctx, v)
+				})
 		case function.Int32Parameter:
-			field = FunctionField{
-				parents:      parents,
-				name:         attr.GetName(),
-				dataType:     DTInt32,
-				description:  DescriptionOf(attr),
-				allowNull:    attr.GetAllowNullValue(),
-				allowUnknown: attr.GetAllowUnknownValues(),
-				validators: MapSliceSome(attr.Validators,
-					func(v function.Int32ParameterValidator) *string {
-						return MaybeDescriptionCtxOf(ctx, v)
-					}),
-			}
+			field.validators = MapSliceSome(attr.Validators,
+				func(v function.Int32ParameterValidator) *string {
+					return MaybeDescriptionCtxOf(ctx, v)
+				})
 		case function.Int64Parameter:
-			field = FunctionField{
-				parents:      parents,
-				name:         attr.GetName(),
-				dataType:     DTInt64,
-				description:  DescriptionOf(attr),
-				allowNull:    attr.GetAllowNullValue(),
-				allowUnknown: attr.GetAllowUnknownValues(),
-				validators: MapSliceSome(attr.Validators,
-					func(v function.Int64ParameterValidator) *string {
-						return MaybeDescriptionCtxOf(ctx, v)
-					}),
-			}
+			field.validators = MapSliceSome(attr.Validators,
+				func(v function.Int64ParameterValidator) *string {
+					return MaybeDescriptionCtxOf(ctx, v)
+				})
 		case function.NumberParameter:
-			field = FunctionField{
-				parents:      parents,
-				name:         attr.GetName(),
-				dataType:     DTNumber,
-				description:  DescriptionOf(attr),
-				allowNull:    attr.GetAllowNullValue(),
-				allowUnknown: attr.GetAllowUnknownValues(),
-				validators: MapSliceSome(attr.Validators,
-					func(v function.NumberParameterValidator) *string {
-						return MaybeDescriptionCtxOf(ctx, v)
-					}),
-			}
+			field.validators = MapSliceSome(attr.Validators,
+				func(v function.NumberParameterValidator) *string {
+					return MaybeDescriptionCtxOf(ctx, v)
+				})
 		case function.StringParameter:
-			field = FunctionField{
-				parents:      parents,
-				name:         attr.GetName(),
-				dataType:     DTString,
-				description:  DescriptionOf(attr),
-				allowNull:    attr.GetAllowNullValue(),
-				allowUnknown: attr.GetAllowUnknownValues(),
-				validators: MapSliceSome(attr.Validators,
-					func(v function.StringParameterValidator) *string {
-						return MaybeDescriptionCtxOf(ctx, v)
-					}),
-			}
+			field.validators = MapSliceSome(attr.Validators,
+				func(v function.StringParameterValidator) *string {
+					return MaybeDescriptionCtxOf(ctx, v)
+				})
 		case function.ListParameter:
-			field = FunctionField{
-				parents:      parents,
-				name:         attr.GetName(),
-				dataType:     DTList,
-				description:  DescriptionOf(attr),
-				allowNull:    attr.GetAllowNullValue(),
-				allowUnknown: attr.GetAllowUnknownValues(),
-				validators: MapSliceSome(attr.Validators,
-					func(v function.ListParameterValidator) *string {
-						return MaybeDescriptionCtxOf(ctx, v)
-					}),
-			}
+			field.validators = MapSliceSome(attr.Validators,
+				func(v function.ListParameterValidator) *string {
+					return MaybeDescriptionCtxOf(ctx, v)
+				})
 		case function.MapParameter:
-			field = FunctionField{
-				parents:      parents,
-				name:         attr.GetName(),
-				dataType:     DTMap,
-				description:  DescriptionOf(attr),
-				allowNull:    attr.GetAllowNullValue(),
-				allowUnknown: attr.GetAllowUnknownValues(),
-				validators: MapSliceSome(attr.Validators,
-					func(v function.MapParameterValidator) *string {
-						return MaybeDescriptionCtxOf(ctx, v)
-					}),
-			}
+			field.validators = MapSliceSome(attr.Validators,
+				func(v function.MapParameterValidator) *string {
+					return MaybeDescriptionCtxOf(ctx, v)
+				})
 		case function.SetParameter:
-			field = FunctionField{
-				parents:      parents,
-				name:         attr.GetName(),
-				dataType:     DTSet,
-				description:  DescriptionOf(attr),
-				allowNull:    attr.GetAllowNullValue(),
-				allowUnknown: attr.GetAllowUnknownValues(),
-				validators: MapSliceSome(attr.Validators,
-					func(v function.SetParameterValidator) *string {
-						return MaybeDescriptionCtxOf(ctx, v)
-					}),
-			}
+			field.validators = MapSliceSome(attr.Validators,
+				func(v function.SetParameterValidator) *string {
+					return MaybeDescriptionCtxOf(ctx, v)
+				})
 		case function.DynamicParameter:
-			field = FunctionField{
-				parents:      parents,
-				name:         attr.GetName(),
-				dataType:     DTDynamic,
-				description:  DescriptionOf(attr),
-				allowNull:    attr.GetAllowNullValue(),
-				allowUnknown: attr.GetAllowUnknownValues(),
-				validators: MapSliceSome(attr.Validators,
-					func(v function.DynamicParameterValidator) *string {
-						return MaybeDescriptionCtxOf(ctx, v)
-					}),
-			}
+			field.validators = MapSliceSome(attr.Validators,
+				func(v function.DynamicParameterValidator) *string {
+					return MaybeDescriptionCtxOf(ctx, v)
+				})
 		case function.ObjectParameter:
-			field = FunctionField{
-				parents:      parents,
-				name:         attr.GetName(),
-				dataType:     DTObjectAttr,
-				description:  DescriptionOf(attr),
-				allowNull:    attr.GetAllowNullValue(),
-				allowUnknown: attr.GetAllowUnknownValues(),
-				validators: MapSliceSome(attr.Validators,
-					func(v function.ObjectParameterValidator) *string {
-						return MaybeDescriptionCtxOf(ctx, v)
-					}),
-			}
+			field.validators = MapSliceSome(attr.Validators,
+				func(v function.ObjectParameterValidator) *string {
+					return MaybeDescriptionCtxOf(ctx, v)
+				})
+			field.isObject = true
 			nestedObjects, odiags := newObjects(ctx, slices.Concat(parents, []string{attr.GetName()}), attr.AttributeTypes)
 			diags = append(diags, odiags...)
 			if diags.HasError() {

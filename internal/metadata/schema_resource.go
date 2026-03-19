@@ -59,278 +59,107 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 
 	for name, attr := range attrs {
 		var (
-			field Field
-
 			objectNested NestedFields
 			objectDiags  diag.Diagnostics
 		)
 
+		field := Field{
+			parents:     parents,
+			name:        name,
+			dataType:    DataType{inner: attr.GetType()},
+			required:    attr.IsRequired(),
+			optional:    attr.IsOptional(),
+			computed:    attr.IsComputed(),
+			sensitive:   attr.IsSensitive(),
+			description: DescriptionOf(attr),
+			deprecation: attr.GetDeprecationMessage(),
+			writeOnly:   attr.IsWriteOnly(),
+		}
+
 		switch attr := attr.(type) {
 		case schema.BoolAttribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTBool,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Bool) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Bool) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Bool) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
-		case schema.Float32Attribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTFloat32,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Float32) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Float32) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Float32) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
-		case schema.Float64Attribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTFloat64,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.DeprecationMessage,
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Float64) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Float64) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Float64) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
-		case schema.Int32Attribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTInt32,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Int32) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Int32) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Int32) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
-		case schema.Int64Attribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTInt64,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Int64) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Int64) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Int64) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
-		case schema.NumberAttribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTNumber,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Number) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Number) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Number) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
-		case schema.StringAttribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTString,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.String) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.String) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.String) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
-		case schema.ListAttribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTList,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.List) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.List) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
-		case schema.MapAttribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTMap,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Map) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Map) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
-		case schema.SetAttribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTSet,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Set) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
-		case schema.DynamicAttribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTDynamic,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Dynamic) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Dynamic) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Dynamic) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Bool) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Bool) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Bool) string { return DescriptionCtxOf(ctx, v) })
 
+		case schema.Float32Attribute:
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Float32) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Float32) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Float32) string { return DescriptionCtxOf(ctx, v) })
+		case schema.Float64Attribute:
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Float64) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Float64) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Float64) string { return DescriptionCtxOf(ctx, v) })
+		case schema.Int32Attribute:
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Int32) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Int32) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Int32) string { return DescriptionCtxOf(ctx, v) })
+		case schema.Int64Attribute:
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Int64) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Int64) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Int64) string { return DescriptionCtxOf(ctx, v) })
+		case schema.NumberAttribute:
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Number) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Number) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Number) string { return DescriptionCtxOf(ctx, v) })
+		case schema.StringAttribute:
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.String) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.String) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.String) string { return DescriptionCtxOf(ctx, v) })
+		case schema.ListAttribute:
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.List) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.List) string { return DescriptionCtxOf(ctx, v) })
+		case schema.MapAttribute:
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Map) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Map) string { return DescriptionCtxOf(ctx, v) })
+		case schema.SetAttribute:
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Set) string { return DescriptionCtxOf(ctx, v) })
+		case schema.DynamicAttribute:
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Dynamic) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Dynamic) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Dynamic) string { return DescriptionCtxOf(ctx, v) })
 		case schema.ObjectAttribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTObjectAttr,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Object) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Object) string { return DescriptionCtxOf(ctx, v) })
+
+			field.isObject = true
 			objects, objectDiags := newObjects(ctx, slices.Concat(parents, []string{name}), attr.AttributeTypes)
 			if objectDiags.HasError() {
 				return nil, nil, objectDiags
 			}
 			objectNested = objects.ToNestedFields(field)
 		case schema.SingleNestedAttribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTSingleNestedAttr,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Object) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Object) string { return DescriptionCtxOf(ctx, v) })
+
+			field.isObject = true
 			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		case schema.SetNestedAttribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTSetNestedAttr,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Set) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Set) string { return DescriptionCtxOf(ctx, v) })
+
+			field.isObject = true
 			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		case schema.MapNestedAttribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTMapNestedAttr,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.Map) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.Map) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Map) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Map) string { return DescriptionCtxOf(ctx, v) })
+
+			field.isObject = true
 			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		case schema.ListNestedAttribute:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTListNestedAttr,
-				required:      attr.IsRequired(),
-				optional:      attr.IsOptional(),
-				computed:      attr.IsComputed(),
-				sensitive:     attr.IsSensitive(),
-				description:   DescriptionOf(attr),
-				deprecation:   attr.GetDeprecationMessage(),
-				planModifiers: MapSlice(attr.PlanModifiers, func(v planmodifier.List) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
-				defaultDesc:   MapOrZero(attr.Default, func(v defaults.List) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:     attr.IsWriteOnly(),
-			}
+			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.List) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) })
+			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.List) string { return DescriptionCtxOf(ctx, v) })
+
+			field.isObject = true
 			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		default:
 			diags.AddError("unknown schema type", fmt.Sprintf("%T", attr))
@@ -372,42 +201,26 @@ func newResourceBlockFields(ctx context.Context, parents []string, blks map[stri
 	nested = NestedFields{}
 
 	for name, blk := range blks {
-		var field Field
+		field := Field{
+			parents:     parents,
+			name:        name,
+			dataType:    DataType{isblk: true, inner: blk.Type()},
+			optional:    true, // Always regard a block as optional.
+			description: DescriptionOf(blk),
+			deprecation: blk.GetDeprecationMessage(),
+			isObject:    true,
+		}
 
 		switch blk := blk.(type) {
 		case schema.SingleNestedBlock:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTSingleNestedBlock,
-				optional:      true, // Always regard a block as optional.
-				description:   DescriptionOf(blk),
-				deprecation:   blk.GetDeprecationMessage(),
-				planModifiers: MapSlice(blk.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(blk.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
-			}
+			field.planModifiers = MapSlice(blk.PlanModifiers, func(v planmodifier.Object) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(blk.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) })
 		case schema.ListNestedBlock:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTListNestedBlock,
-				optional:      true, // Always regard a block as optional.
-				description:   DescriptionOf(blk),
-				deprecation:   blk.GetDeprecationMessage(),
-				planModifiers: MapSlice(blk.PlanModifiers, func(v planmodifier.List) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(blk.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
-			}
+			field.planModifiers = MapSlice(blk.PlanModifiers, func(v planmodifier.List) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(blk.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) })
 		case schema.SetNestedBlock:
-			field = Field{
-				parents:       parents,
-				name:          name,
-				dataType:      DTSetNestedBlock,
-				optional:      true, // Always regard a block as optional.
-				description:   DescriptionOf(blk),
-				deprecation:   blk.GetDeprecationMessage(),
-				planModifiers: MapSlice(blk.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) }),
-				validators:    MapSlice(blk.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
-			}
+			field.planModifiers = MapSlice(blk.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) })
+			field.validators = MapSlice(blk.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) })
 		}
 
 		objectNested, odiags := newResourceNestedBlkObjectFields(ctx, slices.Concat(parents, []string{name}), blk.GetNestedObject().(schema.NestedBlockObject))

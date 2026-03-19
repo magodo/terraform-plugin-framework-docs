@@ -23,98 +23,22 @@ type ObjectField struct {
 	name        string
 	dataType    DataType
 	description string
+	isObject    bool
 }
 
 func newObjects(ctx context.Context, parents []string, attrs map[string]attr.Type) (objects Objects, diags diag.Diagnostics) {
 	objects = Objects{}
 	fields := map[string]ObjectField{}
 	for name, attr := range attrs {
-		var field ObjectField
-		switch attr := attr.(type) {
-		case basetypes.BoolType:
-			field = ObjectField{
-				name:        name,
-				dataType:    DTBool,
-				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
-			}
-		case basetypes.Float32Type:
-			field = ObjectField{
-				parents:     parents,
-				name:        name,
-				dataType:    DTFloat32,
-				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
-			}
-		case basetypes.Float64Type:
-			field = ObjectField{
-				parents:     parents,
-				name:        name,
-				dataType:    DTFloat64,
-				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
-			}
-		case basetypes.Int32Type:
-			field = ObjectField{
-				parents:     parents,
-				name:        name,
-				dataType:    DTInt32,
-				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
-			}
-		case basetypes.Int64Type:
-			field = ObjectField{
-				parents:     parents,
-				name:        name,
-				dataType:    DTInt64,
-				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
-			}
-		case basetypes.NumberType:
-			field = ObjectField{
-				parents:     parents,
-				name:        name,
-				dataType:    DTNumber,
-				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
-			}
-		case basetypes.StringType:
-			field = ObjectField{
-				parents:     parents,
-				name:        name,
-				dataType:    DTString,
-				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
-			}
-		case basetypes.ListType:
-			field = ObjectField{
-				parents:     parents,
-				name:        name,
-				dataType:    DTList,
-				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
-			}
-		case basetypes.SetType:
-			field = ObjectField{
-				parents:     parents,
-				name:        name,
-				dataType:    DTSet,
-				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
-			}
-		case basetypes.MapType:
-			field = ObjectField{
-				parents:     parents,
-				name:        name,
-				dataType:    DTMap,
-				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
-			}
-		case basetypes.DynamicType:
-			field = ObjectField{
-				parents:     parents,
-				name:        name,
-				dataType:    DTDynamic,
-				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
-			}
-		case basetypes.ObjectType:
-			field = ObjectField{
-				parents:     parents,
-				name:        name,
-				dataType:    DTObjectAttr,
-				description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
-			}
-			nestedObjects, odiags := newObjects(ctx, slices.Concat(parents, []string{name}), attr.AttributeTypes())
+		field := ObjectField{
+			parents:     parents,
+			name:        name,
+			dataType:    DataType{inner: attr},
+			description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
+		}
+		if obj, ok := attr.(basetypes.ObjectType); ok {
+			field.isObject = true
+			nestedObjects, odiags := newObjects(ctx, slices.Concat(parents, []string{name}), obj.AttributeTypes())
 			diags = append(diags, odiags...)
 			if diags.HasError() {
 				return nil, diags
@@ -154,6 +78,7 @@ func (obj ObjectField) ToFunctionField() FunctionField {
 		name:        obj.name,
 		dataType:    obj.dataType,
 		description: obj.description,
+		isObject:    obj.isObject,
 	}
 }
 
@@ -180,5 +105,6 @@ func (obj ObjectField) ToField(rootField Field) Field {
 		optional:    rootField.optional,
 		computed:    rootField.computed,
 		description: obj.description,
+		isObject:    obj.isObject,
 	}
 }

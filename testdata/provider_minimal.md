@@ -28,20 +28,20 @@ The example provider.
 	
 - `dynamic` (Dynamic) A dynamic attribute.
 - `int64` (Int64) A int64 attribute.
-- `list` (List) A list attribute.
-- `list_block` (Blocks) A list block. See the nested schema [here](#nested--list_block).
+- `list` (List of Strings) A list attribute.
+- `list_block` (List of Blocks) A list block. See the nested schema [here](#nested--list_block).
 - `list_object` (List of Objects) A list object attribute. See the nested schema [here](#nested--list_object).
-- `map` (Map) A map attribute.
+- `map` (Map of Strings) A map attribute.
 - `map_object` (Map of Objects) A map object attribute. See the nested schema [here](#nested--map_object).
-- `set` (Set) A set attribute.
-- `set_block` (Blocks) A set block. See the nested schema [here](#nested--set_block).
+- `set` (Set of Strings) A set attribute.
+- `set_block` (Set of Blocks) A set block. See the nested schema [here](#nested--set_block).
 - `set_object` (Set of Objects) A set object attribute. See the nested schema [here](#nested--set_object).
-- `single_block` (Single Block) A single block. See the nested schema [here](#nested--single_block).
+- `single_block` (Block) A single block. See the nested schema [here](#nested--single_block).
 
 	Validators:
 
 	- Ensure that if an attribute is set, these are not set: "[list_block]".
-- `single_object` (Single Object) A single object attribute. See the nested schema [here](#nested--single_object).
+- `single_object` (Object) A single object attribute. See the nested schema [here](#nested--single_object).
 - `string` (String, Sensitive) A string attribute.
 
 	Validators:
@@ -63,8 +63,8 @@ Required:
 
 Optional:
 
-- `nested_block` (Single Block) A nested block. See the nested schema [here](#nested--list_block.nested_block).
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--list_block.nested_object).
+- `nested_block` (Block) A nested block. See the nested schema [here](#nested--list_block.nested_block).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--list_block.nested_object).
 - `string` (String) A nested string attribute.
 
 	Validators:
@@ -97,7 +97,7 @@ Required:
 
 Optional:
 
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--list_object.nested_object).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--list_object.nested_object).
 - `string` (String) A nested string attribute.
 
 	Validators:
@@ -124,7 +124,7 @@ Required:
 
 Optional:
 
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--map_object.nested_object).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--map_object.nested_object).
 - `string` (String) A nested string attribute.
 
 	Validators:
@@ -151,8 +151,8 @@ Required:
 
 Optional:
 
-- `nested_block` (Single Block) A nested block. See the nested schema [here](#nested--set_block.nested_block).
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--set_block.nested_object).
+- `nested_block` (Block) A nested block. See the nested schema [here](#nested--set_block.nested_block).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--set_block.nested_object).
 - `string` (String) A nested string attribute.
 
 	Validators:
@@ -185,7 +185,7 @@ Required:
 
 Optional:
 
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--set_object.nested_object).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--set_object.nested_object).
 - `string` (String) A nested string attribute.
 
 	Validators:
@@ -216,8 +216,8 @@ Required:
 
 Optional:
 
-- `nested_block` (Single Block) A nested block. See the nested schema [here](#nested--single_block.nested_block).
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--single_block.nested_object).
+- `nested_block` (Block) A nested block. See the nested schema [here](#nested--single_block.nested_block).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--single_block.nested_object).
 - `string` (String) A nested string attribute.
 
 	Validators:
@@ -250,7 +250,7 @@ Required:
 
 Optional:
 
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--single_object.nested_object).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--single_object.nested_object).
 - `string` (String) A nested string attribute.
 
 	Validators:

@@ -27,6 +27,7 @@ type FunctionField struct {
 	description string
 
 	validators []string
+	isObject   bool
 }
 
 func (r FunctionField) Parents() []string {
@@ -74,17 +75,8 @@ func (field FunctionField) nestedKey() string {
 }
 
 func (field FunctionField) NestedLink() string {
-	switch field.DataType() {
-	case DTSingleNestedAttr,
-		DTListNestedAttr,
-		DTMapNestedAttr,
-		DTSetNestedAttr,
-		DTObjectAttr,
-		DTSingleNestedBlock,
-		DTListNestedBlock,
-		DTSetNestedBlock:
+	if field.isObject {
 		return fmt.Sprintf("See the nested schema [here](#nested--%s).", field.nestedKey())
-	default:
-		return ""
 	}
+	return ""
 }

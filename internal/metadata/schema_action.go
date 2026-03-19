@@ -57,214 +57,73 @@ func newActionAttrFields(ctx context.Context, parents []string, attrs map[string
 
 	for name, attr := range attrs {
 		var (
-			field Field
-
 			objectNested NestedFields
 			objectDiags  diag.Diagnostics
 		)
 
+		field := Field{
+			parents:     parents,
+			name:        name,
+			dataType:    DataType{inner: attr.GetType()},
+			required:    attr.IsRequired(),
+			optional:    attr.IsOptional(),
+			description: DescriptionOf(attr),
+			deprecation: attr.GetDeprecationMessage(),
+			writeOnly:   attr.IsWriteOnly(),
+		}
+
 		switch attr := attr.(type) {
 		case schema.BoolAttribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTBool,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.Bool) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Bool) string { return DescriptionCtxOf(ctx, v) })
 		case schema.Float32Attribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTFloat32,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.Float32) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Float32) string { return DescriptionCtxOf(ctx, v) })
 		case schema.Float64Attribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTFloat64,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.DeprecationMessage,
-				validators:  MapSlice(attr.Validators, func(v validator.Float64) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Float64) string { return DescriptionCtxOf(ctx, v) })
 		case schema.Int32Attribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTInt32,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.Int32) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Int32) string { return DescriptionCtxOf(ctx, v) })
 		case schema.Int64Attribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTInt64,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.Int64) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Int64) string { return DescriptionCtxOf(ctx, v) })
 		case schema.NumberAttribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTNumber,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.Number) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Number) string { return DescriptionCtxOf(ctx, v) })
 		case schema.StringAttribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTString,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.String) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.String) string { return DescriptionCtxOf(ctx, v) })
 		case schema.ListAttribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTList,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) })
 		case schema.MapAttribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTMap,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) })
 		case schema.SetAttribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTSet,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) })
 		case schema.DynamicAttribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTDynamic,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.Dynamic) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Dynamic) string { return DescriptionCtxOf(ctx, v) })
 
 		case schema.ObjectAttribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTObjectAttr,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) })
+
+			field.isObject = true
 			objects, objectDiags := newObjects(ctx, slices.Concat(parents, []string{name}), attr.AttributeTypes)
 			if objectDiags.HasError() {
 				return nil, nil, objectDiags
 			}
 			objectNested = objects.ToNestedFields(field)
 		case schema.SingleNestedAttribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTSingleNestedAttr,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) })
+
+			field.isObject = true
 			objectNested, objectDiags = newActionNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		case schema.SetNestedAttribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTSetNestedAttr,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) })
+
+			field.isObject = true
 			objectNested, objectDiags = newActionNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		case schema.MapNestedAttribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTMapNestedAttr,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.Map) string { return DescriptionCtxOf(ctx, v) })
+
+			field.isObject = true
 			objectNested, objectDiags = newActionNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		case schema.ListNestedAttribute:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTListNestedAttr,
-				required:    attr.IsRequired(),
-				optional:    attr.IsOptional(),
-				description: DescriptionOf(attr),
-				deprecation: attr.GetDeprecationMessage(),
-				validators:  MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
-				writeOnly:   attr.IsWriteOnly(),
-			}
+			field.validators = MapSlice(attr.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) })
+
+			field.isObject = true
 			objectNested, objectDiags = newActionNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
 		default:
 			diags.AddError("unknown schema type", fmt.Sprintf("%T", attr))
@@ -305,39 +164,23 @@ func newActionBlockFields(ctx context.Context, parents []string, blks map[string
 	nested = NestedFields{}
 
 	for name, blk := range blks {
-		var field Field
+		field := Field{
+			parents:     parents,
+			name:        name,
+			dataType:    DataType{isblk: true, inner: blk.Type()},
+			optional:    true, // Always regard a block as optional.
+			description: DescriptionOf(blk),
+			deprecation: blk.GetDeprecationMessage(),
+			isObject:    true,
+		}
 
 		switch blk := blk.(type) {
 		case schema.SingleNestedBlock:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTSingleNestedBlock,
-				optional:    true, // Always regard a block as optional.
-				description: DescriptionOf(blk),
-				deprecation: blk.GetDeprecationMessage(),
-				validators:  MapSlice(blk.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) }),
-			}
+			field.validators = MapSlice(blk.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) })
 		case schema.ListNestedBlock:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTListNestedBlock,
-				optional:    true, // Always regard a block as optional.
-				description: DescriptionOf(blk),
-				deprecation: blk.GetDeprecationMessage(),
-				validators:  MapSlice(blk.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) }),
-			}
+			field.validators = MapSlice(blk.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) })
 		case schema.SetNestedBlock:
-			field = Field{
-				parents:     parents,
-				name:        name,
-				dataType:    DTSetNestedBlock,
-				optional:    true, // Always regard a block as optional.
-				description: DescriptionOf(blk),
-				deprecation: blk.GetDeprecationMessage(),
-				validators:  MapSlice(blk.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) }),
-			}
+			field.validators = MapSlice(blk.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) })
 		}
 
 		objectNested, odiags := newActionNestedBlkObjectFields(ctx, slices.Concat(parents, []string{name}), blk.GetNestedObject().(schema.NestedBlockObject))

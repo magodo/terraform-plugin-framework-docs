@@ -57,16 +57,16 @@ resource "examplecloud_resource" "example" {
 ### Optional
 	
 - `int64` (Int64) A int64 attribute. Value defaults to `0`.
-- `list` (List) A list attribute. Value defaults to `["foo"]`.
-- `list_block` (Blocks) A list block. See the nested schema [here](#nested--list_block).
+- `list` (List of Strings) A list attribute. Value defaults to `["foo"]`.
+- `list_block` (List of Blocks) A list block. See the nested schema [here](#nested--list_block).
 - `list_object` (List of Objects) A list object attribute. See the nested schema [here](#nested--list_object).
-- `map` (Map) A map attribute. Value defaults to `{"key":"val"}`.
+- `map` (Map of Strings) A map attribute. Value defaults to `{"key":"val"}`.
 - `map_object` (Map of Objects) A map object attribute. See the nested schema [here](#nested--map_object).
 - `object` (Object) An object attribute. See the nested schema [here](#nested--object).
-- `set` (Set) A set attribute. Value defaults to `["foo"]`.
-- `set_block` (Blocks) A set block. See the nested schema [here](#nested--set_block).
+- `set` (Set of Strings) A set attribute. Value defaults to `["foo"]`.
+- `set_block` (Set of Blocks) A set block. See the nested schema [here](#nested--set_block).
 - `set_object` (Set of Objects) A set object attribute. See the nested schema [here](#nested--set_object).
-- `single_block` (Single Block) A single block. See the nested schema [here](#nested--single_block).
+- `single_block` (Block) A single block. See the nested schema [here](#nested--single_block).
 
 	Plan Modifiers:
 
@@ -75,7 +75,7 @@ resource "examplecloud_resource" "example" {
 	Validators:
 
 	- Ensure that if an attribute is set, these are not set: "[list_block]".
-- `single_object` (Single Object) A single object attribute. See the nested schema [here](#nested--single_object).
+- `single_object` (Object) A single object attribute. See the nested schema [here](#nested--single_object).
 - `string` (String, Sensitive, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) A string attribute. Value defaults to ``.
 
 	Validators:
@@ -101,8 +101,8 @@ Required:
 
 Optional:
 
-- `nested_block` (Single Block) A nested block. See the nested schema [here](#nested--list_block.nested_block).
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--list_block.nested_object).
+- `nested_block` (Block) A nested block. See the nested schema [here](#nested--list_block.nested_block).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--list_block.nested_object).
 - `string` (String) A nested string attribute.
 
 	Plan Modifiers:
@@ -139,7 +139,7 @@ Required:
 
 Optional:
 
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--list_object.nested_object).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--list_object.nested_object).
 - `string` (String) A nested string attribute.
 
 	Plan Modifiers:
@@ -170,7 +170,7 @@ Required:
 
 Optional:
 
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--map_object.nested_object).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--map_object.nested_object).
 - `string` (String) A nested string attribute.
 
 	Plan Modifiers:
@@ -213,8 +213,8 @@ Required:
 
 Optional:
 
-- `nested_block` (Single Block) A nested block. See the nested schema [here](#nested--set_block.nested_block).
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--set_block.nested_object).
+- `nested_block` (Block) A nested block. See the nested schema [here](#nested--set_block.nested_block).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--set_block.nested_object).
 - `string` (String) A nested string attribute.
 
 	Plan Modifiers:
@@ -251,7 +251,7 @@ Required:
 
 Optional:
 
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--set_object.nested_object).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--set_object.nested_object).
 - `string` (String) A nested string attribute.
 
 	Plan Modifiers:
@@ -286,8 +286,8 @@ Required:
 
 Optional:
 
-- `nested_block` (Single Block) A nested block. See the nested schema [here](#nested--single_block.nested_block).
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--single_block.nested_object).
+- `nested_block` (Block) A nested block. See the nested schema [here](#nested--single_block.nested_block).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--single_block.nested_object).
 - `string` (String) A nested string attribute.
 
 	Plan Modifiers:
@@ -324,7 +324,7 @@ Required:
 
 Optional:
 
-- `nested_object` (Single Object) A nested single object attribute. See the nested schema [here](#nested--single_object.nested_object).
+- `nested_object` (Object) A nested single object attribute. See the nested schema [here](#nested--single_object.nested_object).
 - `string` (String) A nested string attribute.
 
 	Plan Modifiers:
