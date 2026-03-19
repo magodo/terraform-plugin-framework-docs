@@ -23,6 +23,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"github.com/magodo/terraform-plugin-framework-docs/internal/testhelper"
 )
 
 type ExampleResource struct{}
@@ -180,6 +181,11 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: nestedAttrs,
 				},
+			},
+			"custom_string": schema.StringAttribute{
+				MarkdownDescription: "A custom string attribute.",
+				CustomType:          testhelper.CustomStringType{},
+				Optional:            true,
 			},
 		},
 		Blocks: map[string]schema.Block{

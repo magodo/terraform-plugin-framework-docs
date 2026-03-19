@@ -56,6 +56,7 @@ resource "examplecloud_resource" "example" {
 
 ### Optional
 	
+- `custom_string` (String) A custom string attribute.
 - `int64` (Int64) A int64 attribute. Value defaults to `0`.
 - `list` (List of Strings) A list attribute. Value defaults to `["foo"]`.
 - `list_block` (List of Blocks) A list block. See the nested schema [here](#nested--list_block).
