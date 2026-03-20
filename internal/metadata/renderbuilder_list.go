@@ -10,9 +10,8 @@ type listRenderBuilder struct {
 
 	Metadata ListMetadata
 
-	Subcategory        string
-	Examples           []Example
-	ObjectDescriptions ObjectDescription
+	Subcategory string
+	Examples    []Example
 }
 
 func (b listRenderBuilder) Category() Category {
@@ -32,5 +31,5 @@ func (b listRenderBuilder) renderExample(w io.Writer) error {
 }
 
 func (b listRenderBuilder) renderSchema(w io.Writer) error {
-	return renderSchema(w, b.Metadata.Schema.Fields, b.Metadata.Schema.Nested, b.ObjectDescriptions)
+	return renderSchema(w, b.Metadata.Schema.Fields, b.Metadata.Schema.Nested)
 }

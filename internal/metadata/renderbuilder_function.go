@@ -17,8 +17,7 @@ type functionRenderBuilder struct {
 
 	Metadata FunctionMetadata
 
-	ReturnDescription  *string
-	ObjectDescriptions ObjectDescription
+	ReturnDescription *string
 }
 
 func (b functionRenderBuilder) Category() Category {
@@ -186,14 +185,6 @@ func (b functionRenderBuilder) renderObject(w io.Writer, object FunctionObject) 
 		if v := field.Description(); v != "" {
 			if _, err := fmt.Fprintf(w, " %s", v); err != nil {
 				return err
-			}
-		} else if objdescs := b.ObjectDescriptions; objdescs != nil {
-			if objdesc, ok := objdescs[object.functionKey]; ok {
-				if keyDesc, ok := objdesc[key]; ok {
-					if _, err := fmt.Fprintf(w, " %s", keyDesc); err != nil {
-						return err
-					}
-				}
 			}
 		}
 		if v := field.NestedLink(); v != "" {

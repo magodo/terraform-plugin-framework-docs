@@ -44,17 +44,20 @@ example_function_simple(bool Boolean,string String,number Number,int32 Int32,int
 <a id="nested--object"></a>
 ### Fields of `object`
 
-- `bar` (Boolean)
-- `bool` (Boolean) Description
-- `dynamic` (Dynamic) Description
-- `float32` (Float32) Description
-- `float64` (Float64) Description
-- `foo` (String)
-- `int32` (Int32) Description
-- `int64` (Int64) Description
-- `list` (List of Booleans) Description
-- `map` (Map of Booleans) Description
-- `number` (Number) Description
-- `object` (Object) Description
-- `set` (Set of Booleans) Description
-- `string` (String) Description
+- `bool` (Boolean) Description.
+- `dynamic` (Dynamic) Description.
+- `float32` (Float32) Description.
+- `float64` (Float64) Description.
+- `int32` (Int32) Description.
+- `int64` (Int64) Description.
+- `list` (List of Booleans) Description.
+- `map` (Map of Booleans) Description.
+- `number` (Number) Description.
+- `object` (Object) Description. See the nested schema [here](#nested--object.object).
+- `set` (Set of Booleans) Description.
+- `string` (String) Description.
+
+<a id="nested--object.object"></a>
+### Fields of `object.object`
+
+- `foo` (Boolean) A foo field.

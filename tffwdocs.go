@@ -23,7 +23,6 @@ func NewGenerator(ctx context.Context, p provider.Provider) (*Generator, error) 
 
 type Example = metadata.Example
 type ImportId = metadata.ImportId
-type ObjectDescription = metadata.ObjectDescription
 type ProviderRenderOption = metadata.ProviderRenderOption
 type ResourceRenderOption = metadata.ResourceRenderOption
 type DataSourceRenderOption = metadata.DataSourceRenderOption

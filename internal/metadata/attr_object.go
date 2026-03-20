@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-framework/attr"
+	fwattr "github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
@@ -26,7 +26,7 @@ type ObjectField struct {
 	isObject    bool
 }
 
-func newObjects(ctx context.Context, parents []string, attrs map[string]attr.Type) (objects Objects, diags diag.Diagnostics) {
+func newObjects(ctx context.Context, parents []string, attrs map[string]fwattr.Type) (objects Objects, diags diag.Diagnostics) {
 	objects = Objects{}
 	fields := map[string]ObjectField{}
 	for name, attr := range attrs {
@@ -36,14 +36,23 @@ func newObjects(ctx context.Context, parents []string, attrs map[string]attr.Typ
 			dataType:    DataType{inner: attr},
 			description: PointerTo(MaybeDescriptionCtxOf(ctx, attr)),
 		}
-		if obj, ok := attr.(basetypes.ObjectType); ok {
+
+		// If this is an object nested in an object, recursively process it.
+		if obj, ok := attr.(basetypes.ObjectTypable); ok {
 			field.isObject = true
-			nestedObjects, odiags := newObjects(ctx, slices.Concat(parents, []string{name}), obj.AttributeTypes())
-			diags = append(diags, odiags...)
-			if diags.HasError() {
-				return nil, diags
+
+			type AttrTyper interface {
+				AttributeTypes() map[string]fwattr.Type
 			}
-			maps.Copy(objects, nestedObjects)
+
+			if obj, ok := obj.(AttrTyper); ok {
+				nestedObjects, odiags := newObjects(ctx, slices.Concat(parents, []string{name}), obj.AttributeTypes())
+				diags = append(diags, odiags...)
+				if diags.HasError() {
+					return nil, diags
+				}
+				maps.Copy(objects, nestedObjects)
+			}
 		}
 
 		fields[name] = field

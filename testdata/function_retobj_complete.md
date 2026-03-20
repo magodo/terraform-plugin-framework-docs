@@ -41,12 +41,12 @@ example_function_retobj(object Object) Object
 <a id="nested--object"></a>
 ### Fields of `object`
 
-- `foo` (Object) The foo field. See the nested schema [here](#nested--object.foo).
+- `foo` (Object) A foo field. See the nested schema [here](#nested--object.foo).
 
 <a id="nested--object.foo"></a>
 ### Fields of `object.foo`
 
-- `bar` (Boolean) The bar field.
+- `bar` (Boolean) A bar field.
 
 ## Return
 
@@ -61,16 +61,14 @@ The `object` returned from `example_function_retobj` has the following attribute
 <a id="nested--retfoo"></a>
 ### Fields of `retfoo`
 
-- `bool` (Boolean) Description
-- `dynamic` (Dynamic) Description
-- `float32` (Float32) Description
-- `float64` (Float64) Description
-- `int32` (Int32) Description
-- `int64` (Int64) Description
-- `list` (List of Booleans) Description
-- `map` (Map of Booleans) Description
-- `number` (Number) Description
-- `object` (Object) Description
-- `retbar` (Boolean) The retbar field.
-- `set` (Set of Booleans) Description
-- `string` (String) Description
+- `bool` (Boolean) Description.
+- `dynamic` (Dynamic) Description.
+- `float32` (Float32) Description.
+- `float64` (Float64) Description.
+- `int32` (Int32) Description.
+- `int64` (Int64) Description.
+- `list` (List of Booleans) Description.
+- `map` (Map of Booleans) Description.
+- `number` (Number) Description.
+- `set` (Set of Booleans) Description.
+- `string` (String) Description.

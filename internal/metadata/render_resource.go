@@ -8,9 +8,8 @@ import (
 )
 
 type ResourceRenderOption struct {
-	Subcategory       string
-	Examples          []Example
-	ObjectDescription ObjectDescription
+	Subcategory string
+	Examples    []Example
 
 	// Import
 	ImportId         *ImportId
@@ -44,7 +43,6 @@ func (metadata Metadata) NewResourceRender(resourceType string, opt *ResourceRen
 		tpl = opt.Template
 		src.Subcategory = opt.Subcategory
 		src.Examples = opt.Examples
-		src.ObjectDescriptions = opt.ObjectDescription
 		src.ImportId = opt.ImportId
 		src.IdentityExamples = opt.IdentityExamples
 	}

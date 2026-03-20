@@ -13,7 +13,6 @@ type FunctionRenderOption struct {
 
 	// Description
 	ReturnDescription *string
-	ObjectDescription ObjectDescription
 
 	Template *template.Template
 }
@@ -45,7 +44,6 @@ func (metadata Metadata) NewFunctionRender(functionName string, opt *FunctionRen
 		src.Subcategory = opt.Subcategory
 		src.Examples = opt.Examples
 		src.ReturnDescription = opt.ReturnDescription
-		src.ObjectDescriptions = opt.ObjectDescription
 	}
 
 	headerBuf := bytes.NewBuffer(nil)

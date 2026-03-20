@@ -10,9 +10,8 @@ type actionRenderBuilder struct {
 
 	Metadata ActionMetadata
 
-	Subcategory        string
-	Examples           []Example
-	ObjectDescriptions ObjectDescription
+	Subcategory string
+	Examples    []Example
 }
 
 func (b actionRenderBuilder) Category() Category {
@@ -32,5 +31,5 @@ func (b actionRenderBuilder) renderExample(w io.Writer) error {
 }
 
 func (b actionRenderBuilder) renderSchema(w io.Writer) error {
-	return renderSchema(w, b.Metadata.Schema.Fields, b.Metadata.Schema.Nested, b.ObjectDescriptions)
+	return renderSchema(w, b.Metadata.Schema.Fields, b.Metadata.Schema.Nested)
 }

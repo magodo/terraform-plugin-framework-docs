@@ -127,14 +127,6 @@ version = "v2"
 `),
 			},
 		},
-		ObjectDescription: tffwdocs.ObjectDescription{
-			"object": map[string]string{
-				"foo": "A foo field.",
-			},
-			"object.foo": map[string]string{
-				"builtin_string": "A builtin string field.",
-			},
-		},
 	}
 	buf = *bytes.NewBuffer(nil)
 	require.NoError(t, g.RenderResource(t.Context(), &buf, "examplecloud_resource", opt))
@@ -418,12 +410,6 @@ func TestFunctionRenderSimple(t *testing.T) {
 			},
 		},
 		ReturnDescription: new("This function returns a boolean indicating something."),
-		ObjectDescription: tffwdocs.ObjectDescription{
-			"object": map[string]string{
-				"foo": "The foo field.",
-				"bar": "The bar field.",
-			},
-		},
 	}
 	buf = *bytes.NewBuffer(nil)
 	require.NoError(t, g.RenderFunction(t.Context(), &buf, "example_function_simple", opt))
@@ -470,20 +456,6 @@ func TestFunctionRenderRetObj(t *testing.T) {
 			},
 		},
 		ReturnDescription: new("This function returns an object indicating something."),
-		ObjectDescription: tffwdocs.ObjectDescription{
-			"object": map[string]string{
-				"foo": "The foo field.",
-			},
-			"object.foo": map[string]string{
-				"bar": "The bar field.",
-			},
-			"": map[string]string{
-				"retfoo": "The retfoo field.",
-			},
-			"retfoo": map[string]string{
-				"retbar": "The retbar field.",
-			},
-		},
 	}
 	buf = *bytes.NewBuffer(nil)
 	require.NoError(t, g.RenderFunction(t.Context(), &buf, "example_function_retobj", opt))

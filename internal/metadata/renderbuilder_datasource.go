@@ -10,9 +10,8 @@ type dataSourceRenderBuilder struct {
 
 	Metadata DataSourceMetadata
 
-	Subcategory        string
-	Examples           []Example
-	ObjectDescriptions ObjectDescription
+	Subcategory string
+	Examples    []Example
 }
 
 func (b dataSourceRenderBuilder) Category() Category {
@@ -32,5 +31,5 @@ func (b dataSourceRenderBuilder) renderExample(w io.Writer) error {
 }
 
 func (b dataSourceRenderBuilder) renderSchema(w io.Writer) error {
-	return renderSchema(w, b.Metadata.Schema.Fields, b.Metadata.Schema.Nested, b.ObjectDescriptions)
+	return renderSchema(w, b.Metadata.Schema.Fields, b.Metadata.Schema.Nested)
 }

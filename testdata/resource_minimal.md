@@ -182,25 +182,23 @@ Optional:
 
 Optional:
 
-- `foo` (Object) See the nested schema [here](#nested--object.foo).
+- `foo` (Object) A foo field. See the nested schema [here](#nested--object.foo).
 <a id="nested--object.foo"></a>
 ### Nested Schema for `object.foo`
 
 Optional:
 
-- `bool` (Boolean) Description
-- `builtin_string` (String)
-- `dynamic` (Dynamic) Description
-- `float32` (Float32) Description
-- `float64` (Float64) Description
-- `int32` (Int32) Description
-- `int64` (Int64) Description
-- `list` (List of Booleans) Description
-- `map` (Map of Booleans) Description
-- `number` (Number) Description
-- `object` (Object) Description
-- `set` (Set of Booleans) Description
-- `string` (String) Description
+- `bool` (Boolean) Description.
+- `dynamic` (Dynamic) Description.
+- `float32` (Float32) Description.
+- `float64` (Float64) Description.
+- `int32` (Int32) Description.
+- `int64` (Int64) Description.
+- `list` (List of Booleans) Description.
+- `map` (Map of Booleans) Description.
+- `number` (Number) Description.
+- `set` (Set of Booleans) Description.
+- `string` (String) Description.
 <a id="nested--set_block"></a>
 ### Nested Schema for `set_block`
 
