@@ -41,11 +41,7 @@ func newObjects(ctx context.Context, parents []string, attrs map[string]fwattr.T
 		if obj, ok := attr.(basetypes.ObjectTypable); ok {
 			field.isObject = true
 
-			type AttrTyper interface {
-				AttributeTypes() map[string]fwattr.Type
-			}
-
-			if obj, ok := obj.(AttrTyper); ok {
+			if obj, ok := obj.(fwattr.TypeWithAttributeTypes); ok {
 				nestedObjects, odiags := newObjects(ctx, slices.Concat(parents, []string{name}), obj.AttributeTypes())
 				diags = append(diags, odiags...)
 				if diags.HasError() {
