@@ -22,6 +22,11 @@ func NewFloat32Type(description string) Float32Type {
 	}
 }
 
+func (s Float32Type) Equal(o attr.Type) bool {
+	_, ok := o.(Float32Type)
+	return ok
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s Float32Type) MarkdownDescription(context.Context) string {
 	return s.description

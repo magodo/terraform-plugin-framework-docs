@@ -22,6 +22,20 @@ func NewListType(description string, elemType attr.Type) ListType {
 	}
 }
 
+func (s ListType) Equal(o attr.Type) bool {
+	if s.ListType.ElemType == nil {
+		return false
+	}
+
+	other, ok := o.(ListType)
+
+	if !ok {
+		return false
+	}
+
+	return s.ElementType().Equal(other.ElementType())
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s ListType) MarkdownDescription(context.Context) string {
 	return s.description

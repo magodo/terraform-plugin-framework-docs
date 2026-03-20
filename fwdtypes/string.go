@@ -22,6 +22,12 @@ func NewStringType(description string) StringType {
 	}
 }
 
+func (s StringType) Equal(o attr.Type) bool {
+	_, ok := o.(StringType)
+
+	return ok
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s StringType) MarkdownDescription(context.Context) string {
 	return s.description

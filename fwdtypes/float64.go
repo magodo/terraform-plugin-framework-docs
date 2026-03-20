@@ -22,6 +22,11 @@ func NewFloat64Type(description string) Float64Type {
 	}
 }
 
+func (s Float64Type) Equal(o attr.Type) bool {
+	_, ok := o.(Float64Type)
+	return ok
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s Float64Type) MarkdownDescription(context.Context) string {
 	return s.description

@@ -22,6 +22,11 @@ func NewInt64Type(description string) Int64Type {
 	}
 }
 
+func (s Int64Type) Equal(o attr.Type) bool {
+	_, ok := o.(Int64Type)
+	return ok
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s Int64Type) MarkdownDescription(context.Context) string {
 	return s.description

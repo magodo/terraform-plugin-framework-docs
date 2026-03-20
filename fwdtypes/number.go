@@ -22,6 +22,12 @@ func NewNumberType(description string) NumberType {
 	}
 }
 
+func (s NumberType) Equal(o attr.Type) bool {
+	_, ok := o.(NumberType)
+
+	return ok
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s NumberType) MarkdownDescription(context.Context) string {
 	return s.description

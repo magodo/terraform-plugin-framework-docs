@@ -22,6 +22,11 @@ func NewInt32Type(description string) Int32Type {
 	}
 }
 
+func (s Int32Type) Equal(o attr.Type) bool {
+	_, ok := o.(Int32Type)
+	return ok
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s Int32Type) MarkdownDescription(context.Context) string {
 	return s.description

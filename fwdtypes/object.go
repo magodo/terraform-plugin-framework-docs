@@ -7,22 +7,42 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
-var _ basetypes.MapTypable = MapType{}
-var _ attr.TypeWithMarkdownDescription = MapType{}
+var _ basetypes.ObjectTypable = ObjectType{}
+var _ attr.TypeWithMarkdownDescription = ObjectType{}
 
-type MapType struct {
+type ObjectType struct {
 	description string
-	basetypes.MapType
+	basetypes.ObjectType
 }
 
-func NewMapType(description string, elemType attr.Type) MapType {
-	return MapType{
+func NewObjectType(description string, attrTypes map[string]attr.Type) ObjectType {
+	return ObjectType{
 		description: description,
-		MapType:     basetypes.MapType{ElemType: elemType},
+		ObjectType:  basetypes.ObjectType{AttrTypes: attrTypes},
 	}
 }
 
+func (s ObjectType) Equal(candidate attr.Type) bool {
+	other, ok := candidate.(ObjectType)
+	if !ok {
+		return false
+	}
+	if len(other.AttrTypes) != len(s.AttrTypes) {
+		return false
+	}
+	for k, v := range s.AttrTypes {
+		attr, ok := other.AttrTypes[k]
+		if !ok {
+			return false
+		}
+		if !v.Equal(attr) {
+			return false
+		}
+	}
+	return true
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
-func (s MapType) MarkdownDescription(context.Context) string {
+func (s ObjectType) MarkdownDescription(context.Context) string {
 	return s.description
 }
