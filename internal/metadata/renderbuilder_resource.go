@@ -166,5 +166,10 @@ func (b resourceRenderBuilder) renderIdentityField(w io.Writer, field ResourceId
 	if _, err := fmt.Fprintf(w, "- `%s` (%s) %s\n", field.Name, field.Traits(), field.Description); err != nil {
 		return err
 	}
+	if v := field.CustomTypeDescription(); v != "" {
+		if _, err := fmt.Fprintf(w, "\n\t-> %s\n", v); err != nil {
+			return err
+		}
+	}
 	return nil
 }

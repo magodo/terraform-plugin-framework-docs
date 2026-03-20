@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/magodo/terraform-plugin-framework-docs/internal/testhelper"
 )
 
 type ExampleEphemeralResource struct{}
@@ -138,6 +139,11 @@ func (e ExampleEphemeralResource) Schema(ctx context.Context, req ephemeral.Sche
 					Attributes: nestedAttrs,
 				},
 			},
+			"custom_string": schema.StringAttribute{
+				MarkdownDescription: "A custom string attribute.",
+				CustomType:          testhelper.CustomStringType{},
+				Optional:            true,
+			},
 		},
 		Blocks: map[string]schema.Block{
 			"single_block": schema.SingleNestedBlock{
@@ -163,6 +169,16 @@ func (e ExampleEphemeralResource) Schema(ctx context.Context, req ephemeral.Sche
 				NestedObject: schema.NestedBlockObject{
 					Attributes: nestedAttrs,
 					Blocks:     nestedBlks,
+				},
+			},
+			"custom_block": schema.SingleNestedBlock{
+				CustomType:          testhelper.CustomObjectType{},
+				MarkdownDescription: "A custom block.",
+				Attributes: map[string]schema.Attribute{
+					"foo": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: "A foo attribute.",
+					},
 				},
 			},
 		},

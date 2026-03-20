@@ -71,7 +71,8 @@ func NewFunctionSchema(ctx context.Context, sch function.Definition) (schema Fun
 
 func newFunctionReturn(ctx context.Context, ret function.Return) (field FunctionField, objects FunctionObjects, diags diag.Diagnostics) {
 	field = FunctionField{
-		dataType: DataType{inner: ret.GetType()},
+		dataType:              DataType{inner: ret.GetType()},
+		customTypeDescription: PointerTo(MaybeDescriptionCtxOf(ctx, ret.GetType())),
 	}
 
 	if obj, ok := ret.(function.ObjectReturn); ok {
@@ -93,12 +94,13 @@ func newFunctionParameters(ctx context.Context, parents []string, params []funct
 
 	for _, attr := range params {
 		field := FunctionField{
-			parents:      parents,
-			name:         attr.GetName(),
-			dataType:     DataType{inner: attr.GetType()},
-			description:  DescriptionOf(attr),
-			allowNull:    attr.GetAllowNullValue(),
-			allowUnknown: attr.GetAllowUnknownValues(),
+			parents:               parents,
+			name:                  attr.GetName(),
+			dataType:              DataType{inner: attr.GetType()},
+			description:           DescriptionOf(attr),
+			customTypeDescription: PointerTo(MaybeDescriptionCtxOf(ctx, attr.GetType())),
+			allowNull:             attr.GetAllowNullValue(),
+			allowUnknown:          attr.GetAllowUnknownValues(),
 		}
 
 		switch attr := attr.(type) {

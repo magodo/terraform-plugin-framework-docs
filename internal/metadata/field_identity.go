@@ -41,9 +41,14 @@ type ResourceIdentityField struct {
 	Required bool
 	Optional bool
 
-	Description string
+	Description           string
+	customTypeDescription string
 }
 
 func (field ResourceIdentityField) Traits() string {
 	return field.DataType.String()
+}
+
+func (field ResourceIdentityField) CustomTypeDescription() string {
+	return Sentencefy(field.customTypeDescription)
 }

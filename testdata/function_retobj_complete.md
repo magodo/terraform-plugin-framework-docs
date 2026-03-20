@@ -50,6 +50,8 @@ example_function_retobj(object Object) Object
 
 ## Return
 
+-> A custom object type.
+
 This function returns an object indicating something.
 
 The `object` returned from `example_function_retobj` has the following attributes:

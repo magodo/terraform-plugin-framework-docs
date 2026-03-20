@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/magodo/terraform-plugin-framework-docs/internal/testhelper"
 )
 
 type ExampleFunctionRetObj struct{}
@@ -34,6 +35,7 @@ func (e ExampleFunctionRetObj) Definition(ctx context.Context, req function.Defi
 			},
 		},
 		Return: function.ObjectReturn{
+			CustomType: testhelper.CustomObjectType{},
 			AttributeTypes: map[string]attr.Type{
 				"retfoo": types.ObjectType{
 					AttrTypes: map[string]attr.Type{

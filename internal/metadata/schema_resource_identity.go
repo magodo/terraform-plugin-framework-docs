@@ -23,16 +23,17 @@ func NewResourceIdentitySchema(ctx context.Context, sch identityschema.Schema) (
 	return
 }
 
-func newResourceIdentityAttrFields(_ context.Context, attrs map[string]identityschema.Attribute) (fields ResourceIdentityFields, diags diag.Diagnostics) {
+func newResourceIdentityAttrFields(ctx context.Context, attrs map[string]identityschema.Attribute) (fields ResourceIdentityFields, diags diag.Diagnostics) {
 	fields = ResourceIdentityFields{}
 
 	for name, attr := range attrs {
 		field := ResourceIdentityField{
-			Name:        name,
-			DataType:    DataType{inner: attr.GetType()},
-			Required:    attr.IsRequiredForImport(),
-			Optional:    attr.IsOptionalForImport(),
-			Description: DescriptionOf(attr),
+			Name:                  name,
+			DataType:              DataType{inner: attr.GetType()},
+			Required:              attr.IsRequiredForImport(),
+			Optional:              attr.IsOptionalForImport(),
+			Description:           DescriptionOf(attr),
+			customTypeDescription: PointerTo(MaybeDescriptionCtxOf(ctx, attr.GetType())),
 		}
 		fields[name] = field
 	}

@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/magodo/terraform-plugin-framework-docs/internal/testhelper"
 )
 
 type ExampleFunctionSimple struct{}
@@ -81,6 +82,11 @@ func (e ExampleFunctionSimple) Definition(ctx context.Context, req function.Defi
 					"bar": types.BoolType,
 				},
 				MarkdownDescription: "An object parameter.",
+			},
+			function.StringParameter{
+				Name:                "custom_string",
+				MarkdownDescription: "A custom string attribute.",
+				CustomType:          testhelper.CustomStringType{},
 			},
 		},
 		VariadicParameter: function.StringParameter{

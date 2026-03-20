@@ -86,8 +86,9 @@ type Field struct {
 
 	sensitive bool
 
-	description string
-	deprecation string
+	description           string
+	deprecation           string
+	customTypeDescription string
 
 	writeOnly bool
 
@@ -148,6 +149,10 @@ func (r Field) PlanModifiers() []string {
 
 func (r Field) Validators() []string {
 	return MapSlice(r.validators, Sentencefy)
+}
+
+func (r Field) CustomTypeDescription() string {
+	return Sentencefy(r.customTypeDescription)
 }
 
 func (field Field) Traits() string {

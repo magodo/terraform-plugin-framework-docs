@@ -32,6 +32,8 @@ example_function_retobj(object Object) Object
 
 ## Return
 
+-> A custom object type.
+
 The `object` returned from `example_function_retobj` has the following attributes:
 
 - `retfoo` (Object) See the nested schema [here](#nested--retfoo).

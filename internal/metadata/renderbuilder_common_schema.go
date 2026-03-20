@@ -162,6 +162,12 @@ func renderField(w io.Writer, field Field, fallbackDesc string) error {
 		}
 	}
 
+	if v := field.CustomTypeDescription(); v != "" {
+		if _, err := fmt.Fprintf(w, "\n\t-> %s\n", v); err != nil {
+			return err
+		}
+	}
+
 	if v := field.Deprecation(); v != "" {
 		if _, err := fmt.Fprintf(w, "\n\t!> %s\n", v); err != nil {
 			return err

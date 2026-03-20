@@ -17,6 +17,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/magodo/terraform-plugin-framework-docs/internal/testhelper"
 )
 
 var _ provider.Provider = &ExampleCloudProvider{}
@@ -143,6 +144,11 @@ func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRe
 					Attributes: nestedAttrs,
 				},
 			},
+			"custom_string": schema.StringAttribute{
+				MarkdownDescription: "A custom string attribute.",
+				CustomType:          testhelper.CustomStringType{},
+				Optional:            true,
+			},
 		},
 		Blocks: map[string]schema.Block{
 			"single_block": schema.SingleNestedBlock{
@@ -168,6 +174,16 @@ func (p *ExampleCloudProvider) Schema(ctx context.Context, req provider.SchemaRe
 				NestedObject: schema.NestedBlockObject{
 					Attributes: nestedAttrs,
 					Blocks:     nestedBlks,
+				},
+			},
+			"custom_block": schema.SingleNestedBlock{
+				CustomType:          testhelper.CustomObjectType{},
+				MarkdownDescription: "A custom block.",
+				Attributes: map[string]schema.Attribute{
+					"foo": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: "A foo attribute.",
+					},
 				},
 			},
 		},

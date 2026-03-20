@@ -62,14 +62,15 @@ func newActionAttrFields(ctx context.Context, parents []string, attrs map[string
 		)
 
 		field := Field{
-			parents:     parents,
-			name:        name,
-			dataType:    DataType{inner: attr.GetType()},
-			required:    attr.IsRequired(),
-			optional:    attr.IsOptional(),
-			description: DescriptionOf(attr),
-			deprecation: attr.GetDeprecationMessage(),
-			writeOnly:   attr.IsWriteOnly(),
+			parents:               parents,
+			name:                  name,
+			dataType:              DataType{inner: attr.GetType()},
+			required:              attr.IsRequired(),
+			optional:              attr.IsOptional(),
+			description:           DescriptionOf(attr),
+			deprecation:           attr.GetDeprecationMessage(),
+			customTypeDescription: PointerTo(MaybeDescriptionCtxOf(ctx, attr.GetType())),
+			writeOnly:             attr.IsWriteOnly(),
 		}
 
 		switch attr := attr.(type) {
@@ -165,13 +166,14 @@ func newActionBlockFields(ctx context.Context, parents []string, blks map[string
 
 	for name, blk := range blks {
 		field := Field{
-			parents:     parents,
-			name:        name,
-			dataType:    DataType{isblk: true, inner: blk.Type()},
-			optional:    true, // Always regard a block as optional.
-			description: DescriptionOf(blk),
-			deprecation: blk.GetDeprecationMessage(),
-			isObject:    true,
+			parents:               parents,
+			name:                  name,
+			dataType:              DataType{isblk: true, inner: blk.Type()},
+			optional:              true, // Always regard a block as optional.
+			description:           DescriptionOf(blk),
+			deprecation:           blk.GetDeprecationMessage(),
+			customTypeDescription: PointerTo(MaybeDescriptionCtxOf(ctx, blk.Type())),
+			isObject:              true,
 		}
 
 		switch blk := blk.(type) {

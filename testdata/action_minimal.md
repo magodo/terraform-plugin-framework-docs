@@ -25,6 +25,12 @@ Manages an action.
 
 ### Optional
 	
+- `custom_block` (Block) A custom block. See the nested schema [here](#nested--custom_block).
+
+	-> A custom object type.
+- `custom_string` (String) A custom string attribute.
+
+	-> A custom string type.
 - `dynamic` (Dynamic) A dynamic attribute.
 - `int64` (Int64) A int64 attribute.
 - `list` (List of Strings) A list attribute.
@@ -47,6 +53,12 @@ Manages an action.
 
 	- Value must be one of: ["foo" "bar" "baz"].
 
+<a id="nested--custom_block"></a>
+### Nested Schema for `custom_block`
+
+Optional:
+
+- `foo` (String) A foo attribute.
 <a id="nested--list_block"></a>
 ### Nested Schema for `list_block`
 

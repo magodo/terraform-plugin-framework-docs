@@ -95,6 +95,12 @@ func (b functionRenderBuilder) renderReturn(w io.Writer) error {
 		return err
 	}
 
+	if v := b.Metadata.Schema.Return.CustomTypeDescription(); v != "" {
+		if _, err := fmt.Fprintf(w, "\n-> %s\n", v); err != nil {
+			return err
+		}
+	}
+
 	if desc := b.ReturnDescription; desc != nil {
 		if _, err := fmt.Fprintf(w, "\n%s\n", *desc); err != nil {
 			return err
@@ -138,6 +144,13 @@ func (b functionRenderBuilder) renderArgument(w io.Writer, field FunctionField) 
 			}
 		}
 	}
+
+	if v := field.CustomTypeDescription(); v != "" {
+		if _, err := fmt.Fprintf(w, "\n\t-> %s\n", v); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -184,5 +197,12 @@ func (b functionRenderBuilder) renderObject(w io.Writer, object FunctionObject) 
 		}
 		io.WriteString(w, "\n")
 	}
+
+	if v := object.CustomTypeDescription(); v != "" {
+		if _, err := fmt.Fprintf(w, "\n-> %s", v); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

@@ -25,6 +25,12 @@ Manages an ephemeral example resource.
 
 ### Optional
 	
+- `custom_block` (Block) A custom block. See the nested schema [here](#nested--custom_block).
+
+	-> A custom object type.
+- `custom_string` (String) A custom string attribute.
+
+	-> A custom string type.
 - `int64` (Int64) A int64 attribute.
 - `list` (List of Strings) A list attribute.
 - `list_block` (List of Blocks) A list block. See the nested schema [here](#nested--list_block).
@@ -50,6 +56,12 @@ Manages an ephemeral example resource.
 	
 - `dynamic` (Dynamic) A dynamic attribute.
 
+<a id="nested--custom_block"></a>
+### Nested Schema for `custom_block`
+
+Optional:
+
+- `foo` (String) A foo attribute.
 <a id="nested--list_block"></a>
 ### Nested Schema for `list_block`
 

@@ -223,6 +223,16 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					},
 				},
 			},
+			"custom_block": schema.SingleNestedBlock{
+				CustomType:          testhelper.CustomObjectType{},
+				MarkdownDescription: "A custom block.",
+				Attributes: map[string]schema.Attribute{
+					"foo": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: "A foo attribute.",
+					},
+				},
+			},
 		},
 	}
 }
@@ -241,6 +251,11 @@ func (e ExampleResource) IdentitySchema(ctx context.Context, req resource.Identi
 			},
 			"version": identityschema.StringAttribute{
 				Description:       "The version of this resource.",
+				OptionalForImport: true,
+			},
+			"custom_string": identityschema.StringAttribute{
+				Description:       "A custom string attribute.",
+				CustomType:        testhelper.CustomStringType{},
 				OptionalForImport: true,
 			},
 		},

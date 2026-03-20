@@ -12,10 +12,15 @@ import (
 
 // Ensure the implementation satisfies the expected interfaces
 var _ basetypes.StringTypable = CustomStringType{}
+var _ attr.TypeWithMarkdownDescription = CustomStringType{}
 
 type CustomStringType struct {
 	basetypes.StringType
 	// ... potentially other fields ...
+}
+
+func (t CustomStringType) MarkdownDescription(context.Context) string {
+	return "A custom string type."
 }
 
 func (t CustomStringType) Equal(o attr.Type) bool {

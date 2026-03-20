@@ -11,8 +11,13 @@ type FunctionFields []FunctionField
 type FunctionObjects map[string]FunctionObject
 
 type FunctionObject struct {
-	functionKey string
-	fields      map[string]FunctionField
+	functionKey           string
+	fields                map[string]FunctionField
+	customTypeDescription string
+}
+
+func (r FunctionObject) CustomTypeDescription() string {
+	return Sentencefy(r.customTypeDescription)
 }
 
 type FunctionField struct {
@@ -24,7 +29,8 @@ type FunctionField struct {
 	allowUnknown bool
 	isVariadic   bool
 
-	description string
+	description           string
+	customTypeDescription string
 
 	validators []string
 	isObject   bool
@@ -52,6 +58,10 @@ func (r FunctionField) AllowUnknown() bool {
 
 func (r FunctionField) Description() string {
 	return r.description
+}
+
+func (r FunctionField) CustomTypeDescription() string {
+	return Sentencefy(r.customTypeDescription)
 }
 
 func (r FunctionField) Validators() []string {
