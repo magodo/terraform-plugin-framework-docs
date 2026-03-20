@@ -42,6 +42,10 @@ func (s ObjectType) Equal(candidate attr.Type) bool {
 	return true
 }
 
+func (s ObjectType) String() string {
+	return "fwdtypes.ObjectType"
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s ObjectType) MarkdownDescription(context.Context) string {
 	return s.description

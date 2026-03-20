@@ -27,6 +27,10 @@ func (s DynamicType) Equal(o attr.Type) bool {
 	return ok
 }
 
+func (s DynamicType) String() string {
+	return "fwdtypes.DynamicType"
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s DynamicType) MarkdownDescription(context.Context) string {
 	return s.description

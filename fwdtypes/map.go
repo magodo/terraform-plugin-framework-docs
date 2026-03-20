@@ -36,6 +36,10 @@ func (s MapType) Equal(o attr.Type) bool {
 	return s.ElementType().Equal(other.ElementType())
 }
 
+func (s MapType) String() string {
+	return "fwdtypes.MapType"
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s MapType) MarkdownDescription(context.Context) string {
 	return s.description

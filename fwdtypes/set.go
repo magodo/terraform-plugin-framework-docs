@@ -36,6 +36,10 @@ func (s SetType) Equal(o attr.Type) bool {
 	return s.ElementType().Equal(other.ElementType())
 }
 
+func (s SetType) String() string {
+	return "fwdtypes.SetType"
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s SetType) MarkdownDescription(context.Context) string {
 	return s.description

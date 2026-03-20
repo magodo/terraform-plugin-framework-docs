@@ -27,6 +27,10 @@ func (s Int64Type) Equal(o attr.Type) bool {
 	return ok
 }
 
+func (s Int64Type) String() string {
+	return "fwdtypes.Int64Type"
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s Int64Type) MarkdownDescription(context.Context) string {
 	return s.description

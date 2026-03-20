@@ -27,6 +27,10 @@ func (s BoolType) Equal(o attr.Type) bool {
 	return ok
 }
 
+func (s BoolType) String() string {
+	return "fwdtypes.BoolType"
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s BoolType) MarkdownDescription(context.Context) string {
 	return s.description

@@ -36,6 +36,10 @@ func (s ListType) Equal(o attr.Type) bool {
 	return s.ElementType().Equal(other.ElementType())
 }
 
+func (s ListType) String() string {
+	return "fwdtypes.ListType"
+}
+
 // MarkdownDescription implements [attr.TypeWithMarkdownDescription].
 func (s ListType) MarkdownDescription(context.Context) string {
 	return s.description
