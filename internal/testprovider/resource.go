@@ -23,6 +23,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"github.com/magodo/terraform-plugin-framework-docs/fwdtypes"
 	"github.com/magodo/terraform-plugin-framework-docs/internal/testhelper"
 )
 
@@ -148,7 +149,19 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				AttributeTypes: map[string]attr.Type{
 					"foo": types.ObjectType{
 						AttrTypes: map[string]attr.Type{
-							"bar": types.StringType,
+							"builtin_string": types.StringType,
+							"bool":           fwdtypes.NewBoolType("Description"),
+							"int32":          fwdtypes.NewInt32Type("Description"),
+							"int64":          fwdtypes.NewInt64Type("Description"),
+							"float32":        fwdtypes.NewFloat32Type("Description"),
+							"float64":        fwdtypes.NewFloat64Type("Description"),
+							"number":         fwdtypes.NewNumberType("Description"),
+							"string":         fwdtypes.NewStringType("Description"),
+							"dynamic":        fwdtypes.NewDynamicType("Description"),
+							"list":           fwdtypes.NewListType("Description", basetypes.BoolType{}),
+							"set":            fwdtypes.NewSetType("Description", basetypes.BoolType{}),
+							"map":            fwdtypes.NewMapType("Description", basetypes.BoolType{}),
+							"object":         fwdtypes.NewObjectType("Description", nil),
 						},
 					},
 				},

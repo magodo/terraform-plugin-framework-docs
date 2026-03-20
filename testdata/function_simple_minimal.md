@@ -45,4 +45,16 @@ example_function_simple(bool Boolean,string String,number Number,int32 Int32,int
 ### Fields of `object`
 
 - `bar` (Boolean)
+- `bool` (Boolean) Description
+- `dynamic` (Dynamic) Description
+- `float32` (Float32) Description
+- `float64` (Float64) Description
 - `foo` (String)
+- `int32` (Int32) Description
+- `int64` (Int64) Description
+- `list` (List of Booleans) Description
+- `map` (Map of Booleans) Description
+- `number` (Number) Description
+- `object` (Object) Description
+- `set` (Set of Booleans) Description
+- `string` (String) Description

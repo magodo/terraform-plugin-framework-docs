@@ -132,7 +132,7 @@ version = "v2"
 				"foo": "A foo field.",
 			},
 			"object.foo": map[string]string{
-				"bar": "A bar field.",
+				"builtin_string": "A builtin string field.",
 			},
 		},
 	}

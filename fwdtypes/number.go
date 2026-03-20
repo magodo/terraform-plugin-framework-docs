@@ -1,0 +1,28 @@
+package fwdtypes
+
+import (
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+)
+
+var _ basetypes.NumberTypable = NumberType{}
+var _ attr.TypeWithMarkdownDescription = NumberType{}
+
+type NumberType struct {
+	description string
+	basetypes.NumberType
+}
+
+func NewNumberType(description string) NumberType {
+	return NumberType{
+		description: description,
+		NumberType:  basetypes.NumberType{},
+	}
+}
+
+// MarkdownDescription implements [attr.TypeWithMarkdownDescription].
+func (s NumberType) MarkdownDescription(context.Context) string {
+	return s.description
+}

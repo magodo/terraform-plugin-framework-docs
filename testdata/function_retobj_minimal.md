@@ -41,4 +41,16 @@ The `object` returned from `example_function_retobj` has the following attribute
 <a id="nested--retfoo"></a>
 ### Fields of `retfoo`
 
+- `bool` (Boolean) Description
+- `dynamic` (Dynamic) Description
+- `float32` (Float32) Description
+- `float64` (Float64) Description
+- `int32` (Int32) Description
+- `int64` (Int64) Description
+- `list` (List of Booleans) Description
+- `map` (Map of Booleans) Description
+- `number` (Number) Description
+- `object` (Object) Description
 - `retbar` (Boolean)
+- `set` (Set of Booleans) Description
+- `string` (String) Description

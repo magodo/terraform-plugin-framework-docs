@@ -213,7 +213,19 @@ Optional:
 
 Optional:
 
-- `bar` (String) A bar field.
+- `bool` (Boolean) Description
+- `builtin_string` (String) A builtin string field.
+- `dynamic` (Dynamic) Description
+- `float32` (Float32) Description
+- `float64` (Float64) Description
+- `int32` (Int32) Description
+- `int64` (Int64) Description
+- `list` (List of Booleans) Description
+- `map` (Map of Booleans) Description
+- `number` (Number) Description
+- `object` (Object) Description
+- `set` (Set of Booleans) Description
+- `string` (String) Description
 <a id="nested--set_block"></a>
 ### Nested Schema for `set_block`
 
