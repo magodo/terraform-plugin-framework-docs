@@ -14,7 +14,7 @@ The example provider.
 ## Schema
 
 ### Required
-	
+
 - `bool` (Boolean, Sensitive) A boolean attribute.
 
 	Validators:
@@ -25,7 +25,7 @@ The example provider.
 	!> Deprecated in favor of `boolean`.
 
 ### Optional
-	
+
 - `custom_block` (Block) A custom block. See the nested schema [here](#nested--custom_block).
 
 	-> A custom object type.

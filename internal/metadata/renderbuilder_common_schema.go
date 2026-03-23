@@ -37,7 +37,7 @@ func renderSchema(w io.Writer, fields Fields, nested NestedFields) error {
 		}
 		if _, err := fmt.Fprintf(w, `
 ### %s
-	
+
 `, section.name); err != nil {
 			return err
 		}

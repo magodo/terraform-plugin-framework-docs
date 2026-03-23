@@ -42,7 +42,7 @@ list "examplecloud_resource" "example" {
 ## Schema
 
 ### Required
-	
+
 - `bool` (Boolean) A boolean attribute.
 
 	Validators:
@@ -53,7 +53,7 @@ list "examplecloud_resource" "example" {
 	!> Deprecated in favor of `boolean`.
 
 ### Optional
-	
+
 - `custom_block` (Block) A custom block. See the nested schema [here](#nested--custom_block).
 
 	-> A custom object type.

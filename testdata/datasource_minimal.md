@@ -13,7 +13,7 @@ Queries an example resource.
 ## Schema
 
 ### Required
-	
+
 - `bool` (Boolean, Sensitive) A boolean attribute.
 
 	Validators:
@@ -24,7 +24,7 @@ Queries an example resource.
 	!> Deprecated in favor of `boolean`.
 
 ### Optional
-	
+
 - `custom_block` (Block) A custom block. See the nested schema [here](#nested--custom_block).
 
 	-> A custom object type.
@@ -53,7 +53,7 @@ Queries an example resource.
 	- Value must be one of: ["foo" "bar" "baz"].
 
 ### Read-Only
-	
+
 - `dynamic` (Dynamic) A dynamic attribute.
 
 <a id="nested--custom_block"></a>

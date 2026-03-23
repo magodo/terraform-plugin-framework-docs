@@ -13,7 +13,7 @@ Manages an action.
 ## Schema
 
 ### Required
-	
+
 - `bool` (Boolean, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) A boolean attribute.
 
 	Validators:
@@ -24,7 +24,7 @@ Manages an action.
 	!> Deprecated in favor of `boolean`.
 
 ### Optional
-	
+
 - `custom_block` (Block) A custom block. See the nested schema [here](#nested--custom_block).
 
 	-> A custom object type.

@@ -13,7 +13,7 @@ Manages an example resource.
 ## Schema
 
 ### Required
-	
+
 - `bool` (Boolean, Sensitive, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) A boolean attribute.
 
 	Plan Modifiers:
@@ -30,7 +30,7 @@ Manages an example resource.
 	!> Deprecated in favor of `boolean`.
 
 ### Optional
-	
+
 - `custom_block` (Block) A custom block. See the nested schema [here](#nested--custom_block).
 
 	-> A custom object type.
@@ -64,7 +64,7 @@ Manages an example resource.
 	- Value must be one of: ["foo" "bar" "baz"].
 
 ### Read-Only
-	
+
 - `dynamic` (Dynamic) A dynamic attribute.
 
 <a id="nested--custom_block"></a>

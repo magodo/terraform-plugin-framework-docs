@@ -42,7 +42,7 @@ action "examplecloud_resource" "example" {
 ## Schema
 
 ### Required
-	
+
 - `bool` (Boolean, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) A boolean attribute.
 
 	Validators:
@@ -53,7 +53,7 @@ action "examplecloud_resource" "example" {
 	!> Deprecated in favor of `boolean`.
 
 ### Optional
-	
+
 - `custom_block` (Block) A custom block. See the nested schema [here](#nested--custom_block).
 
 	-> A custom object type.
