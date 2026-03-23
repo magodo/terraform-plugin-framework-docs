@@ -35,7 +35,7 @@ example_function_simple(bool Boolean,string String,number Number,int32 Int32,int
 1. `list` (List of Strings) A list of string parameter.
 1. `set` (Set of Strings) A set of string parameter.
 1. `map` (Map of Strings) A map of string parameter.
-1. `object` (Object) An object parameter. See the nested schema [here](#nested--object).
+1. `object` (Object) An object parameter. See [below for nested schema](#nested--object).
 1. `custom_string` (String) A custom string attribute.
 
 	-> A custom string type.
@@ -53,7 +53,7 @@ example_function_simple(bool Boolean,string String,number Number,int32 Int32,int
 - `list` (List of Booleans) Description.
 - `map` (Map of Booleans) Description.
 - `number` (Number) Description.
-- `object` (Object) Description. See the nested schema [here](#nested--object.object).
+- `object` (Object) Description. See [below for nested schema](#nested--object.object).
 - `set` (Set of Booleans) Description.
 - `string` (String) Description.
 

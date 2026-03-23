@@ -86,7 +86,7 @@ func (field FunctionField) nestedKey() string {
 
 func (field FunctionField) NestedLink() string {
 	if field.isObject {
-		return fmt.Sprintf("See the nested schema [here](#nested--%s).", field.nestedKey())
+		return fmt.Sprintf("See [below for nested schema](#nested--%s).", field.nestedKey())
 	}
 	return ""
 }

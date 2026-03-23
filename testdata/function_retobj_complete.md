@@ -36,12 +36,12 @@ example_function_retobj(object Object) Object
 
 ## Arguments
 
-1. `object` (Object) An object parameter. See the nested schema [here](#nested--object).
+1. `object` (Object) An object parameter. See [below for nested schema](#nested--object).
 
 <a id="nested--object"></a>
 ### Fields of `object`
 
-- `foo` (Object) A foo field. See the nested schema [here](#nested--object.foo).
+- `foo` (Object) A foo field. See [below for nested schema](#nested--object.foo).
 
 <a id="nested--object.foo"></a>
 ### Fields of `object.foo`
@@ -56,7 +56,7 @@ This function returns an object indicating something.
 
 The `object` returned from `example_function_retobj` has the following attributes:
 
-- `retfoo` (Object) The retfoo field. See the nested schema [here](#nested--retfoo).
+- `retfoo` (Object) The retfoo field. See [below for nested schema](#nested--retfoo).
 
 <a id="nested--retfoo"></a>
 ### Fields of `retfoo`
