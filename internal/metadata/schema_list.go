@@ -172,9 +172,17 @@ func newListBlockFields(ctx context.Context, parents []string, blks map[string]s
 			field.validators = MapSlice(blk.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) })
 		case schema.ListNestedBlock:
 			field.validators = MapSlice(blk.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) })
+		default:
+			diags.AddError("unknown schema type", fmt.Sprintf("%T", blk))
+			return
 		}
 
-		objectNested, odiags := newListNestedBlkObjectFields(ctx, slices.Concat(parents, []string{name}), blk.GetNestedObject().(schema.NestedBlockObject))
+		// Nullify the validators of the single nested block since it is handled at the block level, which avoids to repeat in the nested schema level.
+		nestedObj := blk.GetNestedObject().(schema.NestedBlockObject)
+		if _, ok := blk.(schema.SingleNestedBlock); ok {
+			nestedObj.Validators = nil
+		}
+		objectNested, odiags := newListNestedBlkObjectFields(ctx, slices.Concat(parents, []string{name}), nestedObj)
 		diags = append(diags, odiags...)
 		if diags.HasError() {
 			return

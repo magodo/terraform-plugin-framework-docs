@@ -180,10 +180,6 @@ Optional:
 <a id="nested--single_block"></a>
 ### Nested Schema for `single_block`
 
-Validators:
-
-- Ensure that if an attribute is set, these are not set: "[list_block]".
-
 Required:
 
 - `bool` (Boolean) A nested bool attribute.

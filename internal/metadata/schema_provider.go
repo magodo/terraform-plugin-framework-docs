@@ -182,6 +182,9 @@ func newProviderBlockFields(ctx context.Context, parents []string, blks map[stri
 			field.validators = MapSlice(blk.Validators, func(v validator.List) string { return DescriptionCtxOf(ctx, v) })
 		case schema.SetNestedBlock:
 			field.validators = MapSlice(blk.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) })
+		default:
+			diags.AddError("unknown schema type", fmt.Sprintf("%T", blk))
+			return
 		}
 
 		objectNested, odiags := newProviderNestedBlkObjectFields(ctx, slices.Concat(parents, []string{name}), blk.GetNestedObject().(schema.NestedBlockObject))

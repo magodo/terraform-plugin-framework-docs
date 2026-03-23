@@ -65,6 +65,14 @@ resource "examplecloud_resource" "example" {
 - `int64` (Int64) A int64 attribute. Value defaults to `0`.
 - `list` (List of Strings) A list attribute. Value defaults to `["foo"]`.
 - `list_block` (List of Blocks) A list block. See [below for nested schema](#nested--list_block).
+
+	Plan Modifiers:
+
+	- Once set, the value of this attribute in state will not change.
+
+	Validators:
+
+	- Ensure that if an attribute is set, also these are set: "[single_block]".
 - `list_object` (List of Objects) A list object attribute. See [below for nested schema](#nested--list_object).
 - `map` (Map of Strings) A map attribute. Value defaults to `{"key":"val"}`.
 - `map_object` (Map of Objects) A map object attribute. See [below for nested schema](#nested--map_object).
@@ -295,10 +303,6 @@ Optional:
 - `string` (String) A nested nested string attribute.
 <a id="nested--single_block"></a>
 ### Nested Schema for `single_block`
-
-Validators:
-
-- Ensure that if an attribute is set, these are not set: "[list_block]".
 
 Required:
 
