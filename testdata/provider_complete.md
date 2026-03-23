@@ -18,7 +18,7 @@ The example provider.
 The basic configuration.
 
 ```terraform
-provider "examplecloud_resource" "example" {
+provider "examplecloud" {
   name = "foo"
 }
 ```
@@ -28,7 +28,7 @@ provider "examplecloud_resource" "example" {
 The complete configuration.
 
 ```terraform
-provider "examplecloud_resource" "example" {
+provider "examplecloud" {
   name    = "foo"
   address = "bar"
   age     = 123

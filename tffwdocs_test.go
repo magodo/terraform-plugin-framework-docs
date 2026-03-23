@@ -2,11 +2,14 @@ package tffwdocs_test
 
 import (
 	"bytes"
+	"context"
+	"log"
 	"os"
 	"testing"
 	"text/template"
 
 	tffwdocs "github.com/magodo/terraform-plugin-framework-docs"
+	"github.com/magodo/terraform-plugin-framework-docs/internal/metadata"
 	"github.com/magodo/terraform-plugin-framework-docs/internal/testprovider"
 	"github.com/stretchr/testify/require"
 )
@@ -29,7 +32,7 @@ func TestProviderRender(t *testing.T) {
 				Header:      new("Basic"),
 				Description: new("The basic configuration."),
 				HCL: []byte(`
-provider "examplecloud_resource" "example" {
+provider "examplecloud" {
 	name = "foo"
 }
 	`),
@@ -38,7 +41,7 @@ provider "examplecloud_resource" "example" {
 				Header:      new("Complete"),
 				Description: new("The complete configuration."),
 				HCL: []byte(`
-provider "examplecloud_resource" "example" {
+provider "examplecloud" {
 	name = "foo"
 	address = "bar"
 	age = 123
@@ -473,4 +476,93 @@ Some note...
 	expected, err = os.ReadFile("./testdata/function_retobj_custom.md")
 	require.NoError(t, err)
 	require.Equal(t, string(expected), buf.String(), "custom")
+}
+
+func ExampleGenerator_WriteAll() {
+	ctx := context.Background()
+	gen, err := tffwdocs.NewGenerator(ctx, &testprovider.ExampleCloudProvider{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := gen.WriteAll(ctx, "./internal/testprovider/docs", &tffwdocs.RenderOptions{
+		Provider: &metadata.ProviderRenderOption{
+			Examples: []tffwdocs.Example{
+				{
+					Header:      new("Basic"),
+					Description: new("The basic configuration."),
+					HCL: []byte(`
+provider "examplecloud" {
+	name = "foo"
+}
+	`),
+				},
+				{
+					Header:      new("Complete"),
+					Description: new("The complete configuration."),
+					HCL: []byte(`
+provider "examplecloud" {
+	name = "foo"
+	address = "bar"
+	age = 123
+	role = "Software Engineer"
+}
+	`),
+				},
+			},
+		},
+		Resources: map[string]tffwdocs.ResourceRenderOption{
+			"examplecloud_resource": metadata.ResourceRenderOption{
+				Subcategory: "abc",
+				Examples: []tffwdocs.Example{
+					{
+						Header:      new("Basic"),
+						Description: new("The basic configuration."),
+						HCL: []byte(`
+resource "examplecloud_resource" "example" {
+	name = "foo"
+}
+`),
+					},
+					{
+						Header:      new("Complete"),
+						Description: new("The complete configuration."),
+						HCL: []byte(`
+resource "examplecloud_resource" "example" {
+	name = "foo"
+	address = "bar"
+	age = 123
+	role = "Software Engineer"
+}
+`),
+					},
+				},
+				ImportId: &tffwdocs.ImportId{
+					Format:  "<parent_id>/<id>[/<version>]",
+					Example: "123/456",
+				},
+				IdentityExamples: []tffwdocs.Example{
+					{
+						Header:      new("Without Version"),
+						Description: new("Import without version."),
+						HCL: []byte(`
+parent_id = "123"
+id = "456"
+`),
+					},
+					{
+						Header:      new("With Version"),
+						Description: new("Import with version."),
+						HCL: []byte(`
+parent_id = "123"
+id = "456"
+version = "v2"
+`),
+					},
+				},
+			},
+		},
+	}); err != nil {
+		log.Fatal(err)
+	}
+	// Output:
 }
