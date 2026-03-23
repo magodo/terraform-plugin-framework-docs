@@ -109,7 +109,12 @@ func newProviderAttrFields(ctx context.Context, parents []string, attrs map[stri
 			field.validators = MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) })
 
 			field.isObject = true
-			objectNested, objectDiags = newProviderNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
+
+			// Nullify the validators of the single nested block since it is handled at the block level, which avoids to repeat in the nested schema level.
+			nestedObj := attr.GetNestedObject().(schema.NestedAttributeObject)
+			nestedObj.Validators = nil
+
+			objectNested, objectDiags = newProviderNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), nestedObj)
 		case schema.SetNestedAttribute:
 			field.validators = MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) })
 
@@ -187,7 +192,12 @@ func newProviderBlockFields(ctx context.Context, parents []string, blks map[stri
 			return
 		}
 
-		objectNested, odiags := newProviderNestedBlkObjectFields(ctx, slices.Concat(parents, []string{name}), blk.GetNestedObject().(schema.NestedBlockObject))
+		// Nullify the validators of the single nested block since it is handled at the block level, which avoids to repeat in the nested schema level.
+		nestedObj := blk.GetNestedObject().(schema.NestedBlockObject)
+		if _, ok := blk.(schema.SingleNestedBlock); ok {
+			nestedObj.Validators = nil
+		}
+		objectNested, odiags := newProviderNestedBlkObjectFields(ctx, slices.Concat(parents, []string{name}), nestedObj)
 		diags = append(diags, odiags...)
 		if diags.HasError() {
 			return

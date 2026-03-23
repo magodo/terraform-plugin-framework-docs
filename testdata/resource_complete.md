@@ -90,6 +90,14 @@ resource "examplecloud_resource" "example" {
 
 	- Ensure that if an attribute is set, these are not set: "[list_block]".
 - `single_object` (Object) A single object attribute. See [below for nested schema](#nested--single_object).
+
+	Plan Modifiers:
+
+	- If the value of this attribute changes, Terraform will destroy and recreate the resource.
+
+	Validators:
+
+	- Ensure that if an attribute is set, also these are set: "[foo]".
 - `string` (String, Sensitive, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) A string attribute. Value defaults to ``.
 
 	Validators:

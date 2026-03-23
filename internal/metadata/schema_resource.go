@@ -140,7 +140,13 @@ func newResourceAttrFields(ctx context.Context, parents []string, attrs map[stri
 			field.defaultDesc = MapOrZero(attr.Default, func(v defaults.Object) string { return DescriptionCtxOf(ctx, v) })
 
 			field.isObject = true
-			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
+
+			// Nullify the validators of the single nested block since it is handled at the block level, which avoids to repeat in the nested schema level.
+			nestedObj := attr.GetNestedObject().(schema.NestedAttributeObject)
+			nestedObj.PlanModifiers = nil
+			nestedObj.Validators = nil
+
+			objectNested, objectDiags = newResourceNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), nestedObj)
 		case schema.SetNestedAttribute:
 			field.planModifiers = MapSlice(attr.PlanModifiers, func(v planmodifier.Set) string { return DescriptionCtxOf(ctx, v) })
 			field.validators = MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) })
@@ -232,6 +238,7 @@ func newResourceBlockFields(ctx context.Context, parents []string, blks map[stri
 		nestedObj := blk.GetNestedObject().(schema.NestedBlockObject)
 		if _, ok := blk.(schema.SingleNestedBlock); ok {
 			nestedObj.Validators = nil
+			nestedObj.PlanModifiers = nil
 		}
 		objectNested, odiags := newResourceNestedBlkObjectFields(ctx, slices.Concat(parents, []string{name}), nestedObj)
 		diags = append(diags, odiags...)

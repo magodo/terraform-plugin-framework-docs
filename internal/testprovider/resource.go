@@ -171,6 +171,12 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				MarkdownDescription: "A single object attribute.",
 				Optional:            true,
 				Attributes:          nestedAttrs,
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.RequiresReplace(),
+				},
+				Validators: []validator.Object{
+					objectvalidator.AlsoRequires(path.MatchRoot("foo")),
+				},
 			},
 			"list_object": schema.ListNestedAttribute{
 				MarkdownDescription: "A list object attribute.",

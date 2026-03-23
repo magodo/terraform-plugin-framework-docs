@@ -110,7 +110,12 @@ func newActionAttrFields(ctx context.Context, parents []string, attrs map[string
 			field.validators = MapSlice(attr.Validators, func(v validator.Object) string { return DescriptionCtxOf(ctx, v) })
 
 			field.isObject = true
-			objectNested, objectDiags = newActionNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), attr.GetNestedObject().(schema.NestedAttributeObject))
+
+			// Nullify the validators of the single nested block since it is handled at the block level, which avoids to repeat in the nested schema level.
+			nestedObj := attr.GetNestedObject().(schema.NestedAttributeObject)
+			nestedObj.Validators = nil
+
+			objectNested, objectDiags = newActionNestedAttrObjectFields(ctx, slices.Concat(parents, []string{name}), nestedObj)
 		case schema.SetNestedAttribute:
 			field.validators = MapSlice(attr.Validators, func(v validator.Set) string { return DescriptionCtxOf(ctx, v) })
 
