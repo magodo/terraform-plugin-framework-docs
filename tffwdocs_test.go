@@ -29,8 +29,8 @@ func TestProviderRender(t *testing.T) {
 	opt := &tffwdocs.ProviderRenderOption{
 		Examples: []tffwdocs.Example{
 			{
-				Header:      new("Basic"),
-				Description: new("The basic configuration."),
+				Header:      "Basic",
+				Description: "The basic configuration.",
 				HCL: []byte(`
 provider "examplecloud" {
 	name = "foo"
@@ -38,8 +38,8 @@ provider "examplecloud" {
 	`),
 			},
 			{
-				Header:      new("Complete"),
-				Description: new("The complete configuration."),
+				Header:      "Complete",
+				Description: "The complete configuration.",
 				HCL: []byte(`
 provider "examplecloud" {
 	name = "foo"
@@ -86,8 +86,8 @@ func TestResourceRender(t *testing.T) {
 		Subcategory: "abc",
 		Examples: []tffwdocs.Example{
 			{
-				Header:      new("Basic"),
-				Description: new("The basic configuration."),
+				Header:      "Basic",
+				Description: "The basic configuration.",
 				HCL: []byte(`
 resource "examplecloud_resource" "example" {
 	name = "foo"
@@ -95,8 +95,8 @@ resource "examplecloud_resource" "example" {
 `),
 			},
 			{
-				Header:      new("Complete"),
-				Description: new("The complete configuration."),
+				Header:      "Complete",
+				Description: "The complete configuration.",
 				HCL: []byte(`
 resource "examplecloud_resource" "example" {
 	name = "foo"
@@ -113,16 +113,16 @@ resource "examplecloud_resource" "example" {
 		},
 		IdentityExamples: []tffwdocs.Example{
 			{
-				Header:      new("Without Version"),
-				Description: new("Import without version."),
+				Header:      "Without Version",
+				Description: "Import without version.",
 				HCL: []byte(`
 parent_id = "123"
 id = "456"
 `),
 			},
 			{
-				Header:      new("With Version"),
-				Description: new("Import with version."),
+				Header:      "With Version",
+				Description: "Import with version.",
 				HCL: []byte(`
 parent_id = "123"
 id = "456"
@@ -166,8 +166,8 @@ func TestDataSourceRender(t *testing.T) {
 		Subcategory: "abc",
 		Examples: []tffwdocs.Example{
 			{
-				Header:      new("Basic"),
-				Description: new("The basic configuration."),
+				Header:      "Basic",
+				Description: "The basic configuration.",
 				HCL: []byte(`
 data "examplecloud_resource" "example" {
 	name = "foo"
@@ -175,8 +175,8 @@ data "examplecloud_resource" "example" {
 	`),
 			},
 			{
-				Header:      new("Complete"),
-				Description: new("The complete configuration."),
+				Header:      "Complete",
+				Description: "The complete configuration.",
 				HCL: []byte(`
 data "examplecloud_resource" "example" {
 	name = "foo"
@@ -223,8 +223,8 @@ func TestEphemeralRender(t *testing.T) {
 		Subcategory: "abc",
 		Examples: []tffwdocs.Example{
 			{
-				Header:      new("Basic"),
-				Description: new("The basic configuration."),
+				Header:      "Basic",
+				Description: "The basic configuration.",
 				HCL: []byte(`
 ephemeral "examplecloud_resource" "example" {
 	name = "foo"
@@ -232,8 +232,8 @@ ephemeral "examplecloud_resource" "example" {
 	`),
 			},
 			{
-				Header:      new("Complete"),
-				Description: new("The complete configuration."),
+				Header:      "Complete",
+				Description: "The complete configuration.",
 				HCL: []byte(`
 ephemeral "examplecloud_resource" "example" {
 	name = "foo"
@@ -280,8 +280,8 @@ func TestActionRender(t *testing.T) {
 		Subcategory: "abc",
 		Examples: []tffwdocs.Example{
 			{
-				Header:      new("Basic"),
-				Description: new("The basic configuration."),
+				Header:      "Basic",
+				Description: "The basic configuration.",
 				HCL: []byte(`
 action "examplecloud_resource" "example" {
 	config {
@@ -291,8 +291,8 @@ action "examplecloud_resource" "example" {
 	`),
 			},
 			{
-				Header:      new("Complete"),
-				Description: new("The complete configuration."),
+				Header:      "Complete",
+				Description: "The complete configuration.",
 				HCL: []byte(`
 action "examplecloud_resource" "example" {
 	config {
@@ -341,8 +341,8 @@ func TestListRender(t *testing.T) {
 		Subcategory: "abc",
 		Examples: []tffwdocs.Example{
 			{
-				Header:      new("Basic"),
-				Description: new("The basic configuration."),
+				Header:      "Basic",
+				Description: "The basic configuration.",
 				HCL: []byte(`
 list "examplecloud_resource" "example" {
 	config {
@@ -352,8 +352,8 @@ list "examplecloud_resource" "example" {
 	`),
 			},
 			{
-				Header:      new("Complete"),
-				Description: new("The complete configuration."),
+				Header:      "Complete",
+				Description: "The complete configuration.",
 				HCL: []byte(`
 list "examplecloud_resource" "example" {
 	config {
@@ -402,13 +402,13 @@ func TestFunctionRenderSimple(t *testing.T) {
 		Subcategory: "abc",
 		Examples: []tffwdocs.Example{
 			{
-				Header:      new("Basic"),
-				Description: new("The basic call."),
+				Header:      "Basic",
+				Description: "The basic call.",
 				HCL:         []byte(`example_function_simple(...)`),
 			},
 			{
-				Header:      new("Complete"),
-				Description: new("The complete call."),
+				Header:      "Complete",
+				Description: "The complete call.",
 				HCL:         []byte(`example_function_simple(...)`),
 			},
 		},
@@ -448,13 +448,13 @@ func TestFunctionRenderRetObj(t *testing.T) {
 		Subcategory: "abc",
 		Examples: []tffwdocs.Example{
 			{
-				Header:      new("Basic"),
-				Description: new("The basic call."),
+				Header:      "Basic",
+				Description: "The basic call.",
 				HCL:         []byte(`example_function_retobj(...)`),
 			},
 			{
-				Header:      new("Complete"),
-				Description: new("The complete call."),
+				Header:      "Complete",
+				Description: "The complete call.",
 				HCL:         []byte(`example_function_retobj(...)`),
 			},
 		},
@@ -488,8 +488,8 @@ func ExampleGenerator_WriteAll() {
 		Provider: &metadata.ProviderRenderOption{
 			Examples: []tffwdocs.Example{
 				{
-					Header:      new("Basic"),
-					Description: new("The basic configuration."),
+					Header:      "Basic",
+					Description: "The basic configuration.",
 					HCL: []byte(`
 provider "examplecloud" {
 	name = "foo"
@@ -497,8 +497,8 @@ provider "examplecloud" {
 	`),
 				},
 				{
-					Header:      new("Complete"),
-					Description: new("The complete configuration."),
+					Header:      "Complete",
+					Description: "The complete configuration.",
 					HCL: []byte(`
 provider "examplecloud" {
 	name = "foo"
@@ -515,8 +515,8 @@ provider "examplecloud" {
 				Subcategory: "abc",
 				Examples: []tffwdocs.Example{
 					{
-						Header:      new("Basic"),
-						Description: new("The basic configuration."),
+						Header:      "Basic",
+						Description: "The basic configuration.",
 						HCL: []byte(`
 resource "examplecloud_resource" "example" {
 	name = "foo"
@@ -524,8 +524,8 @@ resource "examplecloud_resource" "example" {
 `),
 					},
 					{
-						Header:      new("Complete"),
-						Description: new("The complete configuration."),
+						Header:      "Complete",
+						Description: "The complete configuration.",
 						HCL: []byte(`
 resource "examplecloud_resource" "example" {
 	name = "foo"
@@ -542,16 +542,16 @@ resource "examplecloud_resource" "example" {
 				},
 				IdentityExamples: []tffwdocs.Example{
 					{
-						Header:      new("Without Version"),
-						Description: new("Import without version."),
+						Header:      "Without Version",
+						Description: "Import without version.",
 						HCL: []byte(`
 parent_id = "123"
 id = "456"
 `),
 					},
 					{
-						Header:      new("With Version"),
-						Description: new("Import with version."),
+						Header:      "With Version",
+						Description: "Import with version.",
 						HCL: []byte(`
 parent_id = "123"
 id = "456"

@@ -110,13 +110,13 @@ In Terraform v1.12.0 and later, the [%[1]simport%[1]s block](https://developer.h
 	}
 
 	for _, example := range b.IdentityExamples {
-		if example.Header != nil {
-			if _, err := fmt.Fprintf(w, "\n#### Example: %s\n", *example.Header); err != nil {
+		if example.Header != "" {
+			if _, err := fmt.Fprintf(w, "\n#### Example: %s\n", example.Header); err != nil {
 				return err
 			}
 		}
-		if example.Description != nil {
-			if _, err := fmt.Fprintf(w, "\n%s\n", *example.Description); err != nil {
+		if example.Description != "" {
+			if _, err := fmt.Fprintf(w, "\n%s\n", example.Description); err != nil {
 				return err
 			}
 		}

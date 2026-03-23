@@ -9,8 +9,8 @@ import (
 )
 
 type Example struct {
-	Header      *string
-	Description *string
+	Header      string
+	Description string
 	HCL         []byte
 }
 
@@ -20,13 +20,13 @@ func renderExamples(w io.Writer, examples []Example) error {
 			return err
 		}
 		for _, example := range examples {
-			if example.Header != nil {
-				if _, err := fmt.Fprintf(w, "\n### %s\n", *example.Header); err != nil {
+			if example.Header != "" {
+				if _, err := fmt.Fprintf(w, "\n### %s\n", example.Header); err != nil {
 					return err
 				}
 			}
-			if example.Description != nil {
-				if _, err := fmt.Fprintf(w, "\n%s\n", *example.Description); err != nil {
+			if example.Description != "" {
+				if _, err := fmt.Fprintf(w, "\n%s\n", example.Description); err != nil {
 					return err
 				}
 			}
