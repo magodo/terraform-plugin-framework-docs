@@ -73,6 +73,9 @@ func renderNestedFields(w io.Writer, fields NestedFields) error {
 
 		if l := field.Validators(); len(l) != 0 {
 			for _, e := range l {
+				if e == "" {
+					continue
+				}
 				if _, err := fmt.Fprintf(w, "\n-> %s\n", e); err != nil {
 					return err
 				}
@@ -138,6 +141,9 @@ func renderField(w io.Writer, field Field) error {
 
 	if l := field.PlanModifiers(); len(l) != 0 {
 		for _, e := range l {
+			if e == "" {
+				continue
+			}
 			if _, err := fmt.Fprintf(w, "\n\t~> %s\n", e); err != nil {
 				return err
 			}
@@ -146,6 +152,9 @@ func renderField(w io.Writer, field Field) error {
 
 	if l := field.Validators(); len(l) != 0 {
 		for _, e := range l {
+			if e == "" {
+				continue
+			}
 			if _, err := fmt.Fprintf(w, "\n\t-> %s\n", e); err != nil {
 				return err
 			}

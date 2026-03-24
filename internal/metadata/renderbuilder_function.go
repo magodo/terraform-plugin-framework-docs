@@ -137,6 +137,9 @@ func (b functionRenderBuilder) renderArgument(w io.Writer, field FunctionField) 
 
 	if l := field.Validators(); len(l) != 0 {
 		for _, e := range l {
+			if e == "" {
+				continue
+			}
 			if _, err := fmt.Fprintf(w, "\n\t-> %s\n", e); err != nil {
 				return err
 			}
