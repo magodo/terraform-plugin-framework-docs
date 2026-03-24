@@ -117,6 +117,38 @@ func (gen Generator) WriteAll(ctx context.Context, docDir string, opts *RenderOp
 		}
 	}
 
+	// Validate render options
+	for name := range opts.Resources {
+		if _, ok := gen.metadata.Resources[name]; !ok {
+			return fmt.Errorf("invalid render option: unknown resource type: %v", name)
+		}
+	}
+	for name := range opts.DataSources {
+		if _, ok := gen.metadata.DataSources[name]; !ok {
+			return fmt.Errorf("invalid render option: unknown data source type: %v", name)
+		}
+	}
+	for name := range opts.EphemeralResources {
+		if _, ok := gen.metadata.Ephemerals[name]; !ok {
+			return fmt.Errorf("invalid render option: unknown ephemeral resource type: %v", name)
+		}
+	}
+	for name := range opts.ListResources {
+		if _, ok := gen.metadata.Lists[name]; !ok {
+			return fmt.Errorf("invalid render option: unknown list resource type: %v", name)
+		}
+	}
+	for name := range opts.Actions {
+		if _, ok := gen.metadata.Actions[name]; !ok {
+			return fmt.Errorf("invalid render option: unknown action type: %v", name)
+		}
+	}
+	for name := range opts.Functions {
+		if _, ok := gen.metadata.Functions[name]; !ok {
+			return fmt.Errorf("invalid render option: unknown function type: %v", name)
+		}
+	}
+
 	// Provider
 	{
 		var buf bytes.Buffer
