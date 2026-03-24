@@ -1,16 +1,17 @@
 package metadata
 
 import (
-	"bytes"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
 type ImportId struct {
-	Format  string
-	Example string
+	Format        string
+	ExampleCmdArg string
+	ExampleBlk    string
 }
 
 type resourceRenderBuilder struct {
@@ -69,23 +70,28 @@ func (b resourceRenderBuilder) renderImport(w io.Writer) error {
 }
 
 func (b resourceRenderBuilder) renderImportId(w io.Writer, importId ImportId) error {
+	importBlock := hclwrite.Format([]byte(strings.TrimSpace(importId.ExampleBlk)))
+
 	if _, err := fmt.Fprintf(w, `### Import ID
 
-The [%[1]sterraform import%[1]s command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used with the id format: %[1]s%[2]s%[1]s, for example:
+The [%[1]sterraform import%[1]s command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used with the id format:
 
 %[1]s%[1]s%[1]sshell
-$ terraform import %[3]s.example "%[4]s"
+%[2]s
+%[1]s%[1]s%[1]s
+
+For example:
+
+%[1]s%[1]s%[1]sshell
+$ terraform import %[3]s.example '%[4]s'
 %[1]s%[1]s%[1]s
 
 In Terraform v1.5.0 and later, the [%[1]simport%[1]s block](https://developer.hashicorp.com/terraform/language/block/import) can be used with the %[1]sid%[1]s attribute, for example:
 
 %[1]s%[1]s%[1]sterraform
-import {
-  to = %[3]s.example
-  id = "%[4]s"
-}
+%[5]s
 %[1]s%[1]s%[1]s
-`, "`", importId.Format, b.ResourceType, importId.Example); err != nil {
+`, "`", importId.Format, b.ResourceType, importId.ExampleCmdArg, string(importBlock)); err != nil {
 		return err
 	}
 
@@ -93,13 +99,8 @@ import {
 }
 
 func (b resourceRenderBuilder) renderImportIdentity(w io.Writer, schema ResourceIdentitySchema) error {
-	formatExample := func(example []byte) []byte {
-		return hclwrite.Format(fmt.Appendf(nil, `import {
-  to = %s.example
-  identity = {
-    %s
-  }
-}`, b.ResourceType, bytes.TrimSpace(example)))
+	formatExample := func(example string) []byte {
+		return hclwrite.Format([]byte(strings.TrimSpace(example)))
 	}
 
 	if _, err := fmt.Fprintf(w, `### Import Identity
@@ -120,7 +121,7 @@ In Terraform v1.12.0 and later, the [%[1]simport%[1]s block](https://developer.h
 				return err
 			}
 		}
-		if example.HCL != nil {
+		if example.HCL != "" {
 			if _, err := fmt.Fprintf(w, "\n```terraform\n%s\n```\n", formatExample(example.HCL)); err != nil {
 				return err
 			}

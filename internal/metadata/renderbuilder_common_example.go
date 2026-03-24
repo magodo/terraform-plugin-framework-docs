@@ -11,7 +11,7 @@ import (
 type Example struct {
 	Header      string
 	Description string
-	HCL         []byte
+	HCL         string
 }
 
 func renderExamples(w io.Writer, examples []Example) error {
@@ -30,8 +30,8 @@ func renderExamples(w io.Writer, examples []Example) error {
 					return err
 				}
 			}
-			if example.HCL != nil {
-				if _, err := fmt.Fprintf(w, "\n```terraform\n%s\n```\n", bytes.TrimSpace(hclwrite.Format(example.HCL))); err != nil {
+			if example.HCL != "" {
+				if _, err := fmt.Fprintf(w, "\n```terraform\n%s\n```\n", bytes.TrimSpace(hclwrite.Format([]byte(example.HCL)))); err != nil {
 					return err
 				}
 			}

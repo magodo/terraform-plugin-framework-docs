@@ -338,10 +338,16 @@ Optional:
 
 ### Import ID
 
-The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used with the id format: `<parent_id>/<id>[/<version>]`, for example:
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used with the id format:
 
 ```shell
-$ terraform import examplecloud_resource.example "123/456"
+<parent_id>/<id>[/<version>]
+```
+
+For example:
+
+```shell
+$ terraform import examplecloud_resource.example '123/456'
 ```
 
 In Terraform v1.5.0 and later, the [`import` block](https://developer.hashicorp.com/terraform/language/block/import) can be used with the `id` attribute, for example:
