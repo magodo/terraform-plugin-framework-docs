@@ -40,9 +40,7 @@ example_function_simple(bool Boolean,string String,number Number,int32 Int32,int
 
 1. `bool` (Boolean, Nullable, Unknownable) A bool parameter.
 
-	Validators:
-
-	- Value must be "true".
+	-> Value must be "true".
 1. `string` (String) A string parameter
 1. `number` (Number) A number parameter
 1. `int32` (Int32) A int32 parameter

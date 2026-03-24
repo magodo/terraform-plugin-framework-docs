@@ -16,16 +16,15 @@ Manages an example resource.
 
 - `bool` (Boolean, Sensitive, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) A boolean attribute.
 
-	Plan Modifiers:
+	~> If the value of this attribute changes, Terraform will destroy and recreate the resource.
 
-	- If the value of this attribute changes, Terraform will destroy and recreate the resource.
-	- Once set, the value of this attribute in state will not change.
-	- A conditional requires replace if.
+	~> Once set, the value of this attribute in state will not change.
 
-	Validators:
+	~> A conditional requires replace if.
 
-	- Ensure that if an attribute is set, also these are set: "[string,int64]".
-	- Ensure that if an attribute is set, these are not set: "[list]".
+	-> Ensure that if an attribute is set, also these are set: "[string,int64]".
+
+	-> Ensure that if an attribute is set, these are not set: "[list]".
 
 	!> Deprecated in favor of `boolean`.
 
@@ -41,13 +40,9 @@ Manages an example resource.
 - `list` (List of Strings) A list attribute. Value defaults to `["foo"]`.
 - `list_block` (List of Blocks) A list block. See [below for nested schema](#nested--list_block).
 
-	Plan Modifiers:
+	~> Once set, the value of this attribute in state will not change.
 
-	- Once set, the value of this attribute in state will not change.
-
-	Validators:
-
-	- Ensure that if an attribute is set, also these are set: "[single_block]".
+	-> Ensure that if an attribute is set, also these are set: "[single_block]".
 - `list_object` (List of Objects) A list object attribute. See [below for nested schema](#nested--list_object).
 - `map` (Map of Strings) A map attribute. Value defaults to `{"key":"val"}`.
 - `map_object` (Map of Objects) A map object attribute. See [below for nested schema](#nested--map_object).
@@ -57,27 +52,17 @@ Manages an example resource.
 - `set_object` (Set of Objects) A set object attribute. See [below for nested schema](#nested--set_object).
 - `single_block` (Block) A single block. See [below for nested schema](#nested--single_block).
 
-	Plan Modifiers:
+	~> If the value of this attribute changes, Terraform will destroy and recreate the resource.
 
-	- If the value of this attribute changes, Terraform will destroy and recreate the resource.
-
-	Validators:
-
-	- Ensure that if an attribute is set, these are not set: "[list_block]".
+	-> Ensure that if an attribute is set, these are not set: "[list_block]".
 - `single_object` (Object) A single object attribute. See [below for nested schema](#nested--single_object).
 
-	Plan Modifiers:
+	~> If the value of this attribute changes, Terraform will destroy and recreate the resource.
 
-	- If the value of this attribute changes, Terraform will destroy and recreate the resource.
-
-	Validators:
-
-	- Ensure that if an attribute is set, also these are set: "[foo]".
+	-> Ensure that if an attribute is set, also these are set: "[foo]".
 - `string` (String, Sensitive, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) A string attribute. Value defaults to ``.
 
-	Validators:
-
-	- Value must be one of: ["foo" "bar" "baz"].
+	-> Value must be one of: ["foo" "bar" "baz"].
 
 ### Read-Only
 
@@ -92,9 +77,7 @@ Optional:
 <a id="nested--list_block"></a>
 ### Nested Schema for `list_block`
 
-Validators:
-
-- Must have a configuration value as the provider has marked it as required.
+-> Must have a configuration value as the provider has marked it as required.
 
 Required:
 
@@ -108,13 +91,9 @@ Optional:
 - `nested_object` (Object) A nested single object attribute. See [below for nested schema](#nested--list_block.nested_object).
 - `string` (String) A nested string attribute.
 
-	Plan Modifiers:
+	~> If the value of this attribute changes, Terraform will destroy and recreate the resource.
 
-	- If the value of this attribute changes, Terraform will destroy and recreate the resource.
-
-	Validators:
-
-	- Value must be one of: ["foo" "bar" "baz"].
+	-> Value must be one of: ["foo" "bar" "baz"].
 <a id="nested--list_block.nested_block"></a>
 ### Nested Schema for `list_block.nested_block`
 
@@ -145,13 +124,9 @@ Optional:
 - `nested_object` (Object) A nested single object attribute. See [below for nested schema](#nested--list_object.nested_object).
 - `string` (String) A nested string attribute.
 
-	Plan Modifiers:
+	~> If the value of this attribute changes, Terraform will destroy and recreate the resource.
 
-	- If the value of this attribute changes, Terraform will destroy and recreate the resource.
-
-	Validators:
-
-	- Value must be one of: ["foo" "bar" "baz"].
+	-> Value must be one of: ["foo" "bar" "baz"].
 <a id="nested--list_object.nested_object"></a>
 ### Nested Schema for `list_object.nested_object`
 
@@ -176,13 +151,9 @@ Optional:
 - `nested_object` (Object) A nested single object attribute. See [below for nested schema](#nested--map_object.nested_object).
 - `string` (String) A nested string attribute.
 
-	Plan Modifiers:
+	~> If the value of this attribute changes, Terraform will destroy and recreate the resource.
 
-	- If the value of this attribute changes, Terraform will destroy and recreate the resource.
-
-	Validators:
-
-	- Value must be one of: ["foo" "bar" "baz"].
+	-> Value must be one of: ["foo" "bar" "baz"].
 <a id="nested--map_object.nested_object"></a>
 ### Nested Schema for `map_object.nested_object`
 
@@ -230,13 +201,9 @@ Optional:
 - `nested_object` (Object) A nested single object attribute. See [below for nested schema](#nested--set_block.nested_object).
 - `string` (String) A nested string attribute.
 
-	Plan Modifiers:
+	~> If the value of this attribute changes, Terraform will destroy and recreate the resource.
 
-	- If the value of this attribute changes, Terraform will destroy and recreate the resource.
-
-	Validators:
-
-	- Value must be one of: ["foo" "bar" "baz"].
+	-> Value must be one of: ["foo" "bar" "baz"].
 <a id="nested--set_block.nested_block"></a>
 ### Nested Schema for `set_block.nested_block`
 
@@ -267,13 +234,9 @@ Optional:
 - `nested_object` (Object) A nested single object attribute. See [below for nested schema](#nested--set_object.nested_object).
 - `string` (String) A nested string attribute.
 
-	Plan Modifiers:
+	~> If the value of this attribute changes, Terraform will destroy and recreate the resource.
 
-	- If the value of this attribute changes, Terraform will destroy and recreate the resource.
-
-	Validators:
-
-	- Value must be one of: ["foo" "bar" "baz"].
+	-> Value must be one of: ["foo" "bar" "baz"].
 <a id="nested--set_object.nested_object"></a>
 ### Nested Schema for `set_object.nested_object`
 
@@ -299,13 +262,9 @@ Optional:
 - `nested_object` (Object) A nested single object attribute. See [below for nested schema](#nested--single_block.nested_object).
 - `string` (String) A nested string attribute.
 
-	Plan Modifiers:
+	~> If the value of this attribute changes, Terraform will destroy and recreate the resource.
 
-	- If the value of this attribute changes, Terraform will destroy and recreate the resource.
-
-	Validators:
-
-	- Value must be one of: ["foo" "bar" "baz"].
+	-> Value must be one of: ["foo" "bar" "baz"].
 <a id="nested--single_block.nested_block"></a>
 ### Nested Schema for `single_block.nested_block`
 
@@ -336,13 +295,9 @@ Optional:
 - `nested_object` (Object) A nested single object attribute. See [below for nested schema](#nested--single_object.nested_object).
 - `string` (String) A nested string attribute.
 
-	Plan Modifiers:
+	~> If the value of this attribute changes, Terraform will destroy and recreate the resource.
 
-	- If the value of this attribute changes, Terraform will destroy and recreate the resource.
-
-	Validators:
-
-	- Value must be one of: ["foo" "bar" "baz"].
+	-> Value must be one of: ["foo" "bar" "baz"].
 <a id="nested--single_object.nested_object"></a>
 ### Nested Schema for `single_object.nested_object`
 
