@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/magodo/terraform-plugin-framework-docs/internal/metadata"
@@ -127,6 +128,8 @@ func (gen Generator) WriteAll(ctx context.Context, docDir string, opts *RenderOp
 		}
 	}
 
+	providerPrefix := gen.metadata.ProviderName + "_"
+
 	// Resources
 	for name := range gen.metadata.Resources {
 		var buf bytes.Buffer
@@ -141,7 +144,7 @@ func (gen Generator) WriteAll(ctx context.Context, docDir string, opts *RenderOp
 		if err := os.Mkdir(dir, 0755); err != nil && !os.IsExist(err) {
 			return fmt.Errorf("mkdir %q: %v", dir, err)
 		}
-		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.md", name)), buf.Bytes(), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.md", strings.TrimPrefix(name, providerPrefix))), buf.Bytes(), 0644); err != nil {
 			return fmt.Errorf("write resource file for %q: %v", name, err)
 		}
 	}
@@ -160,7 +163,7 @@ func (gen Generator) WriteAll(ctx context.Context, docDir string, opts *RenderOp
 		if err := os.Mkdir(dir, 0755); err != nil && !os.IsExist(err) {
 			return fmt.Errorf("mkdir %q: %v", dir, err)
 		}
-		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.md", name)), buf.Bytes(), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.md", strings.TrimPrefix(name, providerPrefix))), buf.Bytes(), 0644); err != nil {
 			return fmt.Errorf("write data source file for %q: %v", name, err)
 		}
 	}
@@ -179,7 +182,7 @@ func (gen Generator) WriteAll(ctx context.Context, docDir string, opts *RenderOp
 		if err := os.Mkdir(dir, 0755); err != nil && !os.IsExist(err) {
 			return fmt.Errorf("mkdir %q: %v", dir, err)
 		}
-		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.md", name)), buf.Bytes(), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.md", strings.TrimPrefix(name, providerPrefix))), buf.Bytes(), 0644); err != nil {
 			return fmt.Errorf("write ephemeral resource file for %q: %v", name, err)
 		}
 	}
@@ -198,7 +201,7 @@ func (gen Generator) WriteAll(ctx context.Context, docDir string, opts *RenderOp
 		if err := os.Mkdir(dir, 0755); err != nil && !os.IsExist(err) {
 			return fmt.Errorf("mkdir %q: %v", dir, err)
 		}
-		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.md", name)), buf.Bytes(), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.md", strings.TrimPrefix(name, providerPrefix))), buf.Bytes(), 0644); err != nil {
 			return fmt.Errorf("write list resource file for %q: %v", name, err)
 		}
 	}
@@ -217,7 +220,7 @@ func (gen Generator) WriteAll(ctx context.Context, docDir string, opts *RenderOp
 		if err := os.Mkdir(dir, 0755); err != nil && !os.IsExist(err) {
 			return fmt.Errorf("mkdir %q: %v", dir, err)
 		}
-		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.md", name)), buf.Bytes(), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.md", strings.TrimPrefix(name, providerPrefix))), buf.Bytes(), 0644); err != nil {
 			return fmt.Errorf("write action file for %q: %v", name, err)
 		}
 	}
@@ -236,7 +239,7 @@ func (gen Generator) WriteAll(ctx context.Context, docDir string, opts *RenderOp
 		if err := os.Mkdir(dir, 0755); err != nil && !os.IsExist(err) {
 			return fmt.Errorf("mkdir %q: %v", dir, err)
 		}
-		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.md", name)), buf.Bytes(), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.md", strings.TrimPrefix(name, providerPrefix))), buf.Bytes(), 0644); err != nil {
 			return fmt.Errorf("write function file for %q: %v", name, err)
 		}
 	}
