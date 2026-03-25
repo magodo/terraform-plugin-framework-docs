@@ -38,6 +38,11 @@ func (metadata Metadata) NewFunctionRender(functionName string, opt *FunctionRen
 		FunctionName: functionName,
 		Metadata:     fmetadata,
 	}
+
+	if opt == nil {
+		opt = fmetadata.RenderOption
+	}
+
 	var tpl *template.Template
 	if opt != nil {
 		tpl = opt.Template

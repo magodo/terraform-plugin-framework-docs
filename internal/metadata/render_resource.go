@@ -38,6 +38,11 @@ func (metadata Metadata) NewResourceRender(resourceType string, opt *ResourceRen
 		ResourceType: resourceType,
 		Metadata:     resmetadata,
 	}
+
+	if opt == nil {
+		opt = resmetadata.RenderOption
+	}
+
 	var tpl *template.Template
 	if opt != nil {
 		tpl = opt.Template

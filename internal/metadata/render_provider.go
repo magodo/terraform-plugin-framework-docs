@@ -22,8 +22,13 @@ type ProviderRender struct {
 func (metadata Metadata) NewProviderRender(opt *ProviderRenderOption) (*ProviderRender, error) {
 	src := providerRenderBuilder{
 		ProviderName: metadata.ProviderName,
-		Schema:       metadata.ProviderSchema,
+		Schema:       metadata.Provider.Schema,
 	}
+
+	if opt == nil {
+		opt = metadata.Provider.RenderOption
+	}
+
 	var tpl *template.Template
 	if opt != nil {
 		tpl = opt.Template

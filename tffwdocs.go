@@ -46,6 +46,8 @@ type RenderOptions struct {
 	Functions          map[string]FunctionRenderOption
 }
 
+// RenderProvider renders the provider document.
+// If option is specified, it will override the ProviderWithRenderOption.RenderOption() if is implemented.
 func (gen Generator) RenderProvider(ctx context.Context, w io.Writer, option *ProviderRenderOption) error {
 	rr, err := gen.metadata.NewProviderRender(option)
 	if err != nil {
@@ -54,6 +56,8 @@ func (gen Generator) RenderProvider(ctx context.Context, w io.Writer, option *Pr
 	return rr.Execute(w)
 }
 
+// RenderResource renders the resource document.
+// If option is specified, it will override the ResourceWithRenderOption.RenderOption() if is implemented.
 func (gen Generator) RenderResource(ctx context.Context, w io.Writer, resourceType string, option *ResourceRenderOption) error {
 	rr, err := gen.metadata.NewResourceRender(resourceType, option)
 	if err != nil {
@@ -62,6 +66,8 @@ func (gen Generator) RenderResource(ctx context.Context, w io.Writer, resourceTy
 	return rr.Execute(w)
 }
 
+// RenderDataSource renders the data source document.
+// If option is specified, it will override the DataSourceWithRenderOption.RenderOption() if is implemented.
 func (gen Generator) RenderDataSource(ctx context.Context, w io.Writer, dataSourceType string, option *DataSourceRenderOption) error {
 	rr, err := gen.metadata.NewDataSourceRender(dataSourceType, option)
 	if err != nil {
@@ -70,6 +76,8 @@ func (gen Generator) RenderDataSource(ctx context.Context, w io.Writer, dataSour
 	return rr.Execute(w)
 }
 
+// RenderEphemeralResource renders the ephemeral resource document.
+// If option is specified, it will override the EphemeralResourceWithRenderOption.RenderOption() if is implemented.
 func (gen Generator) RenderEphemeralResource(ctx context.Context, w io.Writer, ephemeralResourceType string, option *EphemeralResourceRenderOption) error {
 	rr, err := gen.metadata.NewEphemeralRender(ephemeralResourceType, option)
 	if err != nil {
@@ -78,6 +86,8 @@ func (gen Generator) RenderEphemeralResource(ctx context.Context, w io.Writer, e
 	return rr.Execute(w)
 }
 
+// RenderAction renders the action document.
+// If option is specified, it will override the ActionWithRenderOption.RenderOption() if is implemented.
 func (gen Generator) RenderAction(ctx context.Context, w io.Writer, actionType string, option *ActionRenderOption) error {
 	rr, err := gen.metadata.NewActionRender(actionType, option)
 	if err != nil {
@@ -86,6 +96,8 @@ func (gen Generator) RenderAction(ctx context.Context, w io.Writer, actionType s
 	return rr.Execute(w)
 }
 
+// RenderListResource renders the list resource document.
+// If option is specified, it will override the ListResourceWithRenderOption.RenderOption() if is implemented.
 func (gen Generator) RenderListResource(ctx context.Context, w io.Writer, listResourceType string, option *ListResourceRenderOption) error {
 	rr, err := gen.metadata.NewListRender(listResourceType, option)
 	if err != nil {
@@ -94,6 +106,8 @@ func (gen Generator) RenderListResource(ctx context.Context, w io.Writer, listRe
 	return rr.Execute(w)
 }
 
+// RenderFunction renders the function document.
+// If option is specified, it will override the FunctionWithRenderOption.RenderOption() if is implemented.
 func (gen Generator) RenderFunction(ctx context.Context, w io.Writer, functionName string, option *FunctionRenderOption) error {
 	rr, err := gen.metadata.NewFunctionRender(functionName, option)
 	if err != nil {

@@ -33,6 +33,11 @@ func (metadata Metadata) NewDataSourceRender(dataSourceType string, opt *DataSou
 		ResourceType: dataSourceType,
 		Metadata:     resmetadata,
 	}
+
+	if opt == nil {
+		opt = resmetadata.RenderOption
+	}
+
 	var tpl *template.Template
 	if opt != nil {
 		tpl = opt.Template

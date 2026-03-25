@@ -33,6 +33,11 @@ func (metadata Metadata) NewEphemeralRender(ephemeralType string, opt *Ephemeral
 		ResourceType: ephemeralType,
 		Metadata:     resmetadata,
 	}
+
+	if opt == nil {
+		opt = resmetadata.RenderOption
+	}
+
 	var tpl *template.Template
 	if opt != nil {
 		tpl = opt.Template

@@ -32,6 +32,11 @@ func (metadata Metadata) NewListRender(listType string, opt *ListRenderOption) (
 		ListType:     listType,
 		Metadata:     resmetadata,
 	}
+
+	if opt == nil {
+		opt = resmetadata.RenderOption
+	}
+
 	var tpl *template.Template
 	if opt != nil {
 		tpl = opt.Template

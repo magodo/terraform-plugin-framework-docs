@@ -14,14 +14,20 @@ import (
 )
 
 type Metadata struct {
-	ProviderName   string
-	ProviderSchema ProviderSchema
-	Resources      ResourceMetadatas
-	DataSources    DataSourceMetadatas
-	Ephemerals     EphemeralMetadatas
-	Actions        ActionMetadatas
-	Lists          ListMetadatas
-	Functions      FunctionMetadatas
+	ProviderName string
+	Provider     ProviderMetadata
+	Resources    ResourceMetadatas
+	DataSources  DataSourceMetadatas
+	Ephemerals   EphemeralMetadatas
+	Actions      ActionMetadatas
+	Lists        ListMetadatas
+	Functions    FunctionMetadatas
+}
+
+type ProviderMetadata struct {
+	Schema ProviderSchema
+
+	RenderOption *ProviderRenderOption
 }
 
 type ResourceMetadatas map[string]ResourceMetadata
@@ -29,36 +35,85 @@ type ResourceMetadatas map[string]ResourceMetadata
 type ResourceMetadata struct {
 	Schema   ResourceSchema
 	Identity *ResourceIdentitySchema
+
+	RenderOption *ResourceRenderOption
 }
 
 type DataSourceMetadatas map[string]DataSourceMetadata
 
 type DataSourceMetadata struct {
 	Schema DataSourceSchema
+
+	RenderOption *DataSourceRenderOption
 }
 
 type EphemeralMetadatas map[string]EphemeralMetadata
 
 type EphemeralMetadata struct {
 	Schema EphemeralSchema
+
+	RenderOption *EphemeralRenderOption
 }
 
 type ActionMetadatas map[string]ActionMetadata
 
 type ActionMetadata struct {
 	Schema ActionSchema
+
+	RenderOption *ActionRenderOption
 }
 
 type ListMetadatas map[string]ListMetadata
 
 type ListMetadata struct {
 	Schema ListSchema
+
+	RenderOption *ListRenderOption
 }
 
 type FunctionMetadatas map[string]FunctionMetadata
 
 type FunctionMetadata struct {
 	Schema FunctionSchema
+
+	RenderOption *FunctionRenderOption
+}
+
+// Interface definitions mirrored from the interfaces.go at the root level.
+
+type ProviderWithRenderOption interface {
+	provider.Provider
+	RenderOption() ProviderRenderOption
+}
+
+type ResourceWithRenderOption interface {
+	resource.Resource
+	RenderOption() ResourceRenderOption
+}
+
+type DataSourceWithRenderOption interface {
+	datasource.DataSource
+	RenderOption() DataSourceRenderOption
+}
+
+type EphemeralResourceWithRenderOption interface {
+	ephemeral.EphemeralResource
+	RenderOption() EphemeralRenderOption
+}
+
+type ListResourceWithRenderOption interface {
+	list.ListResource
+	RenderOption() ListRenderOption
+}
+
+type ActionWithRenderOption interface {
+	action.Action
+	RenderOption() ActionRenderOption
+}
+
+type FunctionWithRenderOption interface {
+	function.Function
+	RenderOption() FunctionRenderOption
 }
 
 func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, diags diag.Diagnostics) {
@@ -77,15 +132,22 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 		return
 	}
 
+	providerMetadata := ProviderMetadata{
+		Schema: providerSchema,
+	}
+	if p, ok := p.(ProviderWithRenderOption); ok {
+		providerMetadata.RenderOption = new(p.RenderOption())
+	}
+
 	metadata = Metadata{
-		ProviderName:   providerMetadataResp.TypeName,
-		ProviderSchema: providerSchema,
-		Resources:      ResourceMetadatas{},
-		DataSources:    DataSourceMetadatas{},
-		Ephemerals:     EphemeralMetadatas{},
-		Actions:        ActionMetadatas{},
-		Lists:          ListMetadatas{},
-		Functions:      FunctionMetadatas{},
+		ProviderName: providerMetadataResp.TypeName,
+		Provider:     providerMetadata,
+		Resources:    ResourceMetadatas{},
+		DataSources:  DataSourceMetadatas{},
+		Ephemerals:   EphemeralMetadatas{},
+		Actions:      ActionMetadatas{},
+		Lists:        ListMetadatas{},
+		Functions:    FunctionMetadatas{},
 	}
 
 	for _, builder := range p.Resources(ctx) {
@@ -111,6 +173,10 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 
 		resMetadata := ResourceMetadata{
 			Schema: sch,
+		}
+
+		if res, ok := res.(ResourceWithRenderOption); ok {
+			resMetadata.RenderOption = new(res.RenderOption())
 		}
 
 		if resourceWithIdentity, ok := res.(resource.ResourceWithIdentity); ok {
@@ -158,6 +224,10 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 			Schema: sch,
 		}
 
+		if res, ok := res.(DataSourceWithRenderOption); ok {
+			resMetadata.RenderOption = new(res.RenderOption())
+		}
+
 		metadata.DataSources[resourceType] = resMetadata
 	}
 
@@ -185,6 +255,10 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 
 			resMetadata := EphemeralMetadata{
 				Schema: sch,
+			}
+
+			if res, ok := res.(EphemeralResourceWithRenderOption); ok {
+				resMetadata.RenderOption = new(res.RenderOption())
 			}
 
 			metadata.Ephemerals[resourceType] = resMetadata
@@ -217,6 +291,10 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 				Schema: sch,
 			}
 
+			if res, ok := res.(ActionWithRenderOption); ok {
+				resMetadata.RenderOption = new(res.RenderOption())
+			}
+
 			metadata.Actions[resourceType] = resMetadata
 		}
 	}
@@ -245,6 +323,10 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 
 			resMetadata := ListMetadata{
 				Schema: sch,
+			}
+
+			if res, ok := res.(ListResourceWithRenderOption); ok {
+				resMetadata.RenderOption = new(res.RenderOption())
 			}
 
 			metadata.Lists[resourceType] = resMetadata
@@ -276,6 +358,10 @@ func GetMetadata(ctx context.Context, p provider.Provider) (metadata Metadata, d
 
 			funcMetadata := FunctionMetadata{
 				Schema: sch,
+			}
+
+			if fun, ok := fun.(FunctionWithRenderOption); ok {
+				funcMetadata.RenderOption = new(fun.RenderOption())
 			}
 
 			metadata.Functions[functionName] = funcMetadata

@@ -34,6 +34,11 @@ func (metadata Metadata) NewActionRender(actionType string, opt *ActionRenderOpt
 		ActionType:   actionType,
 		Metadata:     resmetadata,
 	}
+
+	if opt == nil {
+		opt = resmetadata.RenderOption
+	}
+
 	var tpl *template.Template
 	if opt != nil {
 		tpl = opt.Template
