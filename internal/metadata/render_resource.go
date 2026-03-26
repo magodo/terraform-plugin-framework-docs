@@ -11,7 +11,6 @@ type ResourceRenderOption struct {
 	Subcategory string
 	Examples    []Example
 
-	// Import
 	ImportId         *ImportId
 	IdentityExamples []Example
 

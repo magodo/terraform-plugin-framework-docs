@@ -119,7 +119,14 @@ In Terraform v1.5.0 and later, the [%[1]simport%[1]s block](https://developer.ha
 
 func (b resourceRenderBuilder) renderImportIdentity(w io.Writer, schema ResourceIdentitySchema) error {
 	formatExample := func(example string) []byte {
-		return hclwrite.Format([]byte(strings.TrimSpace(example)))
+		return hclwrite.Format([]byte(strings.TrimSpace(fmt.Sprintf(`
+import {
+	to = %s.example
+	identity = {
+		%s
+	}
+}
+`, b.ResourceType, strings.TrimSpace(example)))))
 	}
 
 	if _, err := fmt.Fprintf(w, `### Import Identity

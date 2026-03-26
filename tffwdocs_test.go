@@ -116,27 +116,17 @@ resource "examplecloud_resource" "example" {
 				Header:      "Without Version",
 				Description: "Import without version.",
 				HCL: `
-import {
-	to = examplecloud_resource.example
-	identity = {
-		parent_id = "123"
-		id = "456"
-	}
-}
+parent_id = "123"
+id = "456"
 `,
 			},
 			{
 				Header:      "With Version",
 				Description: "Import with version.",
 				HCL: `
-import {
-	to = examplecloud_resource.example
-	identity = {
-		parent_id = "123"
-		id = "456"
-		version = "v2"
-	}
-}
+parent_id = "123"
+id = "456"
+version = "v2"
 `,
 			},
 		},
