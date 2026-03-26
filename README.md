@@ -22,3 +22,7 @@ A library to generate rich documents for terraform providers based on [`terrafor
 The Terraform official solution for provider document generation is https://github.com/hashicorp/terraform-plugin-docs, which supports both `terraform-plugin-framework` and `terraform-plugin-sdk` based providers. The current `terraform-plugin-docs` tool is dependent on using Terraform CLI's `terraform providers schema -json` [output](https://developer.hashicorp.com/terraform/cli/commands/providers/schema) which restricts it in what can be generated to the document. See https://github.com/hashicorp/terraform-plugin-framework/issues/625#issuecomment-1424690927 (and any issues referenced by this).
 
 This library works in another way, it read the schema from the provider code base. The user is supposed to create a separate Go package along side the provider's `internal` package to use this library to generate the documents. An example can be found at https://github.com/magodo/terraform-plugin-framework-docs/blob/main/tffwdocs_test.go.
+
+## Example
+
+- https://registry.terraform.io/providers/magodo/restful/latest/docs
