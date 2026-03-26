@@ -9,10 +9,13 @@ import (
 )
 
 type ImportId struct {
-	Format    string
+	Format string
+
+	// The example id that will be displayed in an example `terraform import` command.
+	// Note that the id is double quoted, ensure to escape any double quote included in the id.
 	ExampleId string
 
-	// The complete import by id block. If not specified, it will fill in the block with the `ExampleCmdArg`.
+	// The complete import by id block. If not specified, it will fill in the block with the `ExampleId`.
 	ExampleBlk string
 }
 
@@ -25,8 +28,11 @@ type resourceRenderBuilder struct {
 	Subcategory string
 	Examples    []Example
 
-	// Import
-	ImportId         *ImportId
+	// Import by id information.
+	ImportId *ImportId
+
+	// The identity import block examples.
+	// The HCL shall only contain the config inside the `identity` object.
 	IdentityExamples []Example
 }
 
@@ -102,7 +108,7 @@ The [%[1]sterraform import%[1]s command](https://developer.hashicorp.com/terrafo
 For example:
 
 %[1]s%[1]s%[1]sshell
-$ terraform import %[3]s.example '%[4]s'
+$ terraform import %[3]s.example "%[4]s"
 %[1]s%[1]s%[1]s
 
 In Terraform v1.5.0 and later, the [%[1]simport%[1]s block](https://developer.hashicorp.com/terraform/language/block/import) can be used with the %[1]sid%[1]s attribute, for example:

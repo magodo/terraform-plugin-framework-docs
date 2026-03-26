@@ -347,7 +347,7 @@ The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/c
 For example:
 
 ```shell
-$ terraform import examplecloud_resource.example '123/456'
+$ terraform import examplecloud_resource.example "123/456"
 ```
 
 In Terraform v1.5.0 and later, the [`import` block](https://developer.hashicorp.com/terraform/language/block/import) can be used with the `id` attribute, for example:
