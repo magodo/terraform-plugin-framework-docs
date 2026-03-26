@@ -18,7 +18,7 @@ func renderHeader(w io.Writer, category Category, providerName, resourceType, su
 			return err
 		}
 	} else {
-		if _, err := fmt.Fprintf(w, `page_title: "%s %s - %s"
+		if _, err := fmt.Fprintf(w, `page_title: "%s %s - terraform-provider-%s"
 subcategory: "%s"
 `, resourceType, category, providerName, subcategory); err != nil {
 			return err
