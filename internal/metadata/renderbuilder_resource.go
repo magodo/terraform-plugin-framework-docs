@@ -9,9 +9,11 @@ import (
 )
 
 type ImportId struct {
-	Format        string
-	ExampleCmdArg string
-	ExampleBlk    string
+	Format    string
+	ExampleId string
+
+	// The complete import by id block. If not specified, it will fill in the block with the `ExampleCmdArg`.
+	ExampleBlk string
 }
 
 type resourceRenderBuilder struct {
@@ -70,7 +72,24 @@ func (b resourceRenderBuilder) renderImport(w io.Writer) error {
 }
 
 func (b resourceRenderBuilder) renderImportId(w io.Writer, importId ImportId) error {
-	importBlock := hclwrite.Format([]byte(strings.TrimSpace(importId.ExampleBlk)))
+	if importId.Format == "" {
+		return fmt.Errorf("the `.Format` of the ImportId is not specified")
+	}
+	if importId.ExampleId == "" {
+		return fmt.Errorf("the `.ExampleId` of the ImportId is not specified")
+	}
+
+	importBlk := importId.ExampleBlk
+	if importBlk == "" {
+		importBlk = fmt.Sprintf(`
+import {
+  to = %s.example
+  id = "%s"
+}
+`, b.ResourceType, importId.ExampleId)
+	}
+
+	importBlk = string(hclwrite.Format([]byte(strings.TrimSpace(importBlk))))
 
 	if _, err := fmt.Fprintf(w, `### Import ID
 
@@ -91,7 +110,7 @@ In Terraform v1.5.0 and later, the [%[1]simport%[1]s block](https://developer.ha
 %[1]s%[1]s%[1]sterraform
 %[5]s
 %[1]s%[1]s%[1]s
-`, "`", importId.Format, b.ResourceType, importId.ExampleCmdArg, string(importBlock)); err != nil {
+`, "`", importId.Format, b.ResourceType, importId.ExampleId, importBlk); err != nil {
 		return err
 	}
 

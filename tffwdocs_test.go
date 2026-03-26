@@ -108,14 +108,8 @@ resource "examplecloud_resource" "example" {
 			},
 		},
 		ImportId: &tffwdocs.ImportId{
-			Format:        "<parent_id>/<id>[/<version>]",
-			ExampleCmdArg: "123/456",
-			ExampleBlk: `
-import {
-	to = examplecloud_resource.example
-	id = "123/456"
-}
-`,
+			Format:    "<parent_id>/<id>[/<version>]",
+			ExampleId: "123/456",
 		},
 		IdentityExamples: []tffwdocs.Example{
 			{
@@ -553,8 +547,8 @@ resource "examplecloud_resource" "example" {
 					},
 				},
 				ImportId: &tffwdocs.ImportId{
-					Format:        "<parent_id>/<id>[/<version>]",
-					ExampleCmdArg: "123/456",
+					Format:    "<parent_id>/<id>[/<version>]",
+					ExampleId: "123/456",
 					ExampleBlk: `
 import {
 	to = examplecloud_resource.example
