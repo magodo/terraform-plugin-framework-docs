@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"errors"
 	"fmt"
 	"slices"
 	"strings"
@@ -8,12 +9,42 @@ import (
 
 type FunctionFields []FunctionField
 
+func (fields FunctionFields) Lint() error {
+	var errs []error
+	for _, field := range fields {
+		if err := field.Lint(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return errors.Join(errs...)
+}
+
 type FunctionObjects map[string]FunctionObject
+
+func (objects FunctionObjects) Lint() error {
+	var errs []error
+	for _, object := range objects {
+		if err := object.Lint(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return errors.Join(errs...)
+}
 
 type FunctionObject struct {
 	functionKey           string
 	fields                map[string]FunctionField
 	customTypeDescription string
+}
+
+func (object FunctionObject) Lint() error {
+	var errs []error
+	for _, field := range object.fields {
+		if err := field.Lint(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return errors.Join(errs...)
 }
 
 func (r FunctionObject) CustomTypeDescription() string {
@@ -89,4 +120,11 @@ func (field FunctionField) NestedLink() string {
 		return fmt.Sprintf("See [below for nested schema](#nested--%s).", field.nestedKey())
 	}
 	return ""
+}
+
+func (field FunctionField) Lint() error {
+	if field.description == "" {
+		return fmt.Errorf("no description specified for function field: %s", field.nestedKey())
+	}
+	return nil
 }

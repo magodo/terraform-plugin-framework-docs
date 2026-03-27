@@ -484,6 +484,9 @@ func ExampleGenerator_WriteAll() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if err := gen.Lint(nil); err != nil {
+		log.Fatal(err)
+	}
 	if err := gen.WriteAll(ctx, "./internal/testprovider/docs", &tffwdocs.RenderOptions{
 		Provider: &metadata.ProviderRenderOption{
 			Examples: []tffwdocs.Example{

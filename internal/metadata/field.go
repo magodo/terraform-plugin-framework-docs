@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"errors"
 	"fmt"
 	"slices"
 	"sort"
@@ -51,6 +52,16 @@ func (fields Fields) ComputedFields() []Field {
 	return out
 }
 
+func (fields Fields) Lint() error {
+	var errs []error
+	for _, field := range fields {
+		if err := field.Lint(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return errors.Join(errs...)
+}
+
 type NestedFields map[string]NestedField
 
 type NestedField struct {
@@ -73,6 +84,16 @@ func (r NestedField) PlanModifiers() []string {
 
 func (r NestedField) Validators() []string {
 	return MapSlice(r.validators, Sentencefy)
+}
+
+func (fields NestedFields) Lint() error {
+	var errs []error
+	for _, field := range fields {
+		if err := field.fields.Lint(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return errors.Join(errs...)
 }
 
 type Field struct {
@@ -176,4 +197,16 @@ func (field Field) NestedLink() string {
 		return fmt.Sprintf("See [below for nested schema](#nested--%s).", field.nestedKey())
 	}
 	return ""
+}
+
+func (field Field) Lint() error {
+	// TODO: Remove this workaround once PR below is merged:
+	// https://github.com/hashicorp/terraform-plugin-framework-timeouts/pull/231
+	if field.nestedKey() == "timeouts" {
+		return nil
+	}
+	if field.description == "" {
+		return fmt.Errorf("no description specified for field: %s", field.nestedKey())
+	}
+	return nil
 }

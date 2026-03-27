@@ -3,6 +3,7 @@ package tffwdocs
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -45,6 +46,141 @@ type RenderOptions struct {
 	ListResources      map[string]ListResourceRenderOption
 	Actions            map[string]ActionRenderOption
 	Functions          map[string]FunctionRenderOption
+}
+
+type LintOptions struct {
+	SkipProvider           bool
+	SkipResources          map[string]bool
+	SkipDataSources        map[string]bool
+	SkipEphemeralResources map[string]bool
+	SkipListResources      map[string]bool
+	SkipActions            map[string]bool
+	SkipFunctions          map[string]bool
+}
+
+// Lint traverses the provider and provider resource type's schema to identify any field
+// without a description specified.
+func (gen Generator) Lint(opt *LintOptions) error {
+	if opt == nil {
+		opt = &LintOptions{
+			SkipProvider:           false,
+			SkipResources:          map[string]bool{},
+			SkipDataSources:        map[string]bool{},
+			SkipEphemeralResources: map[string]bool{},
+			SkipListResources:      map[string]bool{},
+			SkipActions:            map[string]bool{},
+			SkipFunctions:          map[string]bool{},
+		}
+	}
+	var errs []error
+
+	if !opt.SkipProvider {
+		schema := gen.metadata.Provider.Schema
+		if schema.Description == "" {
+			errs = append(errs, errors.New("Provider has no description"))
+		}
+		if err := schema.Fields.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Provider:\n%v", err))
+		}
+		if err := schema.Nested.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Provider:\n%v", err))
+		}
+	}
+
+	for name, res := range gen.metadata.Resources {
+		if opt.SkipResources[name] {
+			continue
+		}
+		if res.Schema.Description == "" {
+			errs = append(errs, fmt.Errorf("Resource %q has no description", name))
+		}
+		if err := res.Schema.Fields.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Resource %q:\n%v", name, err))
+		}
+		if err := res.Schema.Nested.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Resource %q:\n%v", name, err))
+		}
+		if res.Identity != nil {
+			if err := res.Identity.Fields.Lint(); err != nil {
+				errs = append(errs, fmt.Errorf("Resource %q Identity:\n%v", name, err))
+			}
+		}
+	}
+	for name, ds := range gen.metadata.DataSources {
+		if opt.SkipDataSources[name] {
+			continue
+		}
+		if ds.Schema.Description == "" {
+			errs = append(errs, fmt.Errorf("Data Source %q has no description", name))
+		}
+		if err := ds.Schema.Fields.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Data Source %q:\n%v", name, err))
+		}
+		if err := ds.Schema.Nested.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Data Source %q:\n%v", name, err))
+		}
+	}
+	for name, res := range gen.metadata.Ephemerals {
+		if opt.SkipEphemeralResources[name] {
+			continue
+		}
+		if res.Schema.Description == "" {
+			errs = append(errs, errors.New("Ephemeral Resource %q has no description"))
+		}
+		if err := res.Schema.Fields.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Ephemeral Resource %q:\n%v", name, err))
+		}
+		if err := res.Schema.Nested.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Ephemeral Resource %q:\n%v", name, err))
+		}
+	}
+	for name, res := range gen.metadata.Lists {
+		if opt.SkipListResources[name] {
+			continue
+		}
+		if res.Schema.Description == "" {
+			errs = append(errs, fmt.Errorf("List Resource %q has no description", name))
+		}
+		if err := res.Schema.Fields.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("List Resource %q:\n%v", name, err))
+		}
+		if err := res.Schema.Nested.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("List Resource %q:\n%v", name, err))
+		}
+	}
+	for name, act := range gen.metadata.Actions {
+		if opt.SkipActions[name] {
+			continue
+		}
+		if act.Schema.Description == "" {
+			errs = append(errs, fmt.Errorf("Action %q has no description", name))
+		}
+		if err := act.Schema.Fields.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Action %q:\n%v", name, err))
+		}
+		if err := act.Schema.Nested.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Action %q:\n%v", name, err))
+		}
+	}
+	for name, fun := range gen.metadata.Functions {
+		if opt.SkipFunctions[name] {
+			continue
+		}
+		if fun.Schema.Description == "" {
+			errs = append(errs, fmt.Errorf("Function %q has no description", name))
+		}
+		if err := fun.Schema.Parameters.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Function %q parameter:\n%v", name, err))
+		}
+		if err := fun.Schema.Objects.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Function %q parameter nested objects:\n%v", name, err))
+		}
+		if err := fun.Schema.ReturnObjects.Lint(); err != nil {
+			errs = append(errs, fmt.Errorf("Function %q return nested objects:\n%v", name, err))
+		}
+	}
+
+	return errors.Join(errs...)
 }
 
 // RenderProvider renders the provider document.

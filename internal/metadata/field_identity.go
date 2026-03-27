@@ -1,6 +1,8 @@
 package metadata
 
 import (
+	"errors"
+	"fmt"
 	"sort"
 )
 
@@ -32,6 +34,16 @@ func (fields ResourceIdentityFields) OptionalFields() []ResourceIdentityField {
 		return out[i].Name < out[j].Name
 	})
 	return out
+}
+
+func (fields ResourceIdentityFields) Lint() error {
+	var errs []error
+	for _, field := range fields {
+		if field.Description == "" {
+			return fmt.Errorf("no description specified for identity field: %s", field.Name)
+		}
+	}
+	return errors.Join(errs...)
 }
 
 type ResourceIdentityField struct {
