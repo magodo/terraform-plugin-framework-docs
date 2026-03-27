@@ -8,12 +8,27 @@ import (
 )
 
 type FunctionRenderOption struct {
+	// The subcategory of the document.
 	Subcategory string
 	Examples    []Example
 
-	// Description
+	// Description of the return value.
 	ReturnDescription *string
 
+	// A custom template that overrides the default template:
+	//
+	// {{ .Header }}
+	// {{ .Description }}
+	// {{- with .Example }}
+	// {{ . }}
+	// {{- end }}
+	// {{ .Signature }}
+	// {{- with .Arguments }}
+	// {{ . }}
+	// {{- end }}
+	// {{- with .Return }}
+	// {{ . }}
+	// {{- end }}
 	Template *template.Template
 }
 

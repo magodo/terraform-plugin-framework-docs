@@ -8,12 +8,26 @@ import (
 )
 
 type ResourceRenderOption struct {
+	// The subcategory of the document.
 	Subcategory string
 	Examples    []Example
 
-	ImportId         *ImportId
+	// The information about import by id (including via command and via import block).
+	ImportId *ImportId
+	// The examples for importing by identity via import block.
 	IdentityExamples []Example
 
+	// A custom template that overrides the default template:
+	//
+	// {{ .Header }}
+	// {{ .Description }}
+	// {{- with .Example }}
+	// {{ . }}
+	// {{- end }}
+	// {{ .Schema }}
+	// {{- with .Import }}
+	// {{ . }}
+	// {{- end }}
 	Template *template.Template
 }
 

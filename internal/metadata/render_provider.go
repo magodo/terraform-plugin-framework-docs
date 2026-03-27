@@ -8,6 +8,15 @@ import (
 
 type ProviderRenderOption struct {
 	Examples []Example
+
+	// A custom template that overrides the default template:
+	//
+	// {{ .Header }}
+	// {{ .Description }}
+	// {{- with .Example }}
+	// {{ . }}
+	// {{- end }}
+	// {{ .Schema }}
 	Template *template.Template
 }
 

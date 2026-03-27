@@ -17,6 +17,7 @@ type Generator struct {
 	metadata metadata.Metadata
 }
 
+// Create a Generator by analyzing the schema of the provider and all the registered resources to the provider.
 func NewGenerator(ctx context.Context, p provider.Provider) (*Generator, error) {
 	metadata, diags := metadata.GetMetadata(ctx, p)
 	if diags.HasError() {

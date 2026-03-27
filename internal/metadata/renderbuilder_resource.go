@@ -9,6 +9,7 @@ import (
 )
 
 type ImportId struct {
+	// The Id format.
 	Format string
 
 	// The example id that will be displayed in an example `terraform import` command.

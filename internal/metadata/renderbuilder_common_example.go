@@ -9,9 +9,12 @@ import (
 )
 
 type Example struct {
-	Header      string
+	// The section header.
+	Header string
+	// The description of the example.
 	Description string
-	HCL         string
+	// The HCL code of the example.
+	HCL string
 }
 
 func renderExamples(w io.Writer, examples []Example) error {

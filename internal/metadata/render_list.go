@@ -8,9 +8,19 @@ import (
 )
 
 type ListRenderOption struct {
+	// The subcategory of the document.
 	Subcategory string
 	Examples    []Example
-	Template    *template.Template
+
+	// A custom template that overrides the default template:
+	//
+	// {{ .Header }}
+	// {{ .Description }}
+	// {{- with .Example }}
+	// {{ . }}
+	// {{- end }}
+	// {{ .Schema }}
+	Template *template.Template
 }
 
 type ListRender struct {
