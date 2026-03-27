@@ -1,10 +1,10 @@
 # terraform-plugin-framework-docs
 
-A library to generate rich documents for terraform providers based on [`terraform-plugin-framework`](https://github.com/hashicorp/terraform-plugin-docs).  
+A Go library for generating comprehensive documentation for Terraform providers built with [`terraform-plugin-framework`](https://github.com/hashicorp/terraform-plugin-framework).
 
 ## Features
 
-- Full coverage of provider resources, including:
+- **Complete resource coverage**, including:
     - Provider
     - Managed Resource
     - Data Source
@@ -12,17 +12,18 @@ A library to generate rich documents for terraform providers based on [`terrafor
     - List Resource
     - Action
     - Function
-- Rich document of the provider, including descriptions from `CustomType`, `PlanModifiers` and `Validators`.
-- Flexible to add examples for all provider resources, the API simply takes a string, which can be derived from the acceptance test's config, to make sure the examples are up-to-date.
-- Flexible to add sub-category for the generated documents (This solves the issue: https://github.com/hashicorp/terraform-plugin-docs/issues/156).
-- `fwdtypes` package provides a set of types to be used in place of the `terraform-plugin-framework` `basetypes`, but with a description. This is useful to be used in place of a plain `ObjectType`, to add description to the members (This solves the issue: https://github.com/hashicorp/terraform-plugin-docs/issues/333).
+- **Enhanced documentation** with descriptions extracted from `CustomType`, `PlanModifiers`, and `Validators`
+- **Flexible example integration** — accepts strings that can be derived from acceptance test configurations, ensuring examples remain up-to-date
+- **Subcategory support** for organizing generated documents (addresses [#156](https://github.com/hashicorp/terraform-plugin-docs/issues/156))
+- **Custom template support** — extensible template system for tailoring documentation output to specific needs
+- **`fwdtypes` package** — provides descriptive type wrappers for `terraform-plugin-framework` `basetypes`, enabling documentation for `ObjectType` members (addresses [#333](https://github.com/hashicorp/terraform-plugin-docs/issues/333))
 
-## Why not `tfplugindocs`
+## Comparison with `tfplugindocs`
 
-The Terraform official solution for provider document generation is https://github.com/hashicorp/terraform-plugin-docs, which supports both `terraform-plugin-framework` and `terraform-plugin-sdk` based providers. The current `terraform-plugin-docs` tool is dependent on using Terraform CLI's `terraform providers schema -json` [output](https://developer.hashicorp.com/terraform/cli/commands/providers/schema) which restricts it in what can be generated to the document. See https://github.com/hashicorp/terraform-plugin-framework/issues/625#issuecomment-1424690927 (and any issues referenced by this).
+The official [terraform-plugin-docs](https://github.com/hashicorp/terraform-plugin-docs) tool relies on Terraform CLI's `terraform providers schema -json` [output](https://developer.hashicorp.com/terraform/cli/commands/providers/schema), which limits the documentation content it can generate. See [this discussion](https://github.com/hashicorp/terraform-plugin-framework/issues/625#issuecomment-1424690927) for details.
 
-This library works in another way, it read the schema from the provider code base. The user is supposed to create a separate Go package along side the provider's `internal` package to use this library to generate the documents. An example can be found at https://github.com/magodo/terraform-plugin-framework-docs/blob/main/tffwdocs_test.go.
+This library takes a different approach by reading schemas directly from the provider codebase. To use it, create a separate Go package alongside the provider's `internal` package. See the [example](https://github.com/magodo/terraform-plugin-framework-docs/blob/main/tffwdocs_test.go) for implementation details.
 
 ## Example
 
-- https://registry.terraform.io/providers/magodo/restful/latest/docs
+- [terraform-provider-restful](https://registry.terraform.io/providers/magodo/restful/latest/docs)
