@@ -31,7 +31,7 @@ example_function_retobj(...)
 ## Signature
 
 ```text
-example_function_retobj(object Object) Object
+example_function_retobj(object object) object
 ```
 
 ## Arguments
@@ -67,8 +67,8 @@ The `object` returned from `example_function_retobj` has the following attribute
 - `float64` (Float64) Description.
 - `int32` (Int32) Description.
 - `int64` (Int64) Description.
-- `list` (List of Booleans) Description.
-- `map` (Map of Booleans) Description.
+- `list` (List of Boolean) Description.
+- `map` (Map of Boolean) Description.
 - `number` (Number) Description.
-- `set` (Set of Booleans) Description.
+- `set` (Set of Boolean) Description.
 - `string` (String) Description.

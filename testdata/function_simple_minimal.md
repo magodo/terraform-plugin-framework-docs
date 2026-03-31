@@ -15,7 +15,7 @@ The description.
 ## Signature
 
 ```text
-example_function_simple(bool Boolean,string String,number Number,int32 Int32,int64 Int64,float32 Float32,float64 Float64,dynamic Dynamic,list List of Strings,set Set of Strings,map Map of Strings,object Object,custom_string String,strings String...) Boolean
+example_function_simple(bool boolean, string string, number number, int32 int32, int64 int64, float32 float32, float64 float64, dynamic dynamic, list list of string, set set of string, map map of string, object object, custom_string string, strings string...) boolean
 ```
 
 ## Arguments
@@ -30,9 +30,9 @@ example_function_simple(bool Boolean,string String,number Number,int32 Int32,int
 1. `float32` (Float32) A float32 parameter
 1. `float64` (Float64) A float64 parameter
 1. `dynamic` (Dynamic) A dynamic parameter
-1. `list` (List of Strings) A list of string parameter.
-1. `set` (Set of Strings) A set of string parameter.
-1. `map` (Map of Strings) A map of string parameter.
+1. `list` (List of String) A list of string parameter.
+1. `set` (Set of String) A set of string parameter.
+1. `map` (Map of String) A map of string parameter.
 1. `object` (Object) An object parameter. See [below for nested schema](#nested--object).
 1. `custom_string` (String) A custom string attribute.
 
@@ -48,11 +48,11 @@ example_function_simple(bool Boolean,string String,number Number,int32 Int32,int
 - `float64` (Float64) Description.
 - `int32` (Int32) Description.
 - `int64` (Int64) Description.
-- `list` (List of Booleans) Description.
-- `map` (Map of Booleans) Description.
+- `list` (List of Boolean) Description.
+- `map` (Map of Boolean) Description.
 - `number` (Number) Description.
 - `object` (Object) Description. See [below for nested schema](#nested--object.object).
-- `set` (Set of Booleans) Description.
+- `set` (Set of Boolean) Description.
 - `string` (String) Description.
 
 <a id="nested--object.object"></a>

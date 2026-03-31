@@ -56,14 +56,14 @@ data "examplecloud_resource" "example" {
 
 	-> A custom string type.
 - `int64` (Int64) A int64 attribute.
-- `list` (List of Strings) A list attribute.
-- `list_block` (List of Blocks) A list block. See [below for nested schema](#nested--list_block).
-- `list_object` (List of Objects) A list object attribute. See [below for nested schema](#nested--list_object).
-- `map` (Map of Strings) A map attribute.
-- `map_object` (Map of Objects) A map object attribute. See [below for nested schema](#nested--map_object).
-- `set` (Set of Strings) A set attribute.
-- `set_block` (Set of Blocks) A set block. See [below for nested schema](#nested--set_block).
-- `set_object` (Set of Objects) A set object attribute. See [below for nested schema](#nested--set_object).
+- `list` (List of String) A list attribute.
+- `list_block` (List of Block) A list block. See [below for nested schema](#nested--list_block).
+- `list_object` (List of Object) A list object attribute. See [below for nested schema](#nested--list_object).
+- `map` (Map of String) A map attribute.
+- `map_object` (Map of Object) A map object attribute. See [below for nested schema](#nested--map_object).
+- `set` (Set of String) A set attribute.
+- `set_block` (Set of Block) A set block. See [below for nested schema](#nested--set_block).
+- `set_object` (Set of Object) A set object attribute. See [below for nested schema](#nested--set_object).
 - `single_block` (Block) A single block. See [below for nested schema](#nested--single_block).
 
 	-> Ensure that if an attribute is set, these are not set: "[list_block]".

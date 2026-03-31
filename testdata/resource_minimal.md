@@ -41,19 +41,19 @@ Another line of description.
 
 	-> A custom string type.
 - `int64` (Int64) A int64 attribute. Value defaults to `0`.
-- `list` (List of Strings) A list attribute. Value defaults to `["foo"]`.
-- `list_block` (List of Blocks) A list block. See [below for nested schema](#nested--list_block).
+- `list` (List of String) A list attribute. Value defaults to `["foo"]`.
+- `list_block` (List of Block) A list block. See [below for nested schema](#nested--list_block).
 
 	~> Once set, the value of this attribute in state will not change.
 
 	-> Ensure that if an attribute is set, also these are set: "[single_block]".
-- `list_object` (List of Objects) A list object attribute. See [below for nested schema](#nested--list_object).
-- `map` (Map of Strings) A map attribute. Value defaults to `{"key":"val"}`.
-- `map_object` (Map of Objects) A map object attribute. See [below for nested schema](#nested--map_object).
+- `list_object` (List of Object) A list object attribute. See [below for nested schema](#nested--list_object).
+- `map` (Map of String) A map attribute. Value defaults to `{"key":"val"}`.
+- `map_object` (Map of Object) A map object attribute. See [below for nested schema](#nested--map_object).
 - `object` (Object) An object attribute. See [below for nested schema](#nested--object).
-- `set` (Set of Strings) A set attribute. Value defaults to `["foo"]`.
-- `set_block` (Set of Blocks) A set block. See [below for nested schema](#nested--set_block).
-- `set_object` (Set of Objects) A set object attribute. See [below for nested schema](#nested--set_object).
+- `set` (Set of String) A set attribute. Value defaults to `["foo"]`.
+- `set_block` (Set of Block) A set block. See [below for nested schema](#nested--set_block).
+- `set_object` (Set of Object) A set object attribute. See [below for nested schema](#nested--set_object).
 - `single_block` (Block) A single block. See [below for nested schema](#nested--single_block).
 
 	~> If the value of this attribute changes, Terraform will destroy and recreate the resource.
@@ -185,10 +185,10 @@ Optional:
 - `float64` (Float64) Description.
 - `int32` (Int32) Description.
 - `int64` (Int64) Description.
-- `list` (List of Booleans) Description.
-- `map` (Map of Booleans) Description.
+- `list` (List of Boolean) Description.
+- `map` (Map of Boolean) Description.
 - `number` (Number) Description.
-- `set` (Set of Booleans) Description.
+- `set` (Set of Boolean) Description.
 - `string` (String) Description.
 <a id="nested--set_block"></a>
 ### Nested Schema for `set_block`
