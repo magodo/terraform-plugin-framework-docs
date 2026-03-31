@@ -4,11 +4,15 @@ page_title: "examplecloud_resource Resource - terraform-provider-examplecloud"
 subcategory: ""
 description: |-
   Manages an example resource.
+
+  Another line of description.
 ---
 
 # examplecloud_resource (Resource)
 
 Manages an example resource.
+
+Another line of description.
 
 ## Schema
 

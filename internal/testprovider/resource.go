@@ -84,7 +84,7 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 		},
 	}
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages an example resource.",
+		MarkdownDescription: "Manages an example resource.\n\nAnother line of description.",
 		Attributes: map[string]schema.Attribute{
 			"bool": schema.BoolAttribute{
 				MarkdownDescription: "A boolean attribute.",
