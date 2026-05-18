@@ -139,6 +139,25 @@ func (e ExampleAction) Schema(ctx context.Context, req action.SchemaRequest, res
 				CustomType:          testhelper.CustomStringType{},
 				Optional:            true,
 			},
+			"multi_custom": schema.StringAttribute{
+				MarkdownDescription: "First paragraph.\n\nSecond paragraph.",
+				CustomType:          testhelper.CustomStringType{},
+				Optional:            true,
+			},
+			"multi_object": schema.SingleNestedAttribute{
+				MarkdownDescription: "First paragraph.\n\nSecond paragraph.",
+				Optional:            true,
+				Attributes: map[string]schema.Attribute{
+					"single_nested": schema.StringAttribute{
+						MarkdownDescription: "A single-line attribute.",
+						Optional:            true,
+					},
+					"multi_nested": schema.StringAttribute{
+						MarkdownDescription: "First paragraph.\n\nSecond paragraph.",
+						Optional:            true,
+					},
+				},
+			},
 		},
 		Blocks: map[string]schema.Block{
 			"single_block": schema.SingleNestedBlock{

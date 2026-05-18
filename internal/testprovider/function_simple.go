@@ -105,6 +105,19 @@ func (e ExampleFunctionSimple) Definition(ctx context.Context, req function.Defi
 				MarkdownDescription: "A custom string attribute.",
 				CustomType:          testhelper.CustomStringType{},
 			},
+			function.StringParameter{
+				Name:                "multi_custom",
+				MarkdownDescription: "First paragraph.\n\nSecond paragraph.",
+				CustomType:          testhelper.CustomStringType{},
+			},
+			function.ObjectParameter{
+				Name:                "multi_object",
+				MarkdownDescription: "First paragraph.\n\nSecond paragraph.",
+				AttributeTypes: map[string]attr.Type{
+					"single_nested": fwdtypes.NewStringType("A single-line attribute."),
+					"multi_nested":  fwdtypes.NewStringType("First paragraph.\n\nSecond paragraph."),
+				},
+			},
 		},
 		VariadicParameter: function.StringParameter{
 			Name:                "strings",

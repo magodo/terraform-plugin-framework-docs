@@ -66,6 +66,16 @@ list "examplecloud_resource" "example" {
 - `list_object` (List of Object) A list object attribute. See [below for nested schema](#nested--list_object).
 - `map` (Map of String) A map attribute.
 - `map_object` (Map of Object) A map object attribute. See [below for nested schema](#nested--map_object).
+- `multi_custom` (String) First paragraph.
+
+	Second paragraph.
+
+	-> A custom string type.
+- `multi_object` (Object) First paragraph.
+
+	Second paragraph.
+
+	See [below for nested schema](#nested--multi_object).
 - `single_block` (Block) A single block. See [below for nested schema](#nested--single_block).
 
 	-> Ensure that if an attribute is set, these are not set: "[list_block]".
@@ -164,6 +174,15 @@ Required:
 Optional:
 
 - `string` (String) A nested nested string attribute.
+<a id="nested--multi_object"></a>
+### Nested Schema for `multi_object`
+
+Optional:
+
+- `multi_nested` (String) First paragraph.
+
+	Second paragraph.
+- `single_nested` (String) A single-line attribute.
 <a id="nested--single_block"></a>
 ### Nested Schema for `single_block`
 

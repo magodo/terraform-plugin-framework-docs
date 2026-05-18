@@ -84,7 +84,7 @@ func TestDataType(t *testing.T) {
 					ElemType: basetypes.ObjectType{},
 				},
 			},
-			expect: "List of Objects",
+			expect: "List of Object",
 		},
 		{
 			name: "set of objects",
@@ -93,7 +93,7 @@ func TestDataType(t *testing.T) {
 					ElemType: basetypes.ObjectType{},
 				},
 			},
-			expect: "Set of Objects",
+			expect: "Set of Object",
 		},
 		{
 			name: "map of objects",
@@ -102,7 +102,7 @@ func TestDataType(t *testing.T) {
 					ElemType: basetypes.ObjectType{},
 				},
 			},
-			expect: "Map of Objects",
+			expect: "Map of Object",
 		},
 		{
 			name: "list of blocks",
@@ -112,7 +112,7 @@ func TestDataType(t *testing.T) {
 					ElemType: basetypes.ObjectType{},
 				},
 			},
-			expect: "List of Blocks",
+			expect: "List of Block",
 		},
 		{
 			name: "set of blocks",
@@ -122,7 +122,7 @@ func TestDataType(t *testing.T) {
 					ElemType: basetypes.ObjectType{},
 				},
 			},
-			expect: "Set of Blocks",
+			expect: "Set of Block",
 		},
 		{
 			name: "map of blocks",
@@ -132,7 +132,7 @@ func TestDataType(t *testing.T) {
 					ElemType: basetypes.ObjectType{},
 				},
 			},
-			expect: "Map of Blocks",
+			expect: "Map of Block",
 		},
 		{
 			name: "tuple",
@@ -157,7 +157,7 @@ func TestDataType(t *testing.T) {
 					},
 				},
 			},
-			expect: "List of Maps of Objects",
+			expect: "List of Map of Object",
 		},
 	}
 

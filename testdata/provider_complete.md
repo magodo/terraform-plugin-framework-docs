@@ -63,6 +63,16 @@ provider "examplecloud" {
 - `list_object` (List of Object) A list object attribute. See [below for nested schema](#nested--list_object).
 - `map` (Map of String) A map attribute.
 - `map_object` (Map of Object) A map object attribute. See [below for nested schema](#nested--map_object).
+- `multi_custom` (String) First paragraph.
+
+	Second paragraph.
+
+	-> A custom string type.
+- `multi_object` (Object) First paragraph.
+
+	Second paragraph.
+
+	See [below for nested schema](#nested--multi_object).
 - `set` (Set of String) A set attribute.
 - `set_block` (Set of Block) A set block. See [below for nested schema](#nested--set_block).
 - `set_object` (Set of Object) A set object attribute. See [below for nested schema](#nested--set_object).
@@ -164,6 +174,15 @@ Required:
 Optional:
 
 - `string` (String) A nested nested string attribute.
+<a id="nested--multi_object"></a>
+### Nested Schema for `multi_object`
+
+Optional:
+
+- `multi_nested` (String) First paragraph.
+
+	Second paragraph.
+- `single_nested` (String) A single-line attribute.
 <a id="nested--set_block"></a>
 ### Nested Schema for `set_block`
 

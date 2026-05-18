@@ -207,6 +207,27 @@ func (e ExampleResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				CustomType:          testhelper.CustomStringType{},
 				Optional:            true,
 			},
+			"multi_custom": schema.StringAttribute{
+				MarkdownDescription: "First paragraph.\n\nSecond paragraph.",
+				CustomType:          testhelper.CustomStringType{},
+				Optional:            true,
+				Computed:            true,
+				Default:             stringdefault.StaticString("default-value"),
+			},
+			"multi_object": schema.SingleNestedAttribute{
+				MarkdownDescription: "First paragraph.\n\nSecond paragraph.",
+				Optional:            true,
+				Attributes: map[string]schema.Attribute{
+					"single_nested": schema.StringAttribute{
+						MarkdownDescription: "A single-line attribute.",
+						Optional:            true,
+					},
+					"multi_nested": schema.StringAttribute{
+						MarkdownDescription: "First paragraph.\n\nSecond paragraph.",
+						Optional:            true,
+					},
+				},
+			},
 		},
 		Blocks: map[string]schema.Block{
 			"single_block": schema.SingleNestedBlock{
@@ -281,6 +302,11 @@ func (e ExampleResource) IdentitySchema(ctx context.Context, req resource.Identi
 			},
 			"custom_string": identityschema.StringAttribute{
 				Description:       "A custom string attribute.",
+				CustomType:        testhelper.CustomStringType{},
+				OptionalForImport: true,
+			},
+			"id_multi_custom": identityschema.StringAttribute{
+				Description:       "First paragraph.\n\nSecond paragraph.",
 				CustomType:        testhelper.CustomStringType{},
 				OptionalForImport: true,
 			},

@@ -33,7 +33,7 @@ example_function_simple(...)
 ## Signature
 
 ```text
-example_function_simple(bool boolean, string string, number number, int32 int32, int64 int64, float32 float32, float64 float64, dynamic dynamic, list list of string, set set of string, map map of string, object object, custom_string string, strings string...) boolean
+example_function_simple(bool boolean, string string, number number, int32 int32, int64 int64, float32 float32, float64 float64, dynamic dynamic, list list of string, set set of string, map map of string, object object, custom_string string, multi_custom string, multi_object object, strings string...) boolean
 ```
 
 ## Arguments
@@ -55,7 +55,25 @@ example_function_simple(bool boolean, string string, number number, int32 int32,
 1. `custom_string` (String) A custom string attribute.
 
 	-> A custom string type.
+1. `multi_custom` (String) First paragraph.
+
+	Second paragraph.
+
+	-> A custom string type.
+1. `multi_object` (Object) First paragraph.
+
+	Second paragraph.
+
+	See [below for nested schema](#nested--multi_object).
 1. `strings` (String) The variadic string parameter.
+
+<a id="nested--multi_object"></a>
+### Fields of `multi_object`
+
+- `multi_nested` (String) First paragraph.
+
+	Second paragraph.
+- `single_nested` (String) A single-line attribute.
 
 <a id="nested--object"></a>
 ### Fields of `object`
